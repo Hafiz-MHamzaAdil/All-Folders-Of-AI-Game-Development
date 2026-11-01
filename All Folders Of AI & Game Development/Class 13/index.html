@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 7 — Functions</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f4f0; --surface:#fff; --border:#e2e0d8;
+  --text:#1a1a2e; --muted:#6b6876;
+  --accent:#4f46e5; --accent-light:#ede9fe; --accent2:#7c3aed;
+  --green:#059669; --green-light:#d1fae5;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --red:#dc2626; --red-light:#fee2e2;
+  --blue:#2563eb; --blue-light:#dbeafe;
+  --teal:#0d9488; --teal-light:#ccfbf1;
+  --pink:#db2777; --pink-light:#fce7f3;
+  --orange:#ea580c; --orange-light:#ffedd5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;padding:40px 48px 64px;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,#c8c6d0 1px,transparent 1px);background-size:28px 28px;opacity:.35;pointer-events:none;z-index:0;}
+.page{position:relative;z-index:1;max-width:1080px;margin:0 auto;}
+
+.pg-tag{display:inline-flex;align-items:center;gap:6px;background:var(--blue-light);border:1px solid #bfdbfe;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:var(--blue);letter-spacing:.5px;margin-bottom:10px;}
+.pg-title{font-size:clamp(28px,4vw,46px);font-weight:900;color:var(--text);line-height:1.1;letter-spacing:-.5px;margin-bottom:6px;}
+.pg-title span{color:var(--accent);}
+.pg-sub{font-size:14px;color:var(--muted);font-weight:500;margin-bottom:32px;}
+
+.sec{margin-bottom:32px;}
+.sec-title{font-size:18px;font-weight:800;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.sec-title::after{content:'';flex:1;height:2px;background:var(--border);}
+.sec-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+.divider{height:1px;background:var(--border);margin:28px 0;}
+
+.two-col  {display:grid;grid-template-columns:1fr 1fr;    gap:16px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.four-col {display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+/* CODE */
+.code-wrap{background:#12131f;border:1px solid #2a2d45;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+.code-hdr{background:#0a0b14;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2a2d45;flex-wrap:wrap;gap:6px;}
+.code-ttl{font-size:10px;font-weight:700;letter-spacing:2px;color:#7aa2f7;text-transform:uppercase;}
+.code-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:4px;}
+.cb-blue  {background:rgba(122,162,247,.2);color:#7aa2f7;}
+.cb-green {background:rgba(158,206,106,.2);color:#9ece6a;}
+.cb-amber {background:rgba(224,175,104,.2);color:#e0af68;}
+.cb-purple{background:rgba(187,154,247,.2);color:#bb9af7;}
+.cb-red   {background:rgba(247,118,142,.2);color:#f7768e;}
+.cb-teal  {background:rgba(115,218,202,.2);color:#73daca;}
+.code-body{padding:20px 22px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.1;}
+.ck{color:#bb9af7;font-weight:700;}
+.cs{color:#9ece6a;font-weight:600;}
+.cf{color:#e0af68;font-weight:600;}
+.cv{color:#7dcfff;}
+.cc{color:#565f89;font-style:italic;}
+.cp{color:#f7768e;}
+.co{color:#ff9e64;}
+
+/* OUTPUT */
+.output{background:#f0fff4;border:1px solid #6ee7b7;border-radius:10px;padding:14px 18px;}
+.out-label{font-size:10px;font-weight:700;color:var(--green);letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase;}
+.out-line{font-family:'JetBrains Mono',monospace;font-size:13px;color:#065f46;line-height:2.2;}
+.out-sep{height:1px;background:#a7f3d0;margin:6px 0;}
+
+/* NOTE */
+.note{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;}
+.note-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.note-text{font-size:13px;color:var(--muted);line-height:1.65;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 16px;position:relative;overflow:hidden;}
+.ct{height:3px;position:absolute;top:0;left:0;right:0;border-radius:12px 12px 0 0;}
+.ct-blue{background:var(--blue);} .ct-purple{background:var(--accent2);}
+.ct-amber{background:var(--amber);} .ct-green{background:var(--green);}
+.ct-red{background:var(--red);} .ct-teal{background:var(--teal);}
+.ct-pink{background:var(--pink);} .ct-orange{background:var(--orange);}
+.card-icon{font-size:22px;margin-bottom:7px;margin-top:4px;}
+.card-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.card-text{font-size:12.5px;color:var(--muted);line-height:1.55;}
+
+/* SYNTAX BOX */
+.syntax-box{background:var(--surface);border:2px dashed var(--border);border-radius:12px;padding:18px 22px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.4;}
+
+/* STEPS */
+.steps{list-style:none;}
+.step{display:flex;gap:14px;align-items:flex-start;padding:12px 16px;margin-bottom:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.snum{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:900;flex-shrink:0;}
+.n1{background:var(--blue-light);color:var(--blue);}
+.n2{background:var(--accent-light);color:var(--accent2);}
+.n3{background:var(--amber-light);color:var(--amber);}
+.n4{background:var(--green-light);color:var(--green);}
+.n5{background:var(--pink-light);color:var(--pink);}
+.stitle{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.sdesc{font-size:12px;color:var(--muted);line-height:1.45;}
+
+/* CHECKLIST */
+.chklist{list-style:none;}
+.ci{display:flex;align-items:flex-start;gap:12px;padding:10px 16px;margin-bottom:6px;background:var(--surface);border:1px solid var(--border);border-radius:8px;}
+.ci-box{width:18px;height:18px;border-radius:5px;flex-shrink:0;margin-top:1px;background:var(--green);display:flex;align-items:center;justify-content:center;}
+.ci-box::after{content:'✓';font-size:11px;color:#fff;font-weight:800;}
+.ci-title{font-size:13px;font-weight:600;color:var(--text);}
+.ci-sub{font-size:11px;color:var(--muted);margin-top:1px;font-family:'JetBrains Mono',monospace;}
+
+/* INLINE CODE */
+ic{font-family:'JetBrains Mono',monospace;font-size:12px;background:#e8e6f0;padding:1px 6px;border-radius:4px;color:#4f46e5;font-weight:600;}
+
+/* BONUS */
+.bonus{background:linear-gradient(135deg,#fdf4ff,#ede9fe);border:1px solid #ddd6fe;border-radius:12px;padding:18px 22px;}
+
+/* DIAGRAM FLOW */
+.flow-row{display:flex;align-items:center;gap:0;justify-content:center;flex-wrap:wrap;}
+.flow-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;text-align:center;min-width:130px;}
+.flow-arrow{font-size:18px;color:var(--border2,#d0cecc);padding:0 10px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="pg-tag">CLASS 7 · MODULE 2 · LUA PROGRAMMING</div>
+<h1 class="pg-title">Functions — <span>Write Once, Use Anywhere</span></h1>
+<p class="pg-sub">Creating functions · Parameters · Return values · Functions with Parts · Functions with loops and if/else</p>
+
+<!-- ═══════════════════════════════
+  SECTION 1 — WHAT IS A FUNCTION
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">What is a Function?</div>
+  <p class="sec-sub">A function is a named block of code you can run whenever you need it — without retyping it every time.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="note" style="border-color:#fca5a5;margin-bottom:12px;">
+        <div class="note-label" style="color:var(--red);">Without a Function — Repeated Code</div>
+        <div class="code-wrap" style="margin-top:8px;">
+          <div class="code-body" style="font-size:13px;padding:14px 18px;">
+<span class="cf">print</span>(<span class="cs">"════════════"</span>)<br>
+<span class="cf">print</span>(<span class="cs">"WELCOME!"</span>)<br>
+<span class="cf">print</span>(<span class="cs">"════════════"</span>)<br><br>
+<span class="cc">-- later in the script...</span><br>
+<span class="cf">print</span>(<span class="cs">"════════════"</span>)<br>
+<span class="cf">print</span>(<span class="cs">"WELCOME!"</span>)<br>
+<span class="cf">print</span>(<span class="cs">"════════════"</span>)
+          </div>
+        </div>
+      </div>
+
+      <div class="note" style="border-color:#a7f3d0;">
+        <div class="note-label" style="color:var(--green);">With a Function — Write Once</div>
+        <div class="code-wrap" style="margin-top:8px;">
+          <div class="code-body" style="font-size:13px;padding:14px 18px;">
+<span class="ck">local function</span> <span class="cf">showWelcome</span>()<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"════════════"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"WELCOME!"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"════════════"</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="cf">showWelcome</span>()<br>
+<span class="cc">-- later in the script...</span><br>
+<span class="cf">showWelcome</span>()
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="four-col" style="margin-bottom:12px;">
+        <div class="card" style="text-align:center;">
+          <div class="ct ct-blue"></div>
+          <div style="font-size:22px;margin:8px 0 4px;">📝</div>
+          <div class="card-label" style="color:var(--blue);">Define</div>
+          <div class="card-text">Write the function once</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="ct ct-amber"></div>
+          <div style="font-size:22px;margin:8px 0 4px;">📞</div>
+          <div class="card-label" style="color:var(--amber);">Call</div>
+          <div class="card-text">Run it anytime by name</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="ct ct-purple"></div>
+          <div style="font-size:22px;margin:8px 0 4px;">📦</div>
+          <div class="card-label" style="color:var(--accent2);">Parameters</div>
+          <div class="card-text">Send information in</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="ct ct-green"></div>
+          <div style="font-size:22px;margin:8px 0 4px;">↩️</div>
+          <div class="card-label" style="color:var(--green);">Return</div>
+          <div class="card-text">Send a result back out</div>
+        </div>
+      </div>
+
+      <div class="output">
+        <div class="out-label">Output — calling showWelcome() twice</div>
+        <div class="out-line">════════════<br>WELCOME!<br>════════════<br>════════════<br>WELCOME!<br>════════════</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════
+  SECTION 2 — BASIC SYNTAX
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Function Syntax</div>
+
+  <div class="syntax-box" style="margin-bottom:16px;max-width:560px;">
+    <span style="color:#bb9af7;font-weight:700;">local function</span>
+    <span style="color:#e0af68;font-weight:600;"> functionName</span>
+    <span style="color:#ff9e64;">(</span>
+    <span style="color:#7dcfff;">parameters</span>
+    <span style="color:#ff9e64;">)</span><br>
+    <span style="color:#565f89;font-style:italic;margin-left:28px;display:inline-block;">-- code that runs when called</span><br>
+    <span style="color:#bb9af7;font-weight:700;">end</span><br><br>
+    <span style="color:#e0af68;font-weight:600;">functionName</span><span style="color:#ff9e64;">(</span><span style="color:#7dcfff;">arguments</span><span style="color:#ff9e64;">)</span>
+    <span style="color:#565f89;font-style:italic;"> -- calls the function</span>
+  </div>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — A function with no input</span>
+        <span class="code-badge cb-blue">basic function</span>
+      </div>
+      <div class="code-body">
+<span class="ck">local function</span> <span class="cf">sayHello</span>()<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"Hello, Roblox!"</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="cf">sayHello</span>()<br>
+<span class="cf">sayHello</span>()<br>
+<span class="cf">sayHello</span>()
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">Hello, Roblox!<br>Hello, Roblox!<br>Hello, Roblox!</div>
+      </div>
+      <div class="note" style="border-color:#bfdbfe;">
+        <div class="note-label" style="color:var(--blue);">Define vs Call</div>
+        <div class="note-text">Writing <ic>local function sayHello()</ic> only defines it — it does NOT run yet. The function only runs when you write <ic>sayHello()</ic> with parentheses.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════
+  SECTION 3 — PARAMETERS
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Parameters — Sending Information Into a Function</div>
+  <p class="sec-sub">Parameters let a function behave differently each time it's called, based on what you send it.</p>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Functions with parameters</span>
+        <span class="code-badge cb-amber">parameters</span>
+      </div>
+      <div class="code-body">
+<span class="cc">-- One parameter</span><br>
+<span class="ck">local function</span> <span class="cf">greet</span>(<span class="cv">name</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"Hello, "</span> <span class="co">..</span> <span class="cv">name</span> <span class="co">..</span> <span class="cs">"!"</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="cf">greet</span>(<span class="cs">"Ahmed"</span>)<br>
+<span class="cf">greet</span>(<span class="cs">"Sara"</span>)<br><br>
+<span class="cc">-- Two parameters</span><br>
+<span class="ck">local function</span> <span class="cf">dealDamage</span>(<span class="cv">target</span>, <span class="cv">amount</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cv">target</span> <span class="co">..</span> <span class="cs">" took "</span> <span class="co">..</span> <span class="cv">amount</span> <span class="co">..</span> <span class="cs">" damage!"</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="cf">dealDamage</span>(<span class="cs">"Goblin"</span>, <span class="cs">25</span>)<br>
+<span class="cf">dealDamage</span>(<span class="cs">"Dragon"</span>, <span class="cs">10</span>)
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">Hello, Ahmed!<br>Hello, Sara!</div>
+        <div class="out-sep"></div>
+        <div class="out-line">Goblin took 25 damage!<br>Dragon took 10 damage!</div>
+      </div>
+      <div class="note" style="border-color:#fcd34d;">
+        <div class="note-label" style="color:var(--amber);">Parameter Order Matters</div>
+        <div class="note-text"><ic>dealDamage("Goblin", 25)</ic> — the first value fills <ic>target</ic>, the second fills <ic>amount</ic>, in the exact order they were written in the function.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════
+  SECTION 4 — RETURN VALUES
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">return — Sending a Result Back</div>
+  <p class="sec-sub">A function can calculate something and hand the answer back using <ic>return</ic>. You can then store that answer in a variable.</p>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Functions that return values</span>
+        <span class="code-badge cb-green">return</span>
+      </div>
+      <div class="code-body">
+<span class="cc">-- Returns a calculated number</span><br>
+<span class="ck">local function</span> <span class="cf">addNumbers</span>(<span class="cv">a</span>, <span class="cv">b</span>)<br>
+&nbsp;&nbsp;<span class="ck">return</span> <span class="cv">a</span> <span class="co">+</span> <span class="cv">b</span><br>
+<span class="ck">end</span><br><br>
+<span class="ck">local</span> <span class="cv">total</span> <span class="co">=</span> <span class="cf">addNumbers</span>(<span class="cs">5</span>, <span class="cs">3</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Total: "</span> <span class="co">..</span> <span class="cv">total</span>)<br><br>
+<span class="cc">-- Returns true or false</span><br>
+<span class="ck">local function</span> <span class="cf">isAdult</span>(<span class="cv">age</span>)<br>
+&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">age</span> <span class="co">&gt;=</span> <span class="cs">18</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">return</span> <span class="cs">true</span><br>
+&nbsp;&nbsp;<span class="ck">else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">return</span> <span class="cs">false</span><br>
+&nbsp;&nbsp;<span class="ck">end</span><br>
+<span class="ck">end</span><br><br>
+<span class="ck">local</span> <span class="cv">result</span> <span class="co">=</span> <span class="cf">isAdult</span>(<span class="cs">15</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Is adult: "</span> <span class="co">..</span> <span class="cf">tostring</span>(<span class="cv">result</span>))
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">Total: 8</div>
+        <div class="out-sep"></div>
+        <div class="out-line">Is adult: false</div>
+      </div>
+      <div class="note" style="border-color:#a7f3d0;">
+        <div class="note-label" style="color:var(--green);">return vs print</div>
+        <div class="note-text"><ic>print()</ic> only shows text in the Output window — the value is gone after. <ic>return</ic> sends the value back so it can be stored in a variable and used later in the script.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════
+  SECTION 5 — FUNCTIONS + IF/ELSE
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Functions + if/elseif/else</div>
+  <p class="sec-sub">A function can contain conditions and return a different result depending on the input.</p>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Rank function using elseif</span>
+        <span class="code-badge cb-purple">function + if/else</span>
+      </div>
+      <div class="code-body">
+<span class="ck">local function</span> <span class="cf">getRank</span>(<span class="cv">score</span>)<br>
+&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">score</span> <span class="co">&gt;=</span> <span class="cs">90</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">return</span> <span class="cs">"Gold"</span><br>
+&nbsp;&nbsp;<span class="ck">elseif</span> <span class="cv">score</span> <span class="co">&gt;=</span> <span class="cs">70</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">return</span> <span class="cs">"Silver"</span><br>
+&nbsp;&nbsp;<span class="ck">elseif</span> <span class="cv">score</span> <span class="co">&gt;=</span> <span class="cs">50</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">return</span> <span class="cs">"Bronze"</span><br>
+&nbsp;&nbsp;<span class="ck">else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">return</span> <span class="cs">"No Rank"</span><br>
+&nbsp;&nbsp;<span class="ck">end</span><br>
+<span class="ck">end</span><br><br>
+<span class="cf">print</span>(<span class="cf">getRank</span>(<span class="cs">95</span>))<br>
+<span class="cf">print</span>(<span class="cf">getRank</span>(<span class="cs">74</span>))<br>
+<span class="cf">print</span>(<span class="cf">getRank</span>(<span class="cs">30</span>))
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">Gold<br>Silver<br>No Rank</div>
+      </div>
+      <div class="note" style="border-color:#ddd6fe;">
+        <div class="note-label" style="color:var(--accent2);">One Function, Many Results</div>
+        <div class="note-text">The same <ic>getRank()</ic> function gives a different answer for every score sent into it — that's the entire point of parameters and return values working together.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════
+  SECTION 6 — FUNCTIONS + LOOPS
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Functions + Loops</div>
+  <p class="sec-sub">Call a function repeatedly inside a loop — or use a loop inside a function.</p>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Loop calling a function each time</span>
+        <span class="code-badge cb-teal">loop calls function</span>
+      </div>
+      <div class="code-body">
+<span class="ck">local function</span> <span class="cf">getRank</span>(<span class="cv">score</span>)<br>
+&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">score</span> <span class="co">&gt;=</span> <span class="cs">90</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">return</span> <span class="cs">"Gold"</span><br>
+&nbsp;&nbsp;<span class="ck">elseif</span> <span class="cv">score</span> <span class="co">&gt;=</span> <span class="cs">70</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">return</span> <span class="cs">"Silver"</span><br>
+&nbsp;&nbsp;<span class="ck">else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">return</span> <span class="cs">"Bronze"</span><br>
+&nbsp;&nbsp;<span class="ck">end</span><br>
+<span class="ck">end</span><br><br>
+<span class="ck">local</span> <span class="cv">scores</span> <span class="co">=</span> {<span class="cs">95</span>, <span class="cs">60</span>, <span class="cs">82</span>, <span class="cs">45</span>}<br><br>
+<span class="ck">for</span> <span class="cv">i</span> <span class="co">=</span> <span class="cs">1</span>, <span class="cf">#</span><span class="cv">scores</span> <span class="ck">do</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">rank</span> <span class="co">=</span> <span class="cf">getRank</span>(<span class="cv">scores</span>[<span class="cv">i</span>])<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"Player "</span> <span class="co">..</span> <span class="cv">i</span> <span class="co">..</span> <span class="cs">": "</span> <span class="co">..</span> <span class="cv">rank</span>)<br>
+<span class="ck">end</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">Player 1: Gold<br>Player 2: Bronze<br>Player 3: Silver<br>Player 4: Bronze</div>
+      </div>
+      <div class="note" style="border-color:#fcd34d;">
+        <div class="note-label" style="color:var(--amber);"># scores — table length</div>
+        <div class="note-text"><ic>#scores</ic> counts how many items are in the table. The loop runs once per item, no matter how many scores are added.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════
+  SECTION 7 — FUNCTIONS + PARTS
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Functions + Parts — Reusable Part Builder</div>
+  <p class="sec-sub">Write one function that creates a Part with chosen properties — call it as many times as needed with different values.</p>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — A function that builds a custom Part</span>
+        <span class="code-badge cb-pink">function + Instance.new</span>
+      </div>
+      <div class="code-body">
+<span class="ck">local function</span> <span class="cf">createBlock</span>(<span class="cv">xPos</span>, <span class="cv">color</span>)<br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">block</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Part"</span>)<br>
+&nbsp;&nbsp;<span class="cv">block</span>.<span class="cp">Parent</span>   <span class="co">=</span> workspace<br>
+&nbsp;&nbsp;<span class="cv">block</span>.<span class="cp">Size</span>     <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cs">4</span>, <span class="cs">4</span>, <span class="cs">4</span>)<br>
+&nbsp;&nbsp;<span class="cv">block</span>.<span class="cp">Anchored</span> <span class="co">=</span> <span class="cs">true</span><br>
+&nbsp;&nbsp;<span class="cv">block</span>.<span class="cp">Position</span> <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">xPos</span>, <span class="cs">2</span>, <span class="cs">0</span>)<br>
+&nbsp;&nbsp;<span class="cv">block</span>.<span class="cp">BrickColor</span> <span class="co">=</span> BrickColor.<span class="cf">new</span>(<span class="cv">color</span>)<br>
+&nbsp;&nbsp;<span class="ck">return</span> <span class="cv">block</span><br>
+<span class="ck">end</span><br><br>
+<span class="cc">-- Call it 3 times with different values</span><br>
+<span class="cf">createBlock</span>(<span class="cs">0</span>, <span class="cs">"Bright red"</span>)<br>
+<span class="cf">createBlock</span>(<span class="cs">6</span>, <span class="cs">"Bright blue"</span>)<br>
+<span class="cf">createBlock</span>(<span class="cs">12</span>, <span class="cs">"Lime green"</span>)<br><br>
+<span class="cf">print</span>(<span class="cs">"3 blocks created!"</span>)
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">3 blocks created!</div>
+      </div>
+      <div class="note" style="border-color:#a7f3d0;">
+        <div class="note-label" style="color:var(--green);">Why This Is Powerful</div>
+        <div class="note-text">Without the function, you would copy the same 6 lines 3 times. With the function, only one line changes per call — the position and color.</div>
+      </div>
+      <div class="note" style="border-color:#bfdbfe;">
+        <div class="note-label" style="color:var(--blue);">Combine With a Loop</div>
+        <div class="note-text">Instead of calling <ic>createBlock()</ic> three separate times, you could use a <ic>for</ic> loop to call it 20 times — same function, way less code.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════
+  SECTION 8 — TASK
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Task — The Damage Calculator</div>
+  <p class="sec-sub">Write a function that calculates battle damage and returns a result message, then call it for 5 different battles using a loop.</p>
+
+  <div class="two-col">
+    <div class="note" style="border-color:#bfdbfe;">
+      <div class="note-label" style="color:var(--blue);">Function to Write</div>
+      <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+        Name: <ic>calculateDamage(attack, defense)</ic><br><br>
+        Inside the function:<br>
+        · <ic>local damage = attack - defense</ic><br>
+        · If damage is less than 0, set it to 0<br>
+        · Return the damage value
+      </div>
+    </div>
+    <div class="note" style="border-color:#fcd34d;">
+      <div class="note-label" style="color:var(--amber);">Then Use a Loop</div>
+      <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+        Create a table of 5 battles, each with attack and defense numbers.<br>
+        Loop through them, call <ic>calculateDamage()</ic> for each, and print:<br>
+        <ic>"Battle 1: 15 damage dealt"</ic>
+      </div>
+    </div>
+  </div>
+
+  <div class="bonus" style="margin-top:14px;">
+    <div style="font-size:13px;font-weight:800;color:var(--accent2);margin-bottom:6px;">⭐ Bonus</div>
+    <div style="font-size:12.5px;color:#4c1d95;line-height:1.7;">
+      Write a second function <ic>getBattleResult(damage)</ic> that returns <ic>"Critical Hit!"</ic> if damage is above 30, <ic>"Hit"</ic> if above 0, or <ic>"Blocked!"</ic> if damage is 0. Call it right after calculateDamage for each battle.
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════
+  SUMMARY
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Class 7 — Summary ✅</div>
+
+  <ul class="chklist">
+    <li class="ci"><div class="ci-box"></div><div><div class="ci-title">local function name() ... end — defining a function</div><div class="ci-sub">Code only runs when called by name</div></div></li>
+    <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Parameters — sending information into a function</div><div class="ci-sub">function(name, age) ... end</div></div></li>
+    <li class="ci"><div class="ci-box"></div><div><div class="ci-title">return — sending a result back out</div><div class="ci-sub">local result = myFunction()</div></div></li>
+    <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Functions containing if/elseif/else</div><div class="ci-sub">getRank() returning different strings</div></div></li>
+    <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Calling a function inside a loop</div><div class="ci-sub">for loop + getRank(scores[i])</div></div></li>
+    <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Functions that create Parts — reusable builders</div><div class="ci-sub">createBlock(xPos, color)</div></div></li>
+  </ul>
+
+  <div class="two-col" style="margin-top:14px;">
+    <div class="note" style="border-color:#a7f3d0;">
+      <div class="note-label" style="color:var(--green);">Homework</div>
+      <div class="note-text">Write a function <ic>isEven(number)</ic> that returns true or false. Then use a for loop from 1 to 20 to print which numbers are even using your function.</div>
+    </div>
+    <div class="note" style="border-color:#bfdbfe;">
+      <div class="note-label" style="color:var(--blue);">Next Class — Events</div>
+      <div class="note-text"><strong>Events</strong> — functions that run automatically when something happens, like a player touching a Part or clicking a button.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

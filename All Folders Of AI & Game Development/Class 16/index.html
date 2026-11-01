@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 12 — GUI in Roblox Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f4f0; --surface:#fff; --border:#e2e0d8;
+  --text:#1a1a2e; --muted:#6b6876;
+  --accent:#4f46e5; --accent-light:#ede9fe; --accent2:#7c3aed;
+  --green:#059669; --green-light:#d1fae5;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --red:#dc2626; --red-light:#fee2e2;
+  --blue:#2563eb; --blue-light:#dbeafe;
+  --teal:#0d9488; --teal-light:#ccfbf1;
+  --pink:#db2777; --pink-light:#fce7f3;
+  --orange:#ea580c; --orange-light:#ffedd5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;padding:40px 48px 64px;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,#c8c6d0 1px,transparent 1px);background-size:28px 28px;opacity:.35;pointer-events:none;z-index:0;}
+.page{position:relative;z-index:1;max-width:1080px;margin:0 auto;}
+
+.pg-tag{display:inline-flex;align-items:center;gap:6px;background:var(--teal-light);border:1px solid #99f6e4;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.5px;margin-bottom:10px;}
+.pg-title{font-size:clamp(28px,4vw,46px);font-weight:900;color:var(--text);line-height:1.1;letter-spacing:-.5px;margin-bottom:6px;}
+.pg-title span{color:var(--accent);}
+.pg-sub{font-size:14px;color:var(--muted);font-weight:500;margin-bottom:32px;}
+
+.sec{margin-bottom:30px;}
+.sec-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.sec-title::after{content:'';flex:1;height:2px;background:var(--border);}
+.sec-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+.divider{height:1px;background:var(--border);margin:24px 0;}
+
+.two-col  {display:grid;grid-template-columns:1fr 1fr;    gap:16px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.four-col {display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+/* CODE */
+.code-wrap{background:#12131f;border:1px solid #2a2d45;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+.code-hdr{background:#0a0b14;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2a2d45;flex-wrap:wrap;gap:6px;}
+.code-ttl{font-size:10px;font-weight:700;letter-spacing:2px;color:#7aa2f7;text-transform:uppercase;}
+.code-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:4px;}
+.cb-blue  {background:rgba(122,162,247,.2);color:#7aa2f7;}
+.cb-green {background:rgba(158,206,106,.2);color:#9ece6a;}
+.cb-amber {background:rgba(224,175,104,.2);color:#e0af68;}
+.cb-purple{background:rgba(187,154,247,.2);color:#bb9af7;}
+.cb-red   {background:rgba(247,118,142,.2);color:#f7768e;}
+.cb-teal  {background:rgba(115,218,202,.2);color:#73daca;}
+.code-body{padding:18px 22px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.1;}
+.ck{color:#bb9af7;font-weight:700;}
+.cs{color:#9ece6a;font-weight:600;}
+.cf{color:#e0af68;font-weight:600;}
+.cv{color:#7dcfff;}
+.cc{color:#565f89;font-style:italic;}
+.cp{color:#f7768e;}
+.co{color:#ff9e64;}
+
+/* OUTPUT */
+.output{background:#f0fff4;border:1px solid #6ee7b7;border-radius:10px;padding:14px 18px;}
+.out-label{font-size:10px;font-weight:700;color:var(--green);letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase;}
+.out-line{font-family:'JetBrains Mono',monospace;font-size:13px;color:#065f46;line-height:2.2;}
+
+/* NOTE */
+.note{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;}
+.note-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.note-text{font-size:13px;color:var(--muted);line-height:1.65;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 16px;position:relative;overflow:hidden;}
+.ct{height:3px;position:absolute;top:0;left:0;right:0;border-radius:12px 12px 0 0;}
+.ct-blue{background:var(--blue);} .ct-purple{background:var(--accent2);}
+.ct-amber{background:var(--amber);} .ct-green{background:var(--green);}
+.ct-red{background:var(--red);} .ct-teal{background:var(--teal);}
+.ct-pink{background:var(--pink);}
+.card-icon{font-size:22px;margin-bottom:7px;margin-top:4px;}
+.card-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.card-text{font-size:12.5px;color:var(--muted);line-height:1.55;}
+
+/* STEPS */
+.steps{list-style:none;}
+.step{display:flex;gap:14px;align-items:flex-start;padding:12px 16px;margin-bottom:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.snum{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:900;flex-shrink:0;}
+.n1{background:var(--blue-light);color:var(--blue);}
+.n2{background:var(--accent-light);color:var(--accent2);}
+.n3{background:var(--amber-light);color:var(--amber);}
+.n4{background:var(--green-light);color:var(--green);}
+.n5{background:var(--pink-light);color:var(--pink);}
+.stitle{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.sdesc{font-size:12px;color:var(--muted);line-height:1.45;}
+
+/* CHECKLIST */
+.chklist{list-style:none;}
+.ci{display:flex;align-items:flex-start;gap:12px;padding:10px 16px;margin-bottom:6px;background:var(--surface);border:1px solid var(--border);border-radius:8px;}
+.ci-box{width:18px;height:18px;border-radius:5px;flex-shrink:0;margin-top:1px;background:var(--green);display:flex;align-items:center;justify-content:center;}
+.ci-box::after{content:'✓';font-size:11px;color:#fff;font-weight:800;}
+.ci-title{font-size:13px;font-weight:600;color:var(--text);}
+.ci-sub{font-size:11px;color:var(--muted);margin-top:1px;font-family:'JetBrains Mono',monospace;}
+
+/* GUI SCREEN MOCKUP */
+.screen-mock{background:#1a1a2e;border:3px solid #334155;border-radius:14px;padding:16px;position:relative;overflow:hidden;aspect-ratio:16/9;display:flex;align-items:stretch;}
+.screen-3d{flex:1;background:linear-gradient(180deg,#1e3a5f 0%,#0f2847 60%,#2d5016 100%);border-radius:8px;position:relative;}
+.screen-overlay{position:absolute;inset:0;pointer-events:none;}
+
+/* GUI elements in mockup */
+.gui-topleft{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:6px;}
+.gui-topright{position:absolute;top:10px;right:10px;}
+.gui-topcenter{position:absolute;top:10px;left:50%;transform:translateX(-50%);}
+.gui-bottomcenter{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);}
+.gui-label{background:rgba(0,0,0,.6);color:#fff;font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border-radius:6px;white-space:nowrap;border:1px solid rgba(255,255,255,.15);}
+.gui-frame{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:6px 10px;}
+.gui-bar-bg{width:80px;height:8px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden;}
+.gui-bar-fill{height:100%;border-radius:4px;}
+.gui-btn{background:rgba(79,70,229,.7);color:#fff;font-family:'JetBrains Mono',monospace;font-size:9px;padding:4px 10px;border-radius:6px;border:1px solid rgba(165,180,252,.4);cursor:pointer;white-space:nowrap;}
+.gui-crosshair{font-size:16px;color:rgba(255,255,255,.6);}
+
+/* UDIM2 VISUAL */
+.udim-grid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:4px;background:#1a1a2e;border-radius:10px;padding:12px;aspect-ratio:1.6;}
+.udim-cell{border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;text-align:center;line-height:1.3;}
+
+/* PROP TABLE */
+.prop-table{width:100%;border-collapse:separate;border-spacing:0 3px;}
+.prop-table th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:7px 14px;text-align:left;}
+.prop-table td{padding:10px 14px;font-size:13px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.prop-table tr td:first-child{border-left:1px solid var(--border);border-radius:7px 0 0 7px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:#bb9af7;}
+.prop-table tr td:last-child{border-right:1px solid var(--border);border-radius:0 7px 7px 0;font-size:12px;color:var(--muted);}
+
+ic{font-family:'JetBrains Mono',monospace;font-size:12px;background:#e8e6f0;padding:1px 6px;border-radius:4px;color:#4f46e5;font-weight:600;}
+.bonus{background:linear-gradient(135deg,#fdf4ff,#ede9fe);border:1px solid #ddd6fe;border-radius:12px;padding:18px 22px;}
+.footer{text-align:center;padding-top:18px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);margin-top:8px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="pg-tag">CLASS 12 · GUI · GRAPHICAL USER INTERFACE</div>
+<h1 class="pg-title">GUI — <span>What's on the Screen</span></h1>
+<p class="pg-sub">ScreenGui · TextLabel · Frame · TextButton · UDim2 · Live score on screen</p>
+
+<!-- ═══════════════════════
+  SECTION 1 — WHAT IS GUI
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">What is GUI?</div>
+  <p class="sec-sub">GUI is everything the player sees on screen that is NOT part of the 3D world — score, health bar, timer, buttons, menus. It sits on top of the game like a transparent overlay.</p>
+
+  <!-- SCREEN MOCKUP -->
+  <div class="screen-mock" style="max-width:700px;margin-bottom:16px;">
+    <div class="screen-3d">
+      <!-- fake 3D world -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:30%;background:linear-gradient(180deg,transparent,rgba(45,80,22,.8));border-radius:0 0 8px 8px;"></div>
+      <div style="position:absolute;bottom:28%;left:30%;width:8px;height:20%;background:#4a7c2f;border-radius:2px 2px 0 0;"></div>
+      <div style="position:absolute;bottom:28%;left:55%;width:8px;height:28%;background:#4a7c2f;border-radius:2px 2px 0 0;"></div>
+
+      <!-- GUI OVERLAY -->
+      <div class="screen-overlay">
+        <!-- top left: health + score -->
+        <div class="gui-topleft">
+          <div class="gui-frame">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#a7f3d0;margin-bottom:4px;">❤️ HEALTH</div>
+            <div class="gui-bar-bg"><div class="gui-bar-fill" style="width:65%;background:#22c55e;"></div></div>
+          </div>
+          <div class="gui-label">🪙 Score: 270</div>
+          <div class="gui-label">⚡ Level: 3</div>
+        </div>
+
+        <!-- top center: timer -->
+        <div class="gui-topcenter">
+          <div class="gui-label" style="font-size:12px;padding:5px 14px;">⏱ 00:45</div>
+        </div>
+
+        <!-- top right: kills -->
+        <div class="gui-topright">
+          <div class="gui-label">💀 Kills: 7</div>
+        </div>
+
+        <!-- bottom center: crosshair + button -->
+        <div class="gui-bottomcenter" style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div class="gui-crosshair">⊕</div>
+          <div class="gui-btn">🛒 SHOP (30 coins)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="four-col">
+    <div class="card">
+      <div class="ct ct-blue"></div>
+      <div class="card-icon">🏷️</div>
+      <div class="card-label" style="color:var(--blue);">TextLabel</div>
+      <div class="card-title">Displays text</div>
+      <div class="card-text">Score, health number, timer, messages — any text shown on screen</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-purple"></div>
+      <div class="card-icon">🔘</div>
+      <div class="card-label" style="color:var(--accent2);">TextButton</div>
+      <div class="card-title">Clickable button</div>
+      <div class="card-text">Shop, restart, menu — any button the player can press on screen</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-teal"></div>
+      <div class="card-icon">🔲</div>
+      <div class="card-label" style="color:var(--teal);">Frame</div>
+      <div class="card-title">A coloured box</div>
+      <div class="card-text">Background panels, health bars, inventory slots — containers for other UI</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-green"></div>
+      <div class="card-icon">📺</div>
+      <div class="card-label" style="color:var(--green);">ScreenGui</div>
+      <div class="card-title">The canvas</div>
+      <div class="card-text">The invisible screen that holds all UI elements — must go in StarterGui</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  SECTION 2 — STRUCTURE
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">The Structure — StarterGui → ScreenGui → Elements</div>
+  <p class="sec-sub">Everything must be in the right place. StarterGui is the Roblox folder that copies GUI to every player's screen.</p>
+
+  <div class="two-col">
+    <div>
+      <div style="background:#1a1a2e;border:1px solid #2a2d45;border-radius:12px;padding:20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2.2;">
+        <span style="color:#fcd34d;">📁 StarterGui</span> <span style="color:#565f89;font-size:11px;">← Roblox built-in folder</span><br>
+        <span style="color:#a5b4fc;margin-left:20px;display:inline-block;">📺 ScreenGui</span> <span style="color:#565f89;font-size:11px;">← your canvas</span><br>
+        <span style="color:#9ece6a;margin-left:40px;display:inline-block;">🏷️ ScoreLabel</span> <span style="color:#565f89;font-size:11px;">← TextLabel</span><br>
+        <span style="color:#9ece6a;margin-left:40px;display:inline-block;">🔲 HealthFrame</span> <span style="color:#565f89;font-size:11px;">← Frame</span><br>
+        <span style="color:#fab387;margin-left:60px;display:inline-block;">🔲 HealthBar</span> <span style="color:#565f89;font-size:11px;">← Frame inside Frame</span><br>
+        <span style="color:#9ece6a;margin-left:40px;display:inline-block;">🔘 ShopButton</span> <span style="color:#565f89;font-size:11px;">← TextButton</span>
+      </div>
+
+      <div class="note" style="margin-top:12px;border-color:#99f6e4;">
+        <div class="note-label" style="color:var(--teal);">Two ways to create GUI</div>
+        <div class="note-text" style="font-size:12.5px;line-height:1.85;">
+          <strong>Way 1 — Visual editor</strong><br>
+          Right-click StarterGui → Insert Object → ScreenGui → then add elements inside by right-clicking ScreenGui.<br><br>
+          <strong>Way 2 — From code (LocalScript)</strong><br>
+          Use <ic>Instance.new()</ic> inside a <strong>LocalScript</strong> in StarterGui. This lets you update the GUI live during the game.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Create GUI from code</span>
+        <span class="code-badge cb-teal">LocalScript in StarterGui</span>
+      </div>
+      <div class="code-body">
+<span class="cc">-- LocalScript inside StarterGui</span><br>
+<span class="ck">local</span> <span class="cv">player</span>     <span class="co">=</span> game.Players.LocalPlayer<br>
+<span class="ck">local</span> <span class="cv">playerGui</span>  <span class="co">=</span> <span class="cv">player</span>.PlayerGui<br><br>
+<span class="cc">-- Create the ScreenGui canvas</span><br>
+<span class="ck">local</span> <span class="cv">screenGui</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"ScreenGui"</span>)<br>
+<span class="cv">screenGui</span>.Name   <span class="co">=</span> <span class="cs">"GameHUD"</span><br>
+<span class="cv">screenGui</span>.Parent <span class="co">=</span> <span class="cv">playerGui</span><br><br>
+<span class="cc">-- Create a TextLabel</span><br>
+<span class="ck">local</span> <span class="cv">label</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"TextLabel"</span>)<br>
+<span class="cv">label</span>.Name            <span class="co">=</span> <span class="cs">"ScoreLabel"</span><br>
+<span class="cv">label</span>.Parent          <span class="co">=</span> <span class="cv">screenGui</span><br>
+<span class="cv">label</span>.Text            <span class="co">=</span> <span class="cs">"Score: 0"</span><br>
+<span class="cv">label</span>.Size            <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cs">0.2</span>, <span class="cs">0</span>, <span class="cs">0.07</span>, <span class="cs">0</span>)<br>
+<span class="cv">label</span>.Position        <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cs">0.01</span>, <span class="cs">0</span>, <span class="cs">0.01</span>, <span class="cs">0</span>)<br>
+<span class="cv">label</span>.BackgroundColor3 <span class="co">=</span> Color3.<span class="cf">fromRGB</span>(<span class="cs">0</span>, <span class="cs">0</span>, <span class="cs">0</span>)<br>
+<span class="cv">label</span>.BackgroundTransparency <span class="co">=</span> <span class="cs">0.5</span><br>
+<span class="cv">label</span>.TextColor3      <span class="co">=</span> Color3.<span class="cf">fromRGB</span>(<span class="cs">255</span>, <span class="cs">255</span>, <span class="cs">255</span>)<br>
+<span class="cv">label</span>.TextScaled      <span class="co">=</span> <span class="cs">true</span><br>
+<span class="cv">label</span>.Font            <span class="co">=</span> Enum.Font.<span class="cf">GothamBold</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  SECTION 3 — UDIM2
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">UDim2 — Position and Size on Screen</div>
+  <p class="sec-sub">GUI does not use Vector3. It uses UDim2 — a system that mixes percentage of screen size and exact pixels.</p>
+
+  <div class="two-col">
+    <div>
+      <div style="background:var(--surface);border:2px dashed var(--border);border-radius:12px;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.4;margin-bottom:12px;">
+        UDim2.<span style="color:#e0af68;font-weight:600;">new</span>(<span style="color:#7dcfff;">scaleX</span>, <span style="color:#f7768e;">offsetX</span>, <span style="color:#7dcfff;">scaleY</span>, <span style="color:#f7768e;">offsetY</span>)
+        <div style="margin-top:8px;font-size:11px;color:var(--muted);font-family:'Outfit',sans-serif;line-height:1.7;">
+          <span style="color:#7dcfff;font-weight:700;">Scale</span> — percentage of screen (0.5 = 50%)<br>
+          <span style="color:#f7768e;font-weight:700;">Offset</span> — exact pixels added after scale
+        </div>
+      </div>
+
+      <!-- position examples -->
+      <div class="udim-grid">
+        <div class="udim-cell" style="background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);color:#93c5fd;font-size:9px;">Top Left<br>(0,0, 0,0)</div>
+        <div class="udim-cell" style="background:rgba(5,150,105,.1);border:1px dashed rgba(5,150,105,.3);color:#6ee7b7;font-size:9px;">Top Centre<br>(0.5,0, 0,0)</div>
+        <div class="udim-cell" style="background:rgba(217,119,6,.15);border:1px solid rgba(217,119,6,.3);color:#fcd34d;font-size:9px;">Top Right<br>(1,0, 0,0)</div>
+        <div class="udim-cell" style="background:rgba(5,150,105,.1);border:1px dashed rgba(5,150,105,.3);color:#6ee7b7;font-size:9px;">Mid Left<br>(0,0, 0.5,0)</div>
+        <div class="udim-cell" style="background:rgba(124,58,237,.2);border:2px solid rgba(124,58,237,.5);color:#c4b5fd;font-size:9px;">CENTRE<br>(0.5,0, 0.5,0)</div>
+        <div class="udim-cell" style="background:rgba(5,150,105,.1);border:1px dashed rgba(5,150,105,.3);color:#6ee7b7;font-size:9px;">Mid Right<br>(1,0, 0.5,0)</div>
+        <div class="udim-cell" style="background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);color:#fca5a5;font-size:9px;">Bot Left<br>(0,0, 1,0)</div>
+        <div class="udim-cell" style="background:rgba(5,150,105,.1);border:1px dashed rgba(5,150,105,.3);color:#6ee7b7;font-size:9px;">Bot Centre<br>(0.5,0, 1,0)</div>
+        <div class="udim-cell" style="background:rgba(219,39,119,.15);border:1px solid rgba(219,39,119,.3);color:#f9a8d4;font-size:9px;">Bot Right<br>(1,0, 1,0)</div>
+      </div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — UDim2 examples</span>
+        <span class="code-badge cb-blue">position + size</span>
+      </div>
+      <div class="code-body">
+<span class="cc">-- Top left corner</span><br>
+<span class="cv">label</span>.Position <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cs">0</span>, <span class="cs">10</span>, <span class="cs">0</span>, <span class="cs">10</span>)<br><br>
+<span class="cc">-- Dead centre of screen</span><br>
+<span class="cv">label</span>.Position <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cs">0.5</span>, <span class="cs">0</span>, <span class="cs">0.5</span>, <span class="cs">0</span>)<br>
+<span class="cv">label</span>.AnchorPoint <span class="co">=</span> Vector2.<span class="cf">new</span>(<span class="cs">0.5</span>, <span class="cs">0.5</span>)<br><br>
+<span class="cc">-- Top right corner</span><br>
+<span class="cv">label</span>.Position   <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cs">1</span>, <span class="co">-</span><span class="cs">10</span>, <span class="cs">0</span>, <span class="cs">10</span>)<br>
+<span class="cv">label</span>.AnchorPoint <span class="co">=</span> Vector2.<span class="cf">new</span>(<span class="cs">1</span>, <span class="cs">0</span>)<br><br>
+<span class="cc">-- Half screen wide, 8% tall</span><br>
+<span class="cv">label</span>.Size <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cs">0.5</span>, <span class="cs">0</span>, <span class="cs">0.08</span>, <span class="cs">0</span>)<br><br>
+<span class="cc">-- 200px wide, 50px tall (fixed pixels)</span><br>
+<span class="cv">label</span>.Size <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cs">0</span>, <span class="cs">200</span>, <span class="cs">0</span>, <span class="cs">50</span>)
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  SECTION 4 — GUI PROPERTIES
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Key GUI Properties</div>
+
+  <table class="prop-table">
+    <thead><tr><th>Property</th><th>Type</th><th>Example</th><th>What It Does</th></tr></thead>
+    <tbody>
+      <tr><td>Text</td><td>String</td><td>"Score: 0"</td><td>The text shown on a TextLabel or TextButton</td></tr>
+      <tr><td>Size</td><td>UDim2</td><td>UDim2.new(0.2, 0, 0.07, 0)</td><td>Width and height of the element</td></tr>
+      <tr><td>Position</td><td>UDim2</td><td>UDim2.new(0.01, 0, 0.01, 0)</td><td>Where on screen the element sits</td></tr>
+      <tr><td>AnchorPoint</td><td>Vector2</td><td>Vector2.new(0.5, 0.5)</td><td>Which point of the element the Position refers to</td></tr>
+      <tr><td>BackgroundColor3</td><td>Color3</td><td>Color3.fromRGB(0, 0, 0)</td><td>Background fill colour</td></tr>
+      <tr><td>BackgroundTransparency</td><td>Number 0–1</td><td>0.5</td><td>0 = solid, 1 = invisible background</td></tr>
+      <tr><td>TextColor3</td><td>Color3</td><td>Color3.fromRGB(255, 255, 255)</td><td>Colour of the text</td></tr>
+      <tr><td>TextScaled</td><td>Boolean</td><td>true</td><td>true = text auto-sizes to fit the element</td></tr>
+      <tr><td>Font</td><td>Enum.Font</td><td>Enum.Font.GothamBold</td><td>Font style — GothamBold, Arcade, Arial etc.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  SECTION 5 — LIVE SCORE ON SCREEN
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Live Score on Screen — Updated in Real Time</div>
+  <p class="sec-sub">The score label updates every time the player's Score stat changes. Put this in a <strong>LocalScript</strong> inside StarterGui.</p>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Score label updates live</span>
+        <span class="code-badge cb-amber">LocalScript · StarterGui</span>
+      </div>
+      <div class="code-body">
+<span class="cc">-- LocalScript inside StarterGui</span><br>
+<span class="ck">local</span> <span class="cv">Players</span>   <span class="co">=</span> game:<span class="cf">GetService</span>(<span class="cs">"Players"</span>)<br>
+<span class="ck">local</span> <span class="cv">player</span>    <span class="co">=</span> <span class="cv">Players</span>.LocalPlayer<br>
+<span class="ck">local</span> <span class="cv">playerGui</span> <span class="co">=</span> <span class="cv">player</span>.PlayerGui<br><br>
+<span class="cc">-- Build the ScreenGui</span><br>
+<span class="ck">local</span> <span class="cv">gui</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"ScreenGui"</span>)<br>
+<span class="cv">gui</span>.Name   <span class="co">=</span> <span class="cs">"HUD"</span><br>
+<span class="cv">gui</span>.Parent <span class="co">=</span> <span class="cv">playerGui</span><br><br>
+<span class="cc">-- Score label — top left</span><br>
+<span class="ck">local</span> <span class="cv">scoreLabel</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"TextLabel"</span>)<br>
+<span class="cv">scoreLabel</span>.Name                  <span class="co">=</span> <span class="cs">"ScoreLabel"</span><br>
+<span class="cv">scoreLabel</span>.Parent                <span class="co">=</span> <span class="cv">gui</span><br>
+<span class="cv">scoreLabel</span>.Size                  <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cs">0.22</span>, <span class="cs">0</span>, <span class="cs">0.07</span>, <span class="cs">0</span>)<br>
+<span class="cv">scoreLabel</span>.Position              <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cs">0.01</span>, <span class="cs">0</span>, <span class="cs">0.02</span>, <span class="cs">0</span>)<br>
+<span class="cv">scoreLabel</span>.BackgroundColor3      <span class="co">=</span> Color3.<span class="cf">fromRGB</span>(<span class="cs">0</span>, <span class="cs">0</span>, <span class="cs">0</span>)<br>
+<span class="cv">scoreLabel</span>.BackgroundTransparency <span class="co">=</span> <span class="cs">0.4</span><br>
+<span class="cv">scoreLabel</span>.TextColor3            <span class="co">=</span> Color3.<span class="cf">fromRGB</span>(<span class="cs">255</span>, <span class="cs">255</span>, <span class="cs">255</span>)<br>
+<span class="cv">scoreLabel</span>.TextScaled            <span class="co">=</span> <span class="cs">true</span><br>
+<span class="cv">scoreLabel</span>.Font                  <span class="co">=</span> Enum.Font.<span class="cf">GothamBold</span><br>
+<span class="cv">scoreLabel</span>.Text                  <span class="co">=</span> <span class="cs">"🪙 Score: 0"</span><br><br>
+<span class="cc">-- Wait for leaderstats to load</span><br>
+<span class="ck">local</span> <span class="cv">ls</span>    <span class="co">=</span> <span class="cv">player</span>:<span class="cf">WaitForChild</span>(<span class="cs">"leaderstats"</span>)<br>
+<span class="ck">local</span> <span class="cv">score</span> <span class="co">=</span> <span class="cv">ls</span>:<span class="cf">WaitForChild</span>(<span class="cs">"Score"</span>)<br><br>
+<span class="cc">-- Update label every time score changes</span><br>
+<span class="cv">score</span>.Changed:<span class="cf">Connect</span>(<span class="ck">function</span>(<span class="cv">newVal</span>)<br>
+&nbsp;&nbsp;<span class="cv">scoreLabel</span>.Text <span class="co">=</span> <span class="cs">"🪙 Score: "</span> <span class="co">..</span> <span class="cv">newVal</span><br>
+<span class="ck">end</span>)
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <!-- mini screen showing label updating -->
+      <div class="screen-mock" style="aspect-ratio:2;">
+        <div class="screen-3d">
+          <div style="position:absolute;bottom:0;left:0;right:0;height:35%;background:rgba(45,80,22,.8);border-radius:0 0 8px 8px;"></div>
+          <div class="screen-overlay">
+            <div style="position:absolute;top:8px;left:8px;">
+              <div class="gui-frame">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;font-weight:700;">🪙 Score: 270</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note" style="border-color:#fcd34d;">
+        <div class="note-label" style="color:var(--amber);">WaitForChild</div>
+        <div class="note-text">The LocalScript runs the moment the player joins — before leaderstats is created by the server script. <ic>WaitForChild()</ic> pauses until the object exists. Always use it when reading leaderstats from a LocalScript.</div>
+      </div>
+
+      <div class="note" style="border-color:#99f6e4;">
+        <div class="note-label" style="color:var(--teal);">LocalScript vs Script</div>
+        <div class="note-text">GUI code must go in a <strong>LocalScript</strong> — not a Script. LocalScripts run on the player's device. Scripts run on the server. GUI is personal to each player, so it must be local.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  SECTION 6 — HEALTH BAR
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Health Bar — Frame Inside Frame</div>
+  <p class="sec-sub">A health bar is two Frames stacked — a grey background and a green fill. The fill's width changes as health changes.</p>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Health bar that shrinks as HP drops</span>
+        <span class="code-badge cb-red">health bar</span>
+      </div>
+      <div class="code-body">
+<span class="cc">-- Background bar (grey)</span><br>
+<span class="ck">local</span> <span class="cv">bgBar</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Frame"</span>)<br>
+<span class="cv">bgBar</span>.Parent          <span class="co">=</span> <span class="cv">gui</span><br>
+<span class="cv">bgBar</span>.Size            <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cs">0.25</span>, <span class="cs">0</span>, <span class="cs">0.04</span>, <span class="cs">0</span>)<br>
+<span class="cv">bgBar</span>.Position        <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cs">0.01</span>, <span class="cs">0</span>, <span class="cs">0.1</span>, <span class="cs">0</span>)<br>
+<span class="cv">bgBar</span>.BackgroundColor3 <span class="co">=</span> Color3.<span class="cf">fromRGB</span>(<span class="cs">50</span>, <span class="cs">50</span>, <span class="cs">50</span>)<br><br>
+<span class="cc">-- Green fill bar</span><br>
+<span class="ck">local</span> <span class="cv">fillBar</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Frame"</span>)<br>
+<span class="cv">fillBar</span>.Parent          <span class="co">=</span> <span class="cv">bgBar</span><br>
+<span class="cv">fillBar</span>.Size            <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cs">1</span>, <span class="cs">0</span>, <span class="cs">1</span>, <span class="cs">0</span>)<br>
+<span class="cv">fillBar</span>.BackgroundColor3 <span class="co">=</span> Color3.<span class="cf">fromRGB</span>(<span class="cs">34</span>, <span class="cs">197</span>, <span class="cs">94</span>)<br><br>
+<span class="cc">-- Update bar when health changes</span><br>
+<span class="ck">local</span> <span class="cv">char</span> <span class="co">=</span> <span class="cv">player</span>.Character <span class="ck">or</span> <span class="cv">player</span>.CharacterAdded:<span class="cf">Wait</span>()<br>
+<span class="ck">local</span> <span class="cv">hum</span>  <span class="co">=</span> <span class="cv">char</span>:<span class="cf">WaitForChild</span>(<span class="cs">"Humanoid"</span>)<br><br>
+<span class="cv">hum</span>:GetPropertyChangedSignal(<span class="cs">"Health"</span>):<span class="cf">Connect</span>(<span class="ck">function</span>()<br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">pct</span> <span class="co">=</span> <span class="cv">hum</span>.Health <span class="co">/</span> <span class="cv">hum</span>.MaxHealth<br>
+&nbsp;&nbsp;<span class="cv">fillBar</span>.Size <span class="co">=</span> UDim2.<span class="cf">new</span>(<span class="cv">pct</span>, <span class="cs">0</span>, <span class="cs">1</span>, <span class="cs">0</span>)<br><br>
+&nbsp;&nbsp;<span class="cc">-- Change color at low health</span><br>
+&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">pct</span> <span class="co">&lt;</span> <span class="cs">0.3</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">fillBar</span>.BackgroundColor3 <span class="co">=</span> Color3.<span class="cf">fromRGB</span>(<span class="cs">220</span>, <span class="cs">38</span>, <span class="cs">38</span>)<br>
+&nbsp;&nbsp;<span class="ck">else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">fillBar</span>.BackgroundColor3 <span class="co">=</span> Color3.<span class="cf">fromRGB</span>(<span class="cs">34</span>, <span class="cs">197</span>, <span class="cs">94</span>)<br>
+&nbsp;&nbsp;<span class="ck">end</span><br>
+<span class="ck">end</span>)
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--muted);margin-bottom:2px;text-transform:uppercase;">Health Bar States</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Full Health (100%)</div>
+            <div style="background:#374151;border-radius:4px;height:14px;overflow:hidden;"><div style="width:100%;height:100%;background:#22c55e;border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Half Health (50%)</div>
+            <div style="background:#374151;border-radius:4px;height:14px;overflow:hidden;"><div style="width:50%;height:100%;background:#22c55e;border-radius:4px;"></div></div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Critical Health (20%) — turns red</div>
+            <div style="background:#374151;border-radius:4px;height:14px;overflow:hidden;"><div style="width:20%;height:100%;background:#ef4444;border-radius:4px;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note" style="border-color:#bfdbfe;">
+        <div class="note-label" style="color:var(--blue);">How the bar shrinks</div>
+        <div class="note-text"><ic>pct = health / maxHealth</ic> gives a number between 0 and 1. Setting the fill bar's X scale to <ic>pct</ic> makes it exactly as wide as the current health percentage.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  SECTION 7 — TASK
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Task — Build a Game HUD</div>
+  <p class="sec-sub">Add a complete HUD to any of the games you have already built — coin collector or target shooter.</p>
+
+  <div class="three-col">
+    <div class="note" style="border-color:#bfdbfe;">
+      <div class="note-label" style="color:var(--blue);">Required Elements</div>
+      <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+        ✅ <strong>Score label</strong> — top left, updates live<br>
+        ✅ <strong>Health bar</strong> — below score, turns red at 30%<br>
+        ✅ <strong>Level label</strong> — shows current level<br>
+        All in a LocalScript inside StarterGui
+      </div>
+    </div>
+    <div class="note" style="border-color:#fcd34d;">
+      <div class="note-label" style="color:var(--amber);">Styling Rules</div>
+      <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+        Background semi-transparent black<br>
+        Text white, GothamBold font<br>
+        TextScaled = true<br>
+        All elements have rounded corners using UICorner
+      </div>
+    </div>
+    <div class="bonus">
+      <div style="font-size:13px;font-weight:800;color:var(--accent2);margin-bottom:6px;">⭐ Bonus</div>
+      <div style="font-size:12.5px;color:#4c1d95;line-height:1.7;">
+        Add a <strong>win screen</strong> — when the score hits the target, a large TextLabel appears in the centre of the screen saying "YOU WIN!" with a semi-transparent background.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SUMMARY -->
+<div class="sec">
+  <div class="sec-title">Class 12 — Summary ✅</div>
+  <div class="two-col">
+    <ul class="chklist">
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">GUI sits on top of the 3D world as a screen overlay</div><div class="ci-sub">StarterGui → ScreenGui → elements</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">TextLabel, TextButton, Frame, ScreenGui</div><div class="ci-sub">The 4 core GUI objects</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">UDim2.new(scaleX, offsetX, scaleY, offsetY)</div><div class="ci-sub">Scale = percentage · Offset = pixels</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">AnchorPoint — which corner Position refers to</div><div class="ci-sub">Vector2.new(0.5, 0.5) to centre</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">score.Changed updates the label live</div><div class="ci-sub">scoreLabel.Text = "Score: " .. newVal</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Health bar — fill width = health / maxHealth</div><div class="ci-sub">Turns red below 30%</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">GUI must be in a LocalScript — not a Script</div><div class="ci-sub">LocalScript runs on the player's device</div></div></li>
+    </ul>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="note" style="border-color:#a7f3d0;">
+        <div class="note-label" style="color:var(--green);">Homework</div>
+        <div class="note-text">Add a kill counter label to the Target Shooter game. Position it top right. It must update every time a kill is registered.</div>
+      </div>
+      <div class="note" style="border-color:#bfdbfe;">
+        <div class="note-label" style="color:var(--blue);">Next Class — Final Project</div>
+        <div class="note-text">Students pick their own game idea and build it from scratch using everything learned — events, score, sounds, GUI, loops, functions.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">SMIT · AI & Game Creators · Class 12 · GUI — Graphical User Interface</div>
+
+</div>
+</body>
+</html>

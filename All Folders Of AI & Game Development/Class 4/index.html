@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 3 — Variables + Parts</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f4f0; --surface:#fff; --border:#e2e0d8;
+  --text:#1a1a2e; --muted:#6b6876;
+  --accent:#4f46e5; --accent-light:#ede9fe; --accent2:#7c3aed;
+  --green:#059669; --green-light:#d1fae5;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --red:#dc2626; --red-light:#fee2e2;
+  --blue:#2563eb; --blue-light:#dbeafe;
+  --teal:#0d9488; --teal-light:#ccfbf1;
+  --pink:#db2777; --pink-light:#fce7f3;
+  --orange:#ea580c; --orange-light:#ffedd5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;padding:40px 48px 64px;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,#c8c6d0 1px,transparent 1px);background-size:28px 28px;opacity:.35;pointer-events:none;z-index:0;}
+.page{position:relative;z-index:1;max-width:1080px;margin:0 auto;}
+
+/* PAGE TITLE */
+.pg-tag{display:inline-flex;align-items:center;gap:6px;background:var(--blue-light);border:1px solid #bfdbfe;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:var(--blue);letter-spacing:.5px;margin-bottom:10px;}
+.pg-title{font-size:clamp(28px,4vw,46px);font-weight:900;color:var(--text);line-height:1.1;letter-spacing:-.5px;margin-bottom:6px;}
+.pg-title span{color:var(--accent);}
+.pg-sub{font-size:14px;color:var(--muted);font-weight:500;margin-bottom:32px;}
+
+/* SECTION */
+.sec{margin-bottom:32px;}
+.sec-title{font-size:18px;font-weight:800;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.sec-title::after{content:'';flex:1;height:2px;background:var(--border);}
+.sec-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+
+/* LAYOUT */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+/* CODE BLOCKS — HIGH CONTRAST */
+.code-wrap{background:#12131f;border:1px solid #2a2d45;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+.code-hdr{background:#0a0b14;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2a2d45;}
+.code-ttl{font-size:10px;font-weight:700;letter-spacing:2px;color:#7aa2f7;text-transform:uppercase;}
+.code-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:4px;}
+.cb-blue  {background:rgba(122,162,247,.2);color:#7aa2f7;}
+.cb-green {background:rgba(158,206,106,.2);color:#9ece6a;}
+.cb-amber {background:rgba(224,175,104,.2);color:#e0af68;}
+.cb-purple{background:rgba(187,154,247,.2);color:#bb9af7;}
+.cb-red   {background:rgba(247,118,142,.2);color:#f7768e;}
+.cb-teal  {background:rgba(115,218,202,.2);color:#73daca;}
+.code-body{padding:20px 22px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.1;}
+
+/* SYNTAX COLORS — BRIGHT & CLEAR */
+.ck{color:#bb9af7;font-weight:700;}          /* keyword: local, if, then, end */
+.cs{color:#9ece6a;font-weight:600;}          /* string & number values */
+.cf{color:#e0af68;font-weight:600;}          /* function names */
+.cv{color:#7dcfff;}                          /* variable names */
+.cc{color:#565f89;font-style:italic;}        /* comments */
+.cp{color:#f7768e;}                          /* property names */
+.co{color:#ff9e64;}                          /* operators */
+
+/* PROPERTY TABLE */
+.prop-table{width:100%;border-collapse:separate;border-spacing:0 4px;}
+.prop-table th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:7px 16px;text-align:left;}
+.prop-table td{padding:11px 16px;font-size:13px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.prop-table tr td:first-child{border-left:1px solid var(--border);border-radius:8px 0 0 8px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#bb9af7;}
+.prop-table tr td:last-child{border-right:1px solid var(--border);border-radius:0 8px 8px 0;font-size:12px;color:var(--muted);}
+.prop-table tr td:nth-child(2){font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);}
+.dtype{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.d-str {background:var(--blue-light);  color:var(--blue);}
+.d-num {background:var(--amber-light); color:var(--amber);}
+.d-bool{background:var(--green-light); color:var(--green);}
+.d-vec {background:var(--teal-light);  color:var(--teal);}
+.d-col {background:var(--pink-light);  color:var(--pink);}
+.d-enum{background:var(--orange-light);color:var(--orange);}
+
+/* OUTPUT */
+.output{background:#f0fff4;border:1px solid #6ee7b7;border-radius:10px;padding:14px 18px;}
+.out-label{font-size:10px;font-weight:700;color:var(--green);letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase;}
+.out-line{font-family:'JetBrains Mono',monospace;font-size:13px;color:#065f46;line-height:2.2;}
+
+/* INFO / NOTE BOXES */
+.note{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;}
+.note-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.note-text{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* INLINE CODE */
+ic{font-family:'JetBrains Mono',monospace;font-size:12px;background:#e8e6f0;padding:1px 6px;border-radius:4px;color:#4f46e5;font-weight:600;}
+
+/* AXIS CARD */
+.axis-grid{display:flex;gap:8px;}
+.axis-box{flex:1;border-radius:10px;padding:14px 10px;text-align:center;}
+.axis-letter{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:900;margin-bottom:5px;}
+.axis-name{font-size:12px;font-weight:700;margin-bottom:3px;}
+.axis-desc{font-size:11px;color:var(--muted);}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:28px 0;}
+
+/* COLOR SWATCHES */
+.swatch-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.swatch{display:inline-flex;align-items:center;gap:6px;border-radius:6px;padding:4px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;}
+.sw-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- PAGE TITLE -->
+<div class="pg-tag">CLASS 3 · MODULE 2 · LUA + PARTS</div>
+<h1 class="pg-title">Variables <span>+</span> Parts</h1>
+<p class="pg-sub">Use Lua variables to control the color, size, position and properties of 3D Parts in Roblox Studio.</p>
+
+<!-- ═══════════════════════════════════════
+     SECTION 1 — HOW A SCRIPT FINDS ITS PART
+════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Step 1 — Referencing a Part</div>
+  <p class="sec-sub">Before you can change a Part, your script needs to know which Part to change. There are two ways.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="note" style="border-color:#bfdbfe;margin-bottom:12px;">
+        <div class="note-label" style="color:var(--blue);">Way 1 — Script is INSIDE the Part</div>
+        <div class="note-text">Put the Script inside a Part in Explorer.<br><ic>script.Parent</ic> refers to that Part automatically.<br><br>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:12px;display:block;background:#f0f4ff;padding:10px 12px;border-radius:8px;line-height:2;color:#1e40af;">
+            📁 Workspace<br>
+            &nbsp;&nbsp;📦 Part<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;📄 Script ← here
+          </code>
+        </div>
+      </div>
+      <div class="note" style="border-color:#ddd6fe;">
+        <div class="note-label" style="color:var(--accent2);">Way 2 — Script is in ServerScriptService</div>
+        <div class="note-text">Navigate to the Part by name.<br><br>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:12px;display:block;background:#f5f0ff;padding:10px 12px;border-radius:8px;line-height:2;color:#5b21b6;">
+            📁 Workspace<br>
+            &nbsp;&nbsp;📦 MyCoolPart<br>
+            📁 ServerScriptService<br>
+            &nbsp;&nbsp;📄 Script ← here
+          </code>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-ttl">LUA — Both ways to reference a Part</span>
+          <span class="code-badge cb-blue">script.Parent</span>
+        </div>
+        <div class="code-body">
+<span class="cc">-- WAY 1: Script is inside the Part</span><br>
+<span class="ck">local</span> <span class="cv">part</span> <span class="co">=</span> script.Parent<br>
+<span class="cf">print</span>(<span class="cv">part</span>.Name)<br><br>
+<span class="cc">-- WAY 2: Script is in ServerScriptService</span><br>
+<span class="ck">local</span> <span class="cv">part</span> <span class="co">=</span> workspace.MyCoolPart<br>
+<span class="cf">print</span>(<span class="cv">part</span>.Name)<br><br>
+<span class="cc">-- Also valid:</span><br>
+<span class="ck">local</span> <span class="cv">part</span> <span class="co">=</span> game.Workspace.MyCoolPart<br>
+<span class="cf">print</span>(<span class="cv">part</span>.Name)
+        </div>
+      </div>
+      <div class="output">
+        <div class="out-label">Output — Part named "Block"</div>
+        <div class="out-line">Block<br>MyCoolPart<br>MyCoolPart</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 2 — PART PROPERTIES
+════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Part Properties — What You Can Change</div>
+
+  <table class="prop-table">
+    <thead>
+      <tr>
+        <th>Property</th>
+        <th>Example Value</th>
+        <th>Type</th>
+        <th>What It Does</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>.Name</td><td>"SpawnPoint"</td><td><span class="dtype d-str">String</span></td><td>The label shown in Explorer</td></tr>
+      <tr><td>.BrickColor</td><td>BrickColor.new("Bright red")</td><td><span class="dtype d-col">Color</span></td><td>The solid color of the Part</td></tr>
+      <tr><td>.Size</td><td>Vector3.new(4, 1, 4)</td><td><span class="dtype d-vec">Vector3</span></td><td>Width, Height, Depth in studs</td></tr>
+      <tr><td>.Position</td><td>Vector3.new(0, 10, 0)</td><td><span class="dtype d-vec">Vector3</span></td><td>X, Y, Z location in the world</td></tr>
+      <tr><td>.Transparency</td><td>0.5</td><td><span class="dtype d-num">Number</span></td><td>0 = solid · 1 = invisible</td></tr>
+      <tr><td>.Anchored</td><td>true</td><td><span class="dtype d-bool">Boolean</span></td><td>true = stays still, no physics</td></tr>
+      <tr><td>.CanCollide</td><td>false</td><td><span class="dtype d-bool">Boolean</span></td><td>false = players walk through it</td></tr>
+      <tr><td>.Material</td><td>Enum.Material.Neon</td><td><span class="dtype d-enum">Enum</span></td><td>Wood · Metal · Glass · Neon · etc.</td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:10px;font-size:13px;color:var(--muted);text-align:center;">
+    Syntax: &nbsp;<ic>part.PropertyName = value</ic>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 3 — BRICKCOLOR
+════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Changing Color — BrickColor</div>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Color variable applied to Part</span>
+        <span class="code-badge cb-purple">BrickColor</span>
+      </div>
+      <div class="code-body">
+<span class="cc">-- Script is inside the Part</span><br>
+<span class="ck">local</span> <span class="cv">part</span>     <span class="co">=</span> script.Parent<br>
+<span class="ck">local</span> <span class="cv">myColor</span>  <span class="co">=</span> <span class="cs">"Bright red"</span><br><br>
+<span class="cv">part</span>.<span class="cp">BrickColor</span> <span class="co">=</span> BrickColor.<span class="cf">new</span>(<span class="cv">myColor</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Color: "</span> <span class="co">..</span> <span class="cv">myColor</span>)<br><br>
+<span class="cc">-- Change color again using the same variable</span><br>
+<span class="cv">myColor</span> <span class="co">=</span> <span class="cs">"Lime green"</span><br>
+<span class="cv">part</span>.<span class="cp">BrickColor</span> <span class="co">=</span> BrickColor.<span class="cf">new</span>(<span class="cv">myColor</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Updated: "</span> <span class="co">..</span> <span class="cv">myColor</span>)<br><br>
+<span class="cc">-- Also try Material</span><br>
+<span class="cv">part</span>.<span class="cp">Material</span> <span class="co">=</span> Enum.Material.<span class="cf">Neon</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">Color: Bright red<br>Updated: Lime green</div>
+      </div>
+
+      <div class="note" style="border-color:#fbcfe8;">
+        <div class="note-label" style="color:var(--pink);">BrickColor Names</div>
+        <div class="swatch-row">
+          <span class="swatch" style="background:#fee2e2;"><span class="sw-dot" style="background:#ef4444;"></span>"Bright red"</span>
+          <span class="swatch" style="background:#dbeafe;"><span class="sw-dot" style="background:#3b82f6;"></span>"Bright blue"</span>
+          <span class="swatch" style="background:#d1fae5;"><span class="sw-dot" style="background:#22c55e;"></span>"Lime green"</span>
+          <span class="swatch" style="background:#fef3c7;"><span class="sw-dot" style="background:#eab308;"></span>"Bright yellow"</span>
+          <span class="swatch" style="background:#ffedd5;"><span class="sw-dot" style="background:#f97316;"></span>"Dark orange"</span>
+          <span class="swatch" style="background:#fce7f3;"><span class="sw-dot" style="background:#ec4899;"></span>"Hot pink"</span>
+          <span class="swatch" style="background:#ccfbf1;"><span class="sw-dot" style="background:#14b8a6;"></span>"Teal"</span>
+          <span class="swatch" style="background:#f3f4f6;"><span class="sw-dot" style="background:#fff;border:1px solid #ddd;"></span>"White"</span>
+          <span class="swatch" style="background:#1f2937;color:#e5e7eb;"><span class="sw-dot" style="background:#111827;border:1px solid #374151;"></span>"Black"</span>
+          <span class="swatch" style="background:#ede9fe;"><span class="sw-dot" style="background:#7c3aed;"></span>"Medium violet"</span>
+          <span class="swatch" style="background:#cffafe;"><span class="sw-dot" style="background:#06b6d4;"></span>"Cyan"</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 4 — SIZE
+════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Changing Size — Vector3</div>
+
+  <div class="two-col">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="axis-grid">
+        <div class="axis-box" style="background:var(--red-light);">
+          <div class="axis-letter" style="color:var(--red);">X</div>
+          <div class="axis-name">Width</div>
+          <div class="axis-desc">Left ↔ Right</div>
+        </div>
+        <div class="axis-box" style="background:var(--green-light);">
+          <div class="axis-letter" style="color:var(--green);">Y</div>
+          <div class="axis-name">Height</div>
+          <div class="axis-desc">Down ↕ Up</div>
+        </div>
+        <div class="axis-box" style="background:var(--blue-light);">
+          <div class="axis-letter" style="color:var(--blue);">Z</div>
+          <div class="axis-name">Depth</div>
+          <div class="axis-desc">Front ↔ Back</div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-ttl">LUA — Size variables → Part</span>
+          <span class="code-badge cb-teal">Vector3</span>
+        </div>
+        <div class="code-body">
+<span class="ck">local</span> <span class="cv">part</span>   <span class="co">=</span> script.Parent<br>
+<span class="ck">local</span> <span class="cv">width</span>  <span class="co">=</span> <span class="cs">10</span><br>
+<span class="ck">local</span> <span class="cv">height</span> <span class="co">=</span> <span class="cs">1</span><br>
+<span class="ck">local</span> <span class="cv">depth</span>  <span class="co">=</span> <span class="cs">10</span><br><br>
+<span class="cv">part</span>.<span class="cp">Size</span> <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">width</span>, <span class="cv">height</span>, <span class="cv">depth</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Size: "</span> <span class="co">..</span> <span class="cv">width</span> <span class="co">..</span> <span class="cs">"x"</span> <span class="co">..</span> <span class="cv">height</span> <span class="co">..</span> <span class="cs">"x"</span> <span class="co">..</span> <span class="cv">depth</span>)<br><br>
+<span class="cc">-- Double it using math operator</span><br>
+<span class="cv">width</span>  <span class="co">=</span> <span class="cv">width</span>  <span class="co">*</span> <span class="cs">2</span><br>
+<span class="cv">height</span> <span class="co">=</span> <span class="cv">height</span> <span class="co">*</span> <span class="cs">2</span><br>
+<span class="cv">depth</span>  <span class="co">=</span> <span class="cv">depth</span>  <span class="co">*</span> <span class="cs">2</span><br>
+<span class="cv">part</span>.<span class="cp">Size</span> <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">width</span>, <span class="cv">height</span>, <span class="cv">depth</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Doubled: "</span> <span class="co">..</span> <span class="cv">width</span>)
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">Size: 10x1x10<br>Doubled: 20</div>
+      </div>
+      <div class="note" style="border-color:#99f6e4;">
+        <div class="note-label" style="color:var(--teal);">Vector3.new( X, Y, Z )</div>
+        <div class="note-text">Always three numbers in this order: width, height, depth. To make a flat floor use a small Y value like 1. To make a tall wall use a large Y value like 20.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 5 — POSITION
+════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Changing Position — Move a Part</div>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Position variables → Part</span>
+        <span class="code-badge cb-amber">Position</span>
+      </div>
+      <div class="code-body">
+<span class="ck">local</span> <span class="cv">part</span> <span class="co">=</span> script.Parent<br>
+<span class="ck">local</span> <span class="cv">posX</span> <span class="co">=</span> <span class="cs">0</span><br>
+<span class="ck">local</span> <span class="cv">posY</span> <span class="co">=</span> <span class="cs">10</span>  <span class="cc">-- 10 studs up</span><br>
+<span class="ck">local</span> <span class="cv">posZ</span> <span class="co">=</span> <span class="cs">0</span><br><br>
+<span class="cv">part</span>.<span class="cp">Position</span> <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">posX</span>, <span class="cv">posY</span>, <span class="cv">posZ</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Y position: "</span> <span class="co">..</span> <span class="cv">posY</span>)<br><br>
+<span class="cc">-- Raise it 10 more units</span><br>
+<span class="cv">posY</span> <span class="co">=</span> <span class="cv">posY</span> <span class="co">+</span> <span class="cs">10</span><br>
+<span class="cv">part</span>.<span class="cp">Position</span> <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">posX</span>, <span class="cv">posY</span>, <span class="cv">posZ</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Raised to: "</span> <span class="co">..</span> <span class="cv">posY</span>)
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">Y position: 10<br>Raised to: 20</div>
+      </div>
+      <div class="note" style="border-color:#fcd34d;">
+        <div class="note-label" style="color:var(--amber);">Y = 0 is ground level</div>
+        <div class="note-text" style="font-size:12px;line-height:1.9;">
+          Y = 0 → ground level<br>
+          Y = 10 → floating 10 studs above ground<br>
+          Y = -5 → underground
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 6 — TRANSPARENCY + ANCHORED + NAME
+════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Transparency · Anchored · Name</div>
+
+  <div class="three-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">Transparency</span>
+        <span class="code-badge cb-blue">0 to 1</span>
+      </div>
+      <div class="code-body" style="font-size:13px;">
+<span class="ck">local</span> <span class="cv">part</span>  <span class="co">=</span> script.Parent<br>
+<span class="ck">local</span> <span class="cv">alpha</span> <span class="co">=</span> <span class="cs">0.5</span><br><br>
+<span class="cv">part</span>.<span class="cp">Transparency</span> <span class="co">=</span> <span class="cv">alpha</span><br>
+<span class="cf">print</span>(<span class="cs">"Half transparent"</span>)<br><br>
+<span class="cv">alpha</span> <span class="co">=</span> <span class="cs">1</span><br>
+<span class="cv">part</span>.<span class="cp">Transparency</span> <span class="co">=</span> <span class="cv">alpha</span><br>
+<span class="cf">print</span>(<span class="cs">"Invisible!"</span>)
+      </div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">Anchored</span>
+        <span class="code-badge cb-green">Boolean</span>
+      </div>
+      <div class="code-body" style="font-size:13px;">
+<span class="ck">local</span> <span class="cv">part</span>    <span class="co">=</span> script.Parent<br>
+<span class="ck">local</span> <span class="cv">anchored</span> <span class="co">=</span> <span class="cs">true</span><br><br>
+<span class="cv">part</span>.<span class="cp">Anchored</span> <span class="co">=</span> <span class="cv">anchored</span><br>
+<span class="cf">print</span>(<span class="cs">"Frozen in place"</span>)<br><br>
+<span class="cv">anchored</span> <span class="co">=</span> <span class="cs">false</span><br>
+<span class="cv">part</span>.<span class="cp">Anchored</span> <span class="co">=</span> <span class="cv">anchored</span><br>
+<span class="cf">print</span>(<span class="cs">"Now falling!"</span>)
+      </div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">Name</span>
+        <span class="code-badge cb-purple">String</span>
+      </div>
+      <div class="code-body" style="font-size:13px;">
+<span class="ck">local</span> <span class="cv">part</span>    <span class="co">=</span> script.Parent<br>
+<span class="ck">local</span> <span class="cv">newName</span> <span class="co">=</span> <span class="cs">"SpawnPoint"</span><br><br>
+<span class="cf">print</span>(<span class="cs">"Before: "</span> <span class="co">..</span> <span class="cv">part</span>.Name)<br><br>
+<span class="cv">part</span>.<span class="cp">Name</span> <span class="co">=</span> <span class="cv">newName</span><br><br>
+<span class="cf">print</span>(<span class="cs">"After: "</span> <span class="co">..</span> <span class="cv">part</span>.Name)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 7 — ALL TOGETHER
+════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Everything Together — One Full Setup Script</div>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Full Part setup (Script inside Part)</span>
+        <span class="code-badge cb-green">Complete</span>
+      </div>
+      <div class="code-body">
+<span class="cc">-- All values stored in variables at the top</span><br>
+<span class="ck">local</span> <span class="cv">part</span>         <span class="co">=</span> script.Parent<br>
+<span class="ck">local</span> <span class="cv">partName</span>     <span class="co">=</span> <span class="cs">"HeroBlock"</span><br>
+<span class="ck">local</span> <span class="cv">partColor</span>    <span class="co">=</span> <span class="cs">"Bright blue"</span><br>
+<span class="ck">local</span> <span class="cv">partMaterial</span> <span class="co">=</span> Enum.Material.<span class="cf">Neon</span><br>
+<span class="ck">local</span> <span class="cv">width</span>        <span class="co">=</span> <span class="cs">6</span><br>
+<span class="ck">local</span> <span class="cv">height</span>       <span class="co">=</span> <span class="cs">6</span><br>
+<span class="ck">local</span> <span class="cv">depth</span>        <span class="co">=</span> <span class="cs">6</span><br>
+<span class="ck">local</span> <span class="cv">posX</span>         <span class="co">=</span> <span class="cs">0</span><br>
+<span class="ck">local</span> <span class="cv">posY</span>         <span class="co">=</span> <span class="cs">10</span><br>
+<span class="ck">local</span> <span class="cv">posZ</span>         <span class="co">=</span> <span class="cs">0</span><br>
+<span class="ck">local</span> <span class="cv">transparency</span> <span class="co">=</span> <span class="cs">0</span><br>
+<span class="ck">local</span> <span class="cv">isAnchored</span>   <span class="co">=</span> <span class="cs">true</span><br><br>
+<span class="cc">-- Apply everything to the Part</span><br>
+<span class="cv">part</span>.<span class="cp">Name</span>         <span class="co">=</span> <span class="cv">partName</span><br>
+<span class="cv">part</span>.<span class="cp">BrickColor</span>   <span class="co">=</span> BrickColor.<span class="cf">new</span>(<span class="cv">partColor</span>)<br>
+<span class="cv">part</span>.<span class="cp">Material</span>     <span class="co">=</span> <span class="cv">partMaterial</span><br>
+<span class="cv">part</span>.<span class="cp">Size</span>         <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">width</span>, <span class="cv">height</span>, <span class="cv">depth</span>)<br>
+<span class="cv">part</span>.<span class="cp">Position</span>     <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">posX</span>, <span class="cv">posY</span>, <span class="cv">posZ</span>)<br>
+<span class="cv">part</span>.<span class="cp">Transparency</span> <span class="co">=</span> <span class="cv">transparency</span><br>
+<span class="cv">part</span>.<span class="cp">Anchored</span>     <span class="co">=</span> <span class="cv">isAnchored</span><br><br>
+<span class="cf">print</span>(<span class="cs">"Part ready: "</span> <span class="co">..</span> <span class="cv">part</span>.Name)<br>
+<span class="cf">print</span>(<span class="cs">"Color: "</span> <span class="co">..</span> <span class="cv">partColor</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Size: "</span> <span class="co">..</span> <span class="cv">width</span> <span class="co">..</span> <span class="cs">"x"</span> <span class="co">..</span> <span class="cv">height</span> <span class="co">..</span> <span class="cs">"x"</span> <span class="co">..</span> <span class="cv">depth</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Y: "</span> <span class="co">..</span> <span class="cv">posY</span>)
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">Part ready: HeroBlock<br>Color: Bright blue<br>Size: 6x6x6<br>Y: 10</div>
+      </div>
+      <div class="note" style="border-color:#a7f3d0;">
+        <div class="note-label" style="color:var(--green);">The Key Rule</div>
+        <div class="note-text">All values are stored in variables at the <strong>top</strong>. To change anything — only edit the variable. The code below stays exactly the same.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 8 — TASK
+════════════════════════════════════════ -->
+<div class="divider"></div>
+<div class="sec">
+  <div class="sec-title">Task — Build the Mystery House</div>
+  <p class="sec-sub">Add 3 Parts to Workspace. Write one Script inside each Part. All properties must be set by the script — no manual editing in Properties.</p>
+
+  <div class="three-col">
+    <div class="note" style="border-color:#bfdbfe;">
+      <div class="note-label" style="color:var(--blue);">Part 1 — Floor</div>
+      <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+        Color: <ic>"Dark grey"</ic><br>
+        Size: 20 × 1 × 20<br>
+        Position: Y = 0<br>
+        Anchored: true<br>
+        Transparency: 0
+      </div>
+    </div>
+    <div class="note" style="border-color:#ddd6fe;">
+      <div class="note-label" style="color:var(--accent2);">Part 2 — Wall</div>
+      <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+        Color: <ic>"Sand red"</ic><br>
+        Size: 1 × 12 × 10<br>
+        Position: X = 10, Y = 6<br>
+        Anchored: true<br>
+        Material: Neon
+      </div>
+    </div>
+    <div class="note" style="border-color:#fbcfe8;">
+      <div class="note-label" style="color:var(--pink);">Part 3 — Door ⭐</div>
+      <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+        Color: any color<br>
+        Size: 2 × 8 × 1<br>
+        Position: Y = 15 (floating)<br>
+        Transparency: 0.4<br>
+        Name: <ic>"MysteryDoor"</ic>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /page -->
+</body>
+</html>

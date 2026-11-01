@@ -1,0 +1,16 @@
+print("Hello world!")
+
+print(game.Workspace.box.Name)
+
+local brick = game.Workspace.box
+
+print(brick.Name)
+
+local color_name = "Really red"	
+brick.BrickColor = BrickColor.new(color_name)
+
+local transprance_no = 0.4
+brick.Anchored = true
+brick.Transparency = transprance_no
+
+brick.CanCollide = false

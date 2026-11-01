@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 4 — Conditions & if/else</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f4f0; --surface:#fff; --border:#e2e0d8; --border2:#d0cecc;
+  --text:#1a1a2e; --muted:#7a7880; --muted2:#a09ea8;
+  --accent:#4f46e5; --accent-light:#ede9fe; --accent2:#7c3aed;
+  --green:#059669; --green-light:#d1fae5;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --red:#dc2626; --red-light:#fee2e2;
+  --blue:#2563eb; --blue-light:#dbeafe;
+  --teal:#0d9488; --teal-light:#ccfbf1;
+  --pink:#db2777; --pink-light:#fce7f3;
+  --orange:#ea580c; --orange-light:#ffedd5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;overflow:hidden;height:100vh;width:100vw;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,#c8c6d0 1px,transparent 1px);background-size:28px 28px;opacity:.38;pointer-events:none;z-index:0;}
+
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;height:44px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:300;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.tb-left{display:flex;align-items:center;gap:10px;}
+.tb-logo{width:24px;height:24px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:800;}
+.tb-title{font-size:13px;font-weight:700;}
+.tb-sep{width:1px;height:16px;background:var(--border);}
+.tb-sub{font-size:11px;color:var(--muted);}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.tb-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+.fs-btn{background:transparent;border:1px solid var(--border2);color:var(--muted);font-size:11px;font-family:'Outfit',sans-serif;padding:4px 10px;border-radius:6px;cursor:pointer;transition:all .15s;}
+.fs-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* SLIDES */
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:58px 52px 60px;opacity:0;transform:translateX(60px);transition:all .5s cubic-bezier(.16,1,.3,1);pointer-events:none;z-index:1;overflow:hidden;}
+.slide.active{opacity:1;transform:translateX(0);pointer-events:all;}
+.slide.exit{opacity:0;transform:translateX(-60px);transition:all .32s ease-in;}
+
+/* HUD */
+.hud{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;z-index:300;background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:9px 20px;box-shadow:0 4px 16px rgba(0,0,0,.1);}
+.hbtn{background:transparent;border:1px solid var(--border2);color:var(--accent);font-family:'Outfit',sans-serif;font-weight:700;font-size:12px;padding:6px 16px;border-radius:30px;cursor:pointer;transition:all .18s;}
+.hbtn:hover{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 12px rgba(79,70,229,.3);}
+.hctr{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);min-width:52px;text-align:center;}
+.dots{display:flex;gap:5px;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--border2);transition:all .3s;cursor:pointer;}
+.dot.active{background:var(--accent);width:20px;border-radius:3px;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:12px;}
+.b-blue  {background:var(--blue-light);  color:var(--blue);  border:1px solid #bfdbfe;}
+.b-purple{background:var(--accent-light);color:var(--accent2);border:1px solid #ddd6fe;}
+.b-green {background:var(--green-light); color:var(--green); border:1px solid #a7f3d0;}
+.b-amber {background:var(--amber-light); color:var(--amber); border:1px solid #fcd34d;}
+.b-teal  {background:var(--teal-light);  color:var(--teal);  border:1px solid #99f6e4;}
+.b-red   {background:var(--red-light);   color:var(--red);   border:1px solid #fca5a5;}
+.b-pink  {background:var(--pink-light);  color:var(--pink);  border:1px solid #fbcfe8;}
+.b-orange{background:var(--orange-light);color:var(--orange);border:1px solid #fed7aa;}
+
+/* TYPE */
+.h1{font-size:clamp(30px,4.5vw,54px);font-weight:900;line-height:1.08;text-align:center;color:var(--text);margin-bottom:8px;letter-spacing:-1px;}
+.h2{font-size:clamp(20px,3vw,38px);font-weight:800;line-height:1.1;text-align:center;color:var(--text);margin-bottom:8px;letter-spacing:-.5px;}
+.sub{font-size:14px;color:var(--muted);text-align:center;margin-bottom:22px;font-weight:500;line-height:1.5;max-width:720px;}
+.accent{color:var(--accent);}
+
+/* LAYOUT */
+.two-col  {display:grid;grid-template-columns:1fr 1fr;    gap:16px;width:100%;max-width:1040px;align-items:start;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;width:100%;max-width:1040px;align-items:start;}
+.grid{display:grid;gap:12px;width:100%;}
+.g2{grid-template-columns:1fr 1fr;max-width:860px;}
+.g3{grid-template-columns:repeat(3,1fr);max-width:980px;}
+.g4{grid-template-columns:repeat(4,1fr);max-width:1060px;}
+
+/* DIVIDER */
+.divr{display:flex;align-items:center;gap:10px;width:100%;max-width:1040px;margin:10px 0;}
+.divr-line{flex:1;height:1px;background:var(--border);}
+.divr-text{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted2);white-space:nowrap;text-transform:uppercase;}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 16px;position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s;}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.07);}
+.ct{height:3px;position:absolute;top:0;left:0;right:0;border-radius:12px 12px 0 0;}
+.ct-blue  {background:var(--blue);}
+.ct-purple{background:var(--accent2);}
+.ct-amber {background:var(--amber);}
+.ct-green {background:var(--green);}
+.ct-red   {background:var(--red);}
+.ct-teal  {background:var(--teal);}
+.ct-pink  {background:var(--pink);}
+.ct-orange{background:var(--orange);}
+.card-icon {font-size:22px;margin-bottom:7px;margin-top:4px;}
+.card-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;}
+.card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.card-text {font-size:12.5px;color:var(--muted);line-height:1.55;}
+
+/* CODE */
+.code-wrap{background:#12131f;border:1px solid #313244;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.12);}
+.code-hdr{background:#0a0b14;padding:8px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #313244;}
+.code-ttl{font-size:9px;font-weight:700;letter-spacing:2px;color:#89b4fa;text-transform:uppercase;}
+.code-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;}
+.cb-1{background:rgba(37,99,235,.25);color:#93c5fd;}
+.cb-2{background:rgba(124,58,237,.25);color:#c4b5fd;}
+.cb-3{background:rgba(5,150,105,.25);color:#6ee7b7;}
+.cb-4{background:rgba(217,119,6,.25);color:#fcd34d;}
+.cb-5{background:rgba(219,39,119,.25);color:#f9a8d4;}
+.cb-g{background:rgba(220,38,38,.25);color:#fca5a5;}
+.code-body{padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.0;}
+.ck{color:#bb9af7;font-weight:700;} .cs{color:#9ece6a;font-weight:600;} .cf{color:#e0af68;font-weight:600;} .cv{color:#7dcfff;} .cc{color:#565f89;font-style:italic;} .cp{color:#f7768e;} .co{color:#f9e2af;}
+
+/* OUTPUT */
+.output{background:#f0fff4;border:1px solid #6ee7b7;border-radius:10px;padding:12px 16px;}
+.out-label{font-size:10px;font-weight:700;color:var(--green);letter-spacing:1.5px;margin-bottom:7px;}
+.out-line{font-family:'JetBrains Mono',monospace;font-size:12px;color:#065f46;line-height:2.1;}
+.out-sep{height:1px;background:#a7f3d0;margin:5px 0;}
+
+/* INFO */
+.info{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.info-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.info-text{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* SYNTAX BOX */
+.syntax-box{background:var(--surface);border:2px dashed var(--border2);border-radius:12px;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2.1;width:100%;}
+.sy-kw {color:var(--accent2);font-weight:700;}
+.sy-cond{color:var(--amber);font-style:italic;}
+.sy-body{color:var(--green);margin-left:24px;}
+.sy-com {color:var(--muted2);font-style:italic;font-size:11px;}
+
+/* FLOW CHART */
+.flowchart{display:flex;flex-direction:column;align-items:center;gap:0;width:100%;max-width:340px;}
+.fc-box{padding:10px 20px;border-radius:10px;text-align:center;font-size:13px;font-weight:700;width:100%;}
+.fc-diamond{width:0;height:0;border-left:70px solid transparent;border-right:70px solid transparent;position:relative;display:flex;align-items:center;justify-content:center;}
+.fc-arrow{font-size:20px;color:var(--border2);line-height:1;}
+.fc-side{display:flex;gap:12px;width:100%;justify-content:center;}
+.fc-yes{flex:1;padding:10px 10px;border-radius:10px;text-align:center;font-size:12px;font-weight:700;}
+.fc-no {flex:1;padding:10px 10px;border-radius:10px;text-align:center;font-size:12px;font-weight:700;}
+
+/* GAME CARD */
+.game-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s;}
+.game-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1);}
+.game-thumb{height:70px;display:flex;align-items:center;justify-content:center;font-size:36px;}
+.game-body{padding:14px 16px;}
+.game-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.game-desc{font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:8px;}
+.game-tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;margin:2px;}
+
+/* STEPS */
+.steps{list-style:none;width:100%;}
+.step{display:flex;gap:14px;align-items:flex-start;padding:11px 16px;margin-bottom:7px;background:var(--surface);border:1px solid var(--border);border-radius:10px;transition:all .18s;}
+.step:hover{border-color:var(--accent);transform:translateX(4px);}
+.snum{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:900;flex-shrink:0;}
+.n1{background:var(--blue-light);  color:var(--blue);}
+.n2{background:var(--accent-light);color:var(--accent2);}
+.n3{background:var(--amber-light); color:var(--amber);}
+.n4{background:var(--green-light); color:var(--green);}
+.n5{background:var(--pink-light);  color:var(--pink);}
+.stitle{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.sdesc {font-size:12px;color:var(--muted);line-height:1.45;}
+
+/* REVEAL */
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.rv{opacity:0;}
+.active .rv{animation:up .42s forwards;}
+.active .rv:nth-child(1){animation-delay:.06s}
+.active .rv:nth-child(2){animation-delay:.13s}
+.active .rv:nth-child(3){animation-delay:.20s}
+.active .rv:nth-child(4){animation-delay:.27s}
+.active .rv:nth-child(5){animation-delay:.34s}
+.active .rv:nth-child(6){animation-delay:.41s}
+.active .rv:nth-child(7){animation-delay:.48s}
+.active .rv:nth-child(8){animation-delay:.55s}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-logo">G</div>
+    <span class="tb-title">AI & Game Creators — Class 4</span>
+    <div class="tb-sep"></div>
+    <span class="tb-sub">Conditional Statements — if / elseif / else</span>
+  </div>
+  <div class="tb-right">
+    <span class="tb-num" id="topNum">01 / 12</span>
+    <button class="fs-btn" onclick="toggleFS()">⛶ Fullscreen</button>
+  </div>
+</div>
+
+<!-- ═══ S0 TITLE ═══ -->
+<div class="slide active" id="s0">
+  <div class="badge b-blue rv">CLASS 4 · MODULE 2 · LUA PROGRAMMING</div>
+  <h1 class="h1 rv">Making <span class="accent">Decisions</span><br>in Code</h1>
+  <p class="sub rv">if / elseif / else — the logic that makes your game react, respond, and feel alive</p>
+  <div style="display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap;justify-content:center;" class="rv">
+    <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:10px;padding:12px 20px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">🔀</div>
+      <div style="font-size:13px;font-weight:700;">Part 1</div>
+      <div style="font-size:11px;color:var(--muted);">if / then / end</div>
+    </div>
+    <div style="background:var(--accent-light);border:1px solid #ddd6fe;border-radius:10px;padding:12px 20px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">⚖️</div>
+      <div style="font-size:13px;font-weight:700;">Part 2</div>
+      <div style="font-size:11px;color:var(--muted);">if / else / end</div>
+    </div>
+    <div style="background:var(--amber-light);border:1px solid #fcd34d;border-radius:10px;padding:12px 20px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">📋</div>
+      <div style="font-size:13px;font-weight:700;">Part 3</div>
+      <div style="font-size:11px;color:var(--muted);">if / elseif / else</div>
+    </div>
+    <div style="background:var(--green-light);border:1px solid #a7f3d0;border-radius:10px;padding:12px 20px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">🎮</div>
+      <div style="font-size:13px;font-weight:700;">Part 4</div>
+      <div style="font-size:11px;color:var(--muted);">Short Game + Student Ideas</div>
+    </div>
+  </div>
+  <div style="font-size:12px;color:var(--muted2);" class="rv">Press → to begin</div>
+</div>
+
+<!-- ═══ S1 WHAT IS A CONDITION ═══ -->
+<div class="slide" id="s1">
+  <div class="badge b-blue rv">PART 1 · WHAT IS A CONDITION?</div>
+  <h2 class="h2 rv">Every Game Makes Decisions</h2>
+  <p class="sub rv">Every single thing that happens in a game is a decision — "if this, do that". Conditions are how code makes those decisions.</p>
+
+  <div class="grid g4 rv" style="max-width:1060px;">
+    <div class="card">
+      <div class="ct ct-red"></div>
+      <div class="card-icon">❤️</div>
+      <div class="card-label" style="color:var(--red);">Game Decision 1</div>
+      <div class="card-title">Health Check</div>
+      <div class="card-text"><em>If</em> health reaches zero — <em>then</em> show Game Over screen</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-amber"></div>
+      <div class="card-icon">🏆</div>
+      <div class="card-label" style="color:var(--amber);">Game Decision 2</div>
+      <div class="card-title">Win Condition</div>
+      <div class="card-text"><em>If</em> score is above 100 — <em>then</em> the player wins the round</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-blue"></div>
+      <div class="card-icon">🚪</div>
+      <div class="card-label" style="color:var(--blue);">Game Decision 3</div>
+      <div class="card-title">Door Lock</div>
+      <div class="card-text"><em>If</em> player has a key — <em>then</em> open the door, <em>else</em> keep it locked</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-green"></div>
+      <div class="card-icon">⭐</div>
+      <div class="card-label" style="color:var(--green);">Game Decision 4</div>
+      <div class="card-title">Rank System</div>
+      <div class="card-text"><em>If</em> score is 90+ → Gold, <em>elseif</em> 70+ → Silver, <em>else</em> → Bronze</div>
+    </div>
+  </div>
+
+  <div class="divr rv"><div class="divr-line"></div><div class="divr-text">In Lua, all of these are written the same way</div><div class="divr-line"></div></div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 24px;max-width:700px;width:100%;text-align:center;" class="rv">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:15px;line-height:2.2;">
+      <span style="color:var(--accent2);font-weight:700;">if</span>
+      <span style="color:var(--amber);"> condition </span>
+      <span style="color:var(--accent2);font-weight:700;">then</span><br>
+      <span style="color:var(--green);margin-left:32px;display:inline-block;">-- code that runs if true</span><br>
+      <span style="color:var(--accent2);font-weight:700;">end</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S2 IF / THEN / END ═══ -->
+<div class="slide" id="s2">
+  <div class="badge b-blue rv">PART 1 · if / then / end</div>
+  <h2 class="h2 rv">The Basic if Statement</h2>
+  <p class="sub rv">The simplest form — check one condition. If it's true, run the code inside. If false, skip it entirely.</p>
+
+  <div class="two-col rv">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="background:var(--surface);border:2px dashed var(--border2);border-radius:12px;padding:16px 20px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted2);margin-bottom:10px;">SYNTAX</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.4;">
+          <span style="color:var(--accent2);font-weight:700;">if</span>
+          <span style="color:var(--amber);"> condition </span>
+          <span style="color:var(--accent2);font-weight:700;">then</span><br>
+          <span style="color:var(--green);margin-left:28px;display:inline-block;">-- runs only if true</span><br>
+          <span style="color:var(--accent2);font-weight:700;">end</span>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="code-ttl">LUA — Basic if examples</span><span class="code-badge cb-1">if / then</span></div>
+        <div class="code-body">
+<span class="ck">local</span> <span class="cv">health</span> = <span class="cs">80</span><br>
+<span class="ck">local</span> <span class="cv">score</span>  = <span class="cs">120</span><br><br>
+<span class="cc">-- Check 1: Is health low?</span><br>
+<span class="ck">if</span> <span class="cv">health</span> &lt; <span class="cs">50</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"⚠️ Warning! Low health!"</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="cc">-- Check 2: Did player win?</span><br>
+<span class="ck">if</span> <span class="cv">score</span> &gt; <span class="cs">100</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🏆 You won the round!"</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="cc">-- Check 3: Is health full?</span><br>
+<span class="ck">if</span> <span class="cv">health</span> == <span class="cs">100</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💚 Full health!"</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output — health=80, score=120</div>
+        <div class="out-line">🏆 You won the round!</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic;">Check 1 is skipped — 80 is NOT less than 50<br>Check 2 runs — 120 IS greater than 100<br>Check 3 is skipped — 80 is NOT equal to 100</div>
+      </div>
+
+      <div class="info" style="border-color:#bfdbfe;">
+        <div class="info-label" style="color:var(--blue);">Key Point</div>
+        <div class="info-text" style="font-size:12px;line-height:1.8;">The code inside the <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--blue-light);padding:1px 5px;border-radius:3px;">if</code> block only runs when the condition is <strong>true</strong>. If the condition is false, Lua skips straight to <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--blue-light);padding:1px 5px;border-radius:3px;">end</code> and continues.</div>
+      </div>
+
+      <div class="info" style="border-color:#fcd34d;">
+        <div class="info-label" style="color:var(--amber);">⚠️ Don't Forget end</div>
+        <div class="info-text" style="font-size:12px;">Every <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">if</code> must close with <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">end</code>. Forgetting it is the most common error beginners make.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S3 IF / ELSE ═══ -->
+<div class="slide" id="s3">
+  <div class="badge b-purple rv">PART 2 · if / else / end</div>
+  <h2 class="h2 rv">if / else — Two Outcomes</h2>
+  <p class="sub rv">When you need one thing to happen if true, and a different thing if false — use else</p>
+
+  <div class="two-col rv">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="background:var(--surface);border:2px dashed var(--border2);border-radius:12px;padding:16px 20px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted2);margin-bottom:10px;">SYNTAX</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.4;">
+          <span style="color:var(--accent2);font-weight:700;">if</span>
+          <span style="color:var(--amber);"> condition </span>
+          <span style="color:var(--accent2);font-weight:700;">then</span><br>
+          <span style="color:var(--green);margin-left:28px;display:inline-block;">-- runs if TRUE</span><br>
+          <span style="color:var(--accent2);font-weight:700;">else</span><br>
+          <span style="color:#f38ba8;margin-left:28px;display:inline-block;">-- runs if FALSE</span><br>
+          <span style="color:var(--accent2);font-weight:700;">end</span>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="code-ttl">LUA — if / else examples</span><span class="code-badge cb-2">if / else</span></div>
+        <div class="code-body">
+<span class="ck">local</span> <span class="cv">health</span>  = <span class="cs">30</span><br>
+<span class="ck">local</span> <span class="cv">hasKey</span>  = <span class="cs">true</span><br>
+<span class="ck">local</span> <span class="cv">password</span>= <span class="cs">"roblox"</span><br><br>
+<span class="cc">-- Are they alive?</span><br>
+<span class="ck">if</span> <span class="cv">health</span> &gt; <span class="cs">0</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"✅ Player is alive!"</span>)<br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💀 Game Over!"</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="cc">-- Do they have the key?</span><br>
+<span class="ck">if</span> <span class="cv">hasKey</span> == <span class="cs">true</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🚪 Door is OPEN!"</span>)<br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🔒 Door is LOCKED!"</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="cc">-- Is password correct?</span><br>
+<span class="ck">if</span> <span class="cv">password</span> == <span class="cs">"roblox"</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🔓 Access granted!"</span>)<br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"❌ Wrong password!"</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">✅ Player is alive!<br>🚪 Door is OPEN!<br>🔓 Access granted!</div>
+      </div>
+
+      <!-- FLOWCHART -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--muted2);margin-bottom:12px;">HOW IT FLOWS</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+          <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:8px;padding:8px 20px;font-size:12px;font-weight:700;color:var(--blue);width:200px;text-align:center;">condition check</div>
+          <div style="font-size:18px;color:var(--border2);">↓</div>
+          <div style="background:#fef9ee;border:1px solid #fcd34d;border-radius:8px;padding:6px 16px;font-size:12px;font-weight:700;color:var(--amber);width:200px;text-align:center;">true or false?</div>
+          <div style="display:flex;gap:40px;margin-top:4px;">
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="font-size:11px;color:var(--green);font-weight:700;">TRUE ↓</div>
+              <div style="background:var(--green-light);border:1px solid #a7f3d0;border-radius:8px;padding:7px 14px;font-size:11px;font-weight:700;color:var(--green);text-align:center;">run if block</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="font-size:11px;color:var(--red);font-weight:700;">FALSE ↓</div>
+              <div style="background:var(--red-light);border:1px solid #fca5a5;border-radius:8px;padding:7px 14px;font-size:11px;font-weight:700;color:var(--red);text-align:center;">run else block</div>
+            </div>
+          </div>
+          <div style="font-size:18px;color:var(--border2);margin-top:4px;">↓</div>
+          <div style="background:var(--accent-light);border:1px solid #ddd6fe;border-radius:8px;padding:7px 20px;font-size:12px;font-weight:700;color:var(--accent2);width:200px;text-align:center;">end — continue</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S4 ELSEIF ═══ -->
+<div class="slide" id="s4">
+  <div class="badge b-amber rv">PART 3 · if / elseif / else</div>
+  <h2 class="h2 rv">elseif — Multiple Outcomes</h2>
+  <p class="sub rv">When there are more than two possible outcomes — add as many elseif branches as you need</p>
+
+  <div class="two-col rv">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="background:var(--surface);border:2px dashed var(--border2);border-radius:12px;padding:16px 20px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted2);margin-bottom:10px;">SYNTAX</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2.4;">
+          <span style="color:var(--accent2);font-weight:700;">if</span> <span style="color:var(--amber);">condition1</span> <span style="color:var(--accent2);font-weight:700;">then</span><br>
+          <span style="color:var(--green);margin-left:28px;display:inline-block;">-- condition1 is true</span><br>
+          <span style="color:var(--accent2);font-weight:700;">elseif</span> <span style="color:var(--amber);">condition2</span> <span style="color:var(--accent2);font-weight:700;">then</span><br>
+          <span style="color:var(--green);margin-left:28px;display:inline-block;">-- condition2 is true</span><br>
+          <span style="color:var(--accent2);font-weight:700;">elseif</span> <span style="color:var(--amber);">condition3</span> <span style="color:var(--accent2);font-weight:700;">then</span><br>
+          <span style="color:var(--green);margin-left:28px;display:inline-block;">-- condition3 is true</span><br>
+          <span style="color:var(--accent2);font-weight:700;">else</span><br>
+          <span style="color:#f38ba8;margin-left:28px;display:inline-block;">-- none of the above</span><br>
+          <span style="color:var(--accent2);font-weight:700;">end</span>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="code-ttl">LUA — Rank System</span><span class="code-badge cb-3">elseif</span></div>
+        <div class="code-body">
+<span class="ck">local</span> <span class="cv">score</span> = <span class="cs">74</span><br><br>
+<span class="ck">if</span> <span class="cv">score</span> &gt;= <span class="cs">90</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🥇 Rank: GOLD"</span>)<br>
+<span class="ck">elseif</span> <span class="cv">score</span> &gt;= <span class="cs">70</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🥈 Rank: SILVER"</span>)<br>
+<span class="ck">elseif</span> <span class="cv">score</span> &gt;= <span class="cs">50</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🥉 Rank: BRONZE"</span>)<br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"❌ No Rank — Try Again"</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output — score = 74</div>
+        <div class="out-line">🥈 Rank: SILVER</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic;">score &gt;= 90? No. Skip.<br>score &gt;= 70? Yes! Run this block. Stop checking.</div>
+      </div>
+
+      <div class="info" style="border-color:#fcd34d;">
+        <div class="info-label" style="color:var(--amber);">Important — Lua stops at first match</div>
+        <div class="info-text" style="font-size:12px;line-height:1.7;">Once Lua finds the first true condition, it runs that block and skips all the others — even if another condition would also be true. Order matters — always check from highest to lowest.</div>
+      </div>
+
+      <div class="code-wrap" style="margin-top:0;">
+        <div class="code-hdr"><span class="code-ttl">LUA — Level + Health Check</span><span class="code-badge cb-3">elseif</span></div>
+        <div class="code-body" style="font-size:12px;">
+<span class="ck">local</span> <span class="cv">level</span> = <span class="cs">3</span><br><br>
+<span class="ck">if</span> <span class="cv">level</span> == <span class="cs">1</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"👶 Beginner"</span>)<br>
+<span class="ck">elseif</span> <span class="cv">level</span> == <span class="cs">2</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🧑 Intermediate"</span>)<br>
+<span class="ck">elseif</span> <span class="cv">level</span> == <span class="cs">3</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💪 Advanced"</span>)<br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🔥 MAX LEVEL!"</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S5 AND / OR IN CONDITIONS ═══ -->
+<div class="slide" id="s5">
+  <div class="badge b-teal rv">COMBINING CONDITIONS · and / or</div>
+  <h2 class="h2 rv">and / or Inside Conditions</h2>
+  <p class="sub rv">Combine multiple checks in one condition — use and when both must be true, or when either one is enough</p>
+
+  <div class="two-col rv">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="code-ttl">LUA — and / or in conditions</span><span class="code-badge cb-4">combined</span></div>
+        <div class="code-body">
+<span class="ck">local</span> <span class="cv">health</span>    = <span class="cs">60</span><br>
+<span class="ck">local</span> <span class="cv">hasArmour</span> = <span class="cs">true</span><br>
+<span class="ck">local</span> <span class="cv">gold</span>      = <span class="cs">200</span><br>
+<span class="ck">local</span> <span class="cv">level</span>     = <span class="cs">5</span><br><br>
+<span class="cc">-- AND: both conditions must be true</span><br>
+<span class="ck">if</span> <span class="cv">health</span> &gt; <span class="cs">50</span> <span class="ck">and</span> <span class="cv">hasArmour</span> == <span class="cs">true</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🛡️ Safe to fight!"</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="cc">-- OR: at least one must be true</span><br>
+<span class="ck">if</span> <span class="cv">gold</span> &gt;= <span class="cs">100</span> <span class="ck">or</span> <span class="cv">level</span> &gt;= <span class="cs">5</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🏪 Shop unlocked!"</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="cc">-- AND with else</span><br>
+<span class="ck">if</span> <span class="cv">gold</span> &gt;= <span class="cs">500</span> <span class="ck">and</span> <span class="cv">level</span> &gt;= <span class="cs">10</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"⚔️ Legendary weapon unlocked!"</span>)<br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🔒 Keep levelling up!"</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">🛡️ Safe to fight!<br>🏪 Shop unlocked!<br>🔒 Keep levelling up!</div>
+      </div>
+      <div class="grid g2" style="max-width:500px;gap:10px;">
+        <div class="card">
+          <div class="ct ct-green"></div>
+          <div class="card-label" style="color:var(--green);">and</div>
+          <div class="card-title">Both must be true</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;color:var(--muted);margin-top:4px;">
+            T and T → true<br>T and F → false<br>F and T → false<br>F and F → false
+          </div>
+        </div>
+        <div class="card">
+          <div class="ct ct-blue"></div>
+          <div class="card-label" style="color:var(--blue);">or</div>
+          <div class="card-title">At least one true</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;color:var(--muted);margin-top:4px;">
+            T or T → true<br>T or F → true<br>F or T → true<br>F or F → false
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S6 IF/ELSE + PARTS ═══ -->
+<div class="slide" id="s6">
+  <div class="badge b-green rv">CONNECTING TO PARTS · if/else changes the 3D world</div>
+  <h2 class="h2 rv">Make a Part React to a Condition</h2>
+  <p class="sub rv">Now the if/else does something VISIBLE — the Part changes color based on the health value</p>
+
+  <div class="two-col rv">
+    <div>
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="code-ttl">LUA — Health bar color (Script inside Part)</span><span class="code-badge cb-3">if + Part</span></div>
+        <div class="code-body">
+<span class="ck">local</span> <span class="cv">part</span>   = script.Parent<br>
+<span class="ck">local</span> <span class="cv">health</span> = <span class="cs">30</span>   <span class="cc">-- try: 100, 60, 30, 0</span><br><br>
+<span class="cc">-- Change Part color based on health</span><br>
+<span class="ck">if</span> <span class="cv">health</span> &gt;= <span class="cs">70</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">part</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Lime green"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💚 Health OK: "</span> .. <span class="cv">health</span>)<br>
+<span class="ck">elseif</span> <span class="cv">health</span> &gt;= <span class="cs">40</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">part</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Bright yellow"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🟡 Health Low: "</span> .. <span class="cv">health</span>)<br>
+<span class="ck">elseif</span> <span class="cv">health</span> &gt; <span class="cs">0</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">part</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Bright red"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🔴 Critical! "</span> .. <span class="cv">health</span>)<br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cv">part</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Black"</span>)<br>
+&nbsp;&nbsp;<span class="cv">part</span>.<span class="cp">Transparency</span> = <span class="cs">0.5</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💀 Dead!"</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--muted2);margin-bottom:12px;">WHAT THE PART LOOKS LIKE</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:#f0fff4;border:1px solid #a7f3d0;border-radius:8px;">
+            <div style="width:28px;height:28px;background:#22c55e;border-radius:5px;flex-shrink:0;"></div>
+            <div style="font-size:12px;"><strong>health ≥ 70</strong> → Lime green — safe</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:#fefce8;border:1px solid #fcd34d;border-radius:8px;">
+            <div style="width:28px;height:28px;background:#eab308;border-radius:5px;flex-shrink:0;"></div>
+            <div style="font-size:12px;"><strong>health ≥ 40</strong> → Yellow — warning</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--red-light);border:1px solid #fca5a5;border-radius:8px;">
+            <div style="width:28px;height:28px;background:#ef4444;border-radius:5px;flex-shrink:0;"></div>
+            <div style="font-size:12px;"><strong>health &gt; 0</strong> → Red — critical</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;">
+            <div style="width:28px;height:28px;background:#1f2937;border-radius:5px;flex-shrink:0;opacity:0.5;"></div>
+            <div style="font-size:12px;"><strong>health = 0</strong> → Black + transparent — dead</div>
+          </div>
+        </div>
+      </div>
+      <div class="info" style="border-color:#a7f3d0;">
+        <div class="info-label" style="color:var(--green);">Try it live!</div>
+        <div class="info-text" style="font-size:12px;">Change <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--green-light);padding:1px 5px;border-radius:3px;">local health = 30</code> to 100, 60, 30, or 0 — press Play each time and watch the Part change color automatically.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S7 SHORT GAME ═══ -->
+<div class="slide" id="s7">
+  <div class="badge b-orange rv">🎮 SHORT GAME · Colour Guess Challenge</div>
+  <h2 class="h2 rv">Mini Game — The Colour Trap</h2>
+  <p class="sub rv">A 3-Part game — each Part is a different color. One is safe, one gives damage, one is deadly. The script decides what happens when you step on each one.</p>
+
+  <div class="two-col rv">
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="info" style="border-color:#fed7aa;">
+        <div class="info-label" style="color:var(--orange);">How to Build It</div>
+        <div class="info-text" style="font-size:12px;line-height:1.8;">
+          1. Add <strong>3 Parts</strong> to Workspace — side by side<br>
+          2. Name them <strong>SafePart</strong>, <strong>DamagePart</strong>, <strong>KillPart</strong><br>
+          3. Colour them Green, Yellow, Red manually<br>
+          4. Add a Script inside <strong>each Part</strong><br>
+          5. Each script checks the player's health and reacts
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="code-ttl">Script for SafePart</span><span class="code-badge" style="background:rgba(5,150,105,.25);color:#6ee7b7;">+20 HP</span></div>
+        <div class="code-body" style="font-size:12px;line-height:1.9;">
+<span class="ck">local</span> <span class="cv">part</span>   = script.Parent<br>
+<span class="ck">local</span> <span class="cv">health</span> = <span class="cs">60</span><br>
+<span class="ck">local</span> <span class="cv">heal</span>   = <span class="cs">20</span><br><br>
+<span class="cv">part</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Lime green"</span>)<br>
+<span class="cv">part</span>.<span class="cp">Anchored</span>   = <span class="cs">true</span><br><br>
+<span class="ck">if</span> <span class="cv">health</span> &lt; <span class="cs">100</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">health</span> = <span class="cv">health</span> + <span class="cv">heal</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💚 Safe! Healed +"</span> .. <span class="cv">heal</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Health: "</span> .. <span class="cv">health</span>)<br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💚 Already full health!"</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="code-ttl">Script for DamagePart</span><span class="code-badge" style="background:rgba(217,119,6,.25);color:#fcd34d;">-30 HP</span></div>
+        <div class="code-body" style="font-size:12px;line-height:1.9;">
+<span class="ck">local</span> <span class="cv">part</span>   = script.Parent<br>
+<span class="ck">local</span> <span class="cv">health</span> = <span class="cs">60</span><br>
+<span class="ck">local</span> <span class="cv">damage</span> = <span class="cs">30</span><br><br>
+<span class="cv">part</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Bright yellow"</span>)<br>
+<span class="cv">part</span>.<span class="cp">Anchored</span>   = <span class="cs">true</span><br><br>
+<span class="cv">health</span> = <span class="cv">health</span> - <span class="cv">damage</span><br>
+<span class="cf">print</span>(<span class="cs">"🟡 Ouch! -"</span> .. <span class="cv">damage</span> .. <span class="cs">" damage!"</span>)<br><br>
+<span class="ck">if</span> <span class="cv">health</span> &lt;= <span class="cs">0</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💀 You died from damage!"</span>)<br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Health left: "</span> .. <span class="cv">health</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="code-wrap">
+        <div class="code-hdr"><span class="code-ttl">Script for KillPart</span><span class="code-badge cb-g">INSTANT DEATH</span></div>
+        <div class="code-body" style="font-size:12px;line-height:1.9;">
+<span class="ck">local</span> <span class="cv">part</span>    = script.Parent<br>
+<span class="ck">local</span> <span class="cv">health</span>  = <span class="cs">60</span><br>
+<span class="ck">local</span> <span class="cv">isAlive</span> = <span class="cs">true</span><br><br>
+<span class="cv">part</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Bright red"</span>)<br>
+<span class="cv">part</span>.<span class="cp">Material</span>   = Enum.Material.<span class="cf">Neon</span><br>
+<span class="cv">part</span>.<span class="cp">Anchored</span>   = <span class="cs">true</span><br><br>
+<span class="cv">health</span>  = <span class="cs">0</span><br>
+<span class="cv">isAlive</span> = <span class="cs">false</span><br><br>
+<span class="cf">print</span>(<span class="cs">"🔴 DANGER ZONE!"</span>)<br><br>
+<span class="ck">if</span> <span class="cv">isAlive</span> == <span class="cs">false</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">part</span>.<span class="cp">Transparency</span> = <span class="cs">0.4</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💀 GAME OVER!"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Final health: "</span> .. <span class="cv">health</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+
+      <div class="output">
+        <div class="out-label">Output when all 3 scripts run</div>
+        <div class="out-line">
+          💚 Safe! Healed +20<br>
+          &nbsp;&nbsp; Health: 80<br>
+        </div>
+        <div class="out-sep"></div>
+        <div class="out-line">
+          🟡 Ouch! -30 damage!<br>
+          &nbsp;&nbsp; Health left: 30<br>
+        </div>
+        <div class="out-sep"></div>
+        <div class="out-line">
+          🔴 DANGER ZONE!<br>
+          💀 GAME OVER!<br>
+          &nbsp;&nbsp; Final health: 0
+        </div>
+      </div>
+
+      <div class="info" style="border-color:#a7f3d0;">
+        <div class="info-label" style="color:var(--green);">What students see</div>
+        <div class="info-text" style="font-size:12px;">3 coloured Parts in the world. 3 different scripts. All using if/else. Each Part has a different behaviour — all controlled by conditions. This is exactly how real Roblox games work.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S8 CLASS TASK ═══ -->
+<div class="slide" id="s8">
+  <div class="badge b-amber rv">CLASS TASK · 25 MINUTES</div>
+  <h2 class="h2 rv">Task — The Smart Checkpoint</h2>
+  <p class="sub rv">Build a checkpoint Part that checks the player's score and gives a different reward depending on how well they did</p>
+
+  <div class="two-col rv" style="max-width:1040px;">
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="info" style="border-color:#fcd34d;">
+        <div class="info-label" style="color:var(--amber);">The Scenario</div>
+        <div class="info-text" style="font-size:13px;line-height:1.6;">The player reaches the end of a level and touches a glowing checkpoint. The checkpoint script checks their score, health, and whether they have a key — then decides what reward they get.</div>
+      </div>
+      <ul class="steps">
+        <li class="step"><div class="snum n1">1</div><div><div class="stitle">Add a Part — name it "Checkpoint"</div><div class="sdesc">Make it tall and thin. Set Material to Neon. Anchor it. This is the end-of-level gate.</div></div></li>
+        <li class="step"><div class="snum n2">2</div><div><div class="stitle">Insert a Script inside the Part</div><div class="sdesc">Declare these variables: score (number), health (number), hasKey (boolean). Use your own values.</div></div></li>
+        <li class="step"><div class="snum n3">3</div><div><div class="stitle">Write the Score Check — elseif</div><div class="sdesc">If score ≥ 90 → print "⭐ PERFECT — Bonus chest unlocked!" and turn Part gold. elseif score ≥ 60 → "✅ PASSED" and turn green. else → "❌ FAILED" and turn red.</div></div></li>
+        <li class="step"><div class="snum n4">4</div><div><div class="stitle">Write the Key Check — if / else</div><div class="sdesc">If hasKey is true → print "🗝️ Secret door opened!". Else → print "🔒 No key — secret door stays locked."</div></div></li>
+        <li class="step"><div class="snum n5">5</div><div><div class="stitle">Health Check bonus</div><div class="sdesc">If health is 100 → print "💚 Perfect health bonus: +50 gold!" and add 50 to a gold variable. Else → print "❤️ Health: " .. health.</div></div></li>
+      </ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="output">
+        <div class="out-label">Example Output (score=75, hasKey=true, health=100)</div>
+        <div class="out-line">
+          ✅ PASSED — Good job!<br>
+          🗝️ Secret door opened!<br>
+          💚 Perfect health bonus: +50 gold!
+        </div>
+      </div>
+      <div class="output" style="background:#fff5f5;border-color:#fca5a5;">
+        <div class="out-label" style="color:var(--red);">Example Output (score=40, hasKey=false, health=60)</div>
+        <div class="out-line" style="color:#991b1b;">
+          ❌ FAILED — Score too low!<br>
+          🔒 No key — secret door stays locked.<br>
+          ❤️ Health: 60
+        </div>
+      </div>
+      <div class="info" style="border-color:#ddd6fe;">
+        <div class="info-label" style="color:var(--accent2);">Bonus ⭐</div>
+        <div class="info-text" style="font-size:12px;line-height:1.7;">Add a <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">lives</code> variable. If lives == 0 AND score &lt; 60 → print "💀 No lives left — GAME OVER!" and set part transparency to 0.8.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S9 STUDENT GAME IDEAS ═══ -->
+<div class="slide" id="s9">
+  <div class="badge b-purple rv">STUDENT GAME IDEAS · Build These Yourself!</div>
+  <h2 class="h2 rv">8 Games You Can Build <span class="accent">Right Now</span></h2>
+  <p class="sub rv">Every one of these uses only what you already know — variables, operators, conditions, and Parts</p>
+
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);max-width:1080px;gap:10px;width:100%;" class="rv">
+
+    <div class="game-card">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#fef3c7,#fcd34d);">🚦</div>
+      <div class="game-body">
+        <div class="game-title">Traffic Light</div>
+        <div class="game-desc">3 Parts — Red, Yellow, Green. A variable controls which one is "active". If state == 1 → red glows. elseif state == 2 → yellow. else → green.</div>
+        <span class="game-tag" style="background:var(--blue-light);color:var(--blue);">if/elseif</span>
+        <span class="game-tag" style="background:var(--amber-light);color:var(--amber);">BrickColor</span>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#fee2e2,#fca5a5);">🩺</div>
+      <div class="game-body">
+        <div class="game-title">Health Monitor</div>
+        <div class="game-desc">One Part acts as a health bar. Its color changes based on health variable — green, yellow, red, black. Also prints a status message.</div>
+        <span class="game-tag" style="background:var(--green-light);color:var(--green);">elseif</span>
+        <span class="game-tag" style="background:var(--pink-light);color:var(--pink);">Transparency</span>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#dbeafe,#93c5fd);">🔐</div>
+      <div class="game-body">
+        <div class="game-title">Secret Room</div>
+        <div class="game-desc">A wall Part. If the player's password variable matches "open123" → set Transparency to 1 (invisible wall). Else → print "Wrong code!".</div>
+        <span class="game-tag" style="background:var(--accent-light);color:var(--accent2);">if/else</span>
+        <span class="game-tag" style="background:var(--teal-light);color:var(--teal);">Transparency</span>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#d1fae5,#6ee7b7);">🪙</div>
+      <div class="game-body">
+        <div class="game-title">Shop System</div>
+        <div class="game-desc">Player has gold variable. If gold >= itemCost → print "Purchased!" and subtract gold. Else → print "Not enough gold! Need X more."</div>
+        <span class="game-tag" style="background:var(--amber-light);color:var(--amber);">if/else</span>
+        <span class="game-tag" style="background:var(--blue-light);color:var(--blue);">math ops</span>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#fce7f3,#f9a8d4);">🏅</div>
+      <div class="game-body">
+        <div class="game-title">Score Ranker</div>
+        <div class="game-desc">Player finishes a level. Script checks score — if 90+ print Gold medal and turn a Part gold. elseif 70+ Silver. elseif 50+ Bronze. Else Try Again.</div>
+        <span class="game-tag" style="background:var(--accent-light);color:var(--accent2);">elseif chain</span>
+        <span class="game-tag" style="background:var(--orange-light);color:var(--orange);">BrickColor</span>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#ccfbf1,#5eead4);">🌦️</div>
+      <div class="game-body">
+        <div class="game-title">Weather System</div>
+        <div class="game-desc">A variable weatherCode (1–4). if 1 → Part is bright blue (clear), elseif 2 → grey (cloudy), elseif 3 → dark blue (rainy), else → white (snow).</div>
+        <span class="game-tag" style="background:var(--teal-light);color:var(--teal);">elseif</span>
+        <span class="game-tag" style="background:var(--blue-light);color:var(--blue);">Material</span>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#ede9fe,#c4b5fd);">⚔️</div>
+      <div class="game-body">
+        <div class="game-title">Battle Result</div>
+        <div class="game-desc">playerAttack vs enemyHealth. If playerAttack > enemyHealth → "Enemy defeated!" and turn Part green. Else → "Enemy survived!" and Part stays red.</div>
+        <span class="game-tag" style="background:var(--red-light);color:var(--red);">if/else</span>
+        <span class="game-tag" style="background:var(--green-light);color:var(--green);">comparison</span>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#ffedd5,#fed7aa);">🚀</div>
+      <div class="game-body">
+        <div class="game-title">Launch Pad</div>
+        <div class="game-desc">A Part checks if fuelLevel > 0 AND hasLaunchCode is true. If both → "🚀 Launch!" Part turns neon orange. Else → print which condition failed.</div>
+        <span class="game-tag" style="background:var(--green-light);color:var(--green);">and / or</span>
+        <span class="game-tag" style="background:var(--orange-light);color:var(--orange);">Neon</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ S10 HOW TO BUILD A GAME IDEA ═══ -->
+<div class="slide" id="s10">
+  <div class="badge b-teal rv">STUDENT GUIDE · HOW TO BUILD ANY GAME IDEA</div>
+  <h2 class="h2 rv">3 Questions — Design Any Game</h2>
+  <p class="sub rv">Before writing a single line of code, answer these three questions. Every game starts here.</p>
+
+  <div class="three-col rv" style="max-width:980px;">
+    <div class="card" style="border-color:#bfdbfe;">
+      <div class="ct ct-blue"></div>
+      <div style="font-size:36px;margin:8px 0 12px;">❓</div>
+      <div class="card-label" style="color:var(--blue);">Question 1</div>
+      <div class="card-title" style="font-size:16px;">What are the variables?</div>
+      <div class="card-text" style="font-size:13px;line-height:1.7;">What information does the game need to track? Health? Score? Level? Coins? Write them all as variables first — before anything else.</div>
+      <div style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--blue-light);padding:8px 10px;border-radius:6px;line-height:1.9;color:var(--blue);">
+        local health = 100<br>
+        local score = 0<br>
+        local hasKey = false
+      </div>
+    </div>
+
+    <div class="card" style="border-color:#fcd34d;">
+      <div class="ct ct-amber"></div>
+      <div style="font-size:36px;margin:8px 0 12px;">🔀</div>
+      <div class="card-label" style="color:var(--amber);">Question 2</div>
+      <div class="card-title" style="font-size:16px;">What are the conditions?</div>
+      <div class="card-text" style="font-size:13px;line-height:1.7;">What decisions does the game make? "If score is high enough...", "If the player has the key...", "If health runs out...". These become your if/elseif/else blocks.</div>
+      <div style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--amber-light);padding:8px 10px;border-radius:6px;line-height:1.9;color:var(--amber);">
+        if health &lt;= 0 then<br>
+        &nbsp;&nbsp;-- game over<br>
+        end
+      </div>
+    </div>
+
+    <div class="card" style="border-color:#a7f3d0;">
+      <div class="ct ct-green"></div>
+      <div style="font-size:36px;margin:8px 0 12px;">✨</div>
+      <div class="card-label" style="color:var(--green);">Question 3</div>
+      <div class="card-title" style="font-size:16px;">What changes in the world?</div>
+      <div class="card-text" style="font-size:13px;line-height:1.7;">What does the player see happen? Part color changes, transparency, size, position? This is where your Lua connects to the 3D world.</div>
+      <div style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--green-light);padding:8px 10px;border-radius:6px;line-height:1.9;color:var(--green);">
+        part.BrickColor =<br>
+        &nbsp;&nbsp;BrickColor.new("Red")<br>
+        part.Transparency = 0.5
+      </div>
+    </div>
+  </div>
+
+  <div class="divr rv" style="margin-top:18px;"><div class="divr-line"></div><div class="divr-text">Example — Traffic Light designed with 3 questions</div><div class="divr-line"></div></div>
+
+  <div style="display:flex;gap:12px;max-width:900px;width:100%;justify-content:center;flex-wrap:wrap;" class="rv">
+    <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:8px;padding:10px 16px;font-size:12px;color:var(--blue);"><strong>Variables:</strong> state = 1</div>
+    <div style="font-size:18px;color:var(--border2);display:flex;align-items:center;">→</div>
+    <div style="background:var(--amber-light);border:1px solid #fcd34d;border-radius:8px;padding:10px 16px;font-size:12px;color:var(--amber);"><strong>Condition:</strong> if state==1 → red</div>
+    <div style="font-size:18px;color:var(--border2);display:flex;align-items:center;">→</div>
+    <div style="background:var(--green-light);border:1px solid #a7f3d0;border-radius:8px;padding:10px 16px;font-size:12px;color:var(--green);"><strong>World change:</strong> Part = "Bright red"</div>
+  </div>
+</div>
+
+<!-- ═══ S11 WRAP UP ═══ -->
+<div class="slide" id="s11">
+  <div class="badge b-green rv">CLASS 4 · WRAP UP</div>
+  <h2 class="h2 rv">Class 4 — Complete ✅</h2>
+  <p class="sub rv">What you learned today and what's coming next</p>
+
+  <div class="two-col rv" style="max-width:1000px;">
+    <div>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:11px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;">
+          <div style="width:18px;height:18px;border-radius:5px;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;"><span style="color:#fff;font-size:11px;font-weight:800;">✓</span></div>
+          <div><div style="font-size:13px;font-weight:600;">if / then / end — basic condition</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);">Runs only when true, skips when false</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:11px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;">
+          <div style="width:18px;height:18px;border-radius:5px;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;"><span style="color:#fff;font-size:11px;font-weight:800;">✓</span></div>
+          <div><div style="font-size:13px;font-weight:600;">if / else / end — two outcomes</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);">True path OR false path</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:11px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;">
+          <div style="width:18px;height:18px;border-radius:5px;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;"><span style="color:#fff;font-size:11px;font-weight:800;">✓</span></div>
+          <div><div style="font-size:13px;font-weight:600;">elseif — multiple outcomes</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);">Lua stops at the first true condition</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:11px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;">
+          <div style="width:18px;height:18px;border-radius:5px;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;"><span style="color:#fff;font-size:11px;font-weight:800;">✓</span></div>
+          <div><div style="font-size:13px;font-weight:600;">and / or inside conditions</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);">Combine multiple checks in one line</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:11px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;">
+          <div style="width:18px;height:18px;border-radius:5px;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;"><span style="color:#fff;font-size:11px;font-weight:800;">✓</span></div>
+          <div><div style="font-size:13px;font-weight:600;">Conditions controlling Parts in 3D</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);">BrickColor · Transparency · Anchored</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:11px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;">
+          <div style="width:18px;height:18px;border-radius:5px;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;"><span style="color:#fff;font-size:11px;font-weight:800;">✓</span></div>
+          <div><div style="font-size:13px;font-weight:600;">Built the Colour Trap mini game</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);">3 Parts · 3 scripts · 3 different outcomes</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="info" style="border-color:#a7f3d0;">
+        <div class="info-label" style="color:var(--green);">Homework</div>
+        <div class="info-text" style="font-size:13px;line-height:1.65;">Pick <strong>one game idea</strong> from the 8 ideas slide. Answer the 3 design questions (variables, conditions, world changes). Write the script and bring it to next class to show.</div>
+      </div>
+      <div class="info" style="border-color:#bfdbfe;">
+        <div class="info-label" style="color:var(--blue);">Next Class — Loops</div>
+        <div class="info-text" style="font-size:13px;line-height:1.65;"><strong>for loops and while loops</strong> — run a block of code multiple times automatically. Combined with if/else this is where games really come alive.</div>
+      </div>
+      <div class="info" style="border-color:#ddd6fe;">
+        <div class="info-label" style="color:var(--accent2);">Think About It</div>
+        <div class="info-text" style="font-size:13px;">Name one thing in Fortnite, Minecraft, or Adopt Me that is controlled by an if/else decision.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HUD -->
+<div class="hud">
+  <button class="hbtn" onclick="go(-1)">← Prev</button>
+  <div class="dots" id="dots"></div>
+  <span class="hctr" id="ctr">01 / 12</span>
+  <button class="hbtn" onclick="go(1)">Next →</button>
+</div>
+
+<script>
+const N=12; let cur=0;
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<N;i++){const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.onclick=()=>goTo(i);dotsEl.appendChild(d);}
+function goTo(n){
+  document.getElementById('s'+cur).classList.remove('active');
+  document.getElementById('s'+cur).classList.add('exit');
+  setTimeout(()=>document.getElementById('s'+cur).classList.remove('exit'),320);
+  cur=n;
+  document.getElementById('s'+cur).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+  const l=String(cur+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+  document.getElementById('ctr').textContent=l;
+  document.getElementById('topNum').textContent=l;
+}
+function go(d){const n=Math.max(0,Math.min(N-1,cur+d));if(n!==cur)goTo(n);}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+function toggleFS(){
+  if(!document.fullscreenElement)document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+</script>
+</body>
+</html>

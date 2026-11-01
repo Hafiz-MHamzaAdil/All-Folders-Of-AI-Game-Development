@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glass Bridge Game — Lua Script</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f4f0; --surface:#fff; --border:#e2e0d8; --border2:#d0cecc;
+  --text:#1a1a2e; --muted:#7a7880; --muted2:#a09ea8;
+  --accent:#4f46e5; --accent-light:#ede9fe; --accent2:#7c3aed;
+  --green:#059669; --green-light:#d1fae5;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --red:#dc2626; --red-light:#fee2e2;
+  --blue:#2563eb; --blue-light:#dbeafe;
+  --teal:#0d9488; --teal-light:#ccfbf1;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;padding:36px 44px 56px;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,#c8c6d0 1px,transparent 1px);background-size:28px 28px;opacity:.38;pointer-events:none;z-index:0;}
+.page{position:relative;z-index:1;max-width:1060px;margin:0 auto;}
+
+/* HEADER */
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:26px;flex-wrap:wrap;gap:16px;}
+.course-tag{display:inline-flex;align-items:center;gap:6px;background:var(--red-light);border:1px solid #fca5a5;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:700;color:var(--red);letter-spacing:.5px;margin-bottom:10px;}
+.main-title{font-size:clamp(26px,4vw,44px);font-weight:900;color:var(--text);line-height:1.1;letter-spacing:-.5px;}
+.main-title span{color:var(--accent);}
+.main-sub{font-size:15px;color:var(--muted);margin-top:7px;font-weight:500;}
+.meta-pills{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 13px;font-size:12px;color:var(--muted);}
+.pill strong{color:var(--text);font-weight:700;}
+
+/* SECTION */
+.sec{margin-bottom:24px;}
+.sec-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* LAYOUT */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+
+/* GAME HERO */
+.game-hero{background:linear-gradient(135deg,#0f0f1a,#1a0a2e);border:1px solid #4c2d6e;border-radius:16px;padding:22px 28px;display:flex;gap:22px;align-items:center;margin-bottom:24px;}
+.gh-icon{font-size:52px;flex-shrink:0;}
+.gh-title{font-size:clamp(20px,3vw,32px);font-weight:900;color:#fff;letter-spacing:-.5px;margin-bottom:5px;}
+.gh-sub{font-size:13px;color:#94a3b8;line-height:1.6;}
+.gh-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+.gtag{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;font-family:'JetBrains Mono',monospace;}
+
+/* INFO */
+.info{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.info-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.info-text{font-size:12.5px;color:var(--muted);line-height:1.65;}
+
+/* CODE */
+.code-wrap{background:#12131f;border:1px solid #313244;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.12);}
+.code-hdr{background:#0a0b14;padding:9px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #313244;flex-wrap:wrap;gap:6px;}
+.code-ttl{font-size:9px;font-weight:700;letter-spacing:2px;color:#89b4fa;text-transform:uppercase;}
+.code-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:4px;}
+.cb1{background:rgba(37,99,235,.25);  color:#93c5fd;}
+.cb2{background:rgba(124,58,237,.25); color:#c4b5fd;}
+.cb3{background:rgba(5,150,105,.25);  color:#6ee7b7;}
+.cb4{background:rgba(217,119,6,.25);  color:#fcd34d;}
+.cb5{background:rgba(220,38,38,.25);  color:#fca5a5;}
+.code-body{padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.0;}
+.ck{color:#bb9af7;font-weight:700;} .cs{color:#9ece6a;font-weight:600;} .cf{color:#e0af68;font-weight:600;} .cv{color:#7dcfff;} .cc{color:#565f89;font-style:italic;} .cp{color:#f7768e;}
+.co{color:#ff9e64;}
+
+/* BRIDGE VISUAL */
+.bridge{display:flex;flex-direction:column;gap:8px;align-items:center;padding:20px;background:linear-gradient(180deg,#0f172a,#1e1b4b);border-radius:14px;border:1px solid #312e81;}
+.bridge-row{display:flex;gap:10px;align-items:center;}
+.bridge-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:#64748b;min-width:40px;text-align:right;}
+.glass-safe{width:70px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid #7dd3fc;background:rgba(125,211,252,.15);color:#7dd3fc;font-family:'JetBrains Mono',monospace;}
+.glass-fake{width:70px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid rgba(125,211,252,.25);background:rgba(125,211,252,.04);color:rgba(125,211,252,.4);font-family:'JetBrains Mono',monospace;}
+.bridge-arrow{font-size:14px;color:#334155;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;}
+.ct{height:3px;position:absolute;top:0;left:0;right:0;border-radius:12px 12px 0 0;}
+.ct-blue{background:var(--blue);} .ct-purple{background:var(--accent2);}
+.ct-green{background:var(--green);} .ct-red{background:var(--red);}
+.ct-amber{background:var(--amber);} .ct-teal{background:var(--teal);}
+.card-icon{font-size:20px;margin-bottom:6px;margin-top:4px;}
+.card-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.card-text{font-size:11.5px;color:var(--muted);line-height:1.55;}
+
+/* OUTPUT */
+.output{background:#f0fff4;border:1px solid #6ee7b7;border-radius:10px;padding:13px 16px;}
+.out-label{font-size:10px;font-weight:700;color:var(--green);letter-spacing:1.5px;margin-bottom:8px;}
+.out-line{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#065f46;line-height:2.1;}
+
+/* STEP */
+.steps{list-style:none;}
+.step{display:flex;gap:14px;align-items:flex-start;padding:11px 16px;margin-bottom:7px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.snum{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:900;flex-shrink:0;}
+.n1{background:var(--blue-light);color:var(--blue);}
+.n2{background:var(--accent-light);color:var(--accent2);}
+.n3{background:var(--amber-light);color:var(--amber);}
+.n4{background:var(--green-light);color:var(--green);}
+.n5{background:var(--red-light);color:var(--red);}
+.stitle{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.sdesc{font-size:11.5px;color:var(--muted);line-height:1.45;}
+
+/* BONUS */
+.bonus{background:linear-gradient(135deg,#fdf4ff,#ede9fe);border:1px solid #ddd6fe;border-radius:12px;padding:18px 22px;}
+
+/* FOOTER */
+.footer{text-align:center;padding-top:18px;border-top:1px solid var(--border);font-size:12px;color:var(--muted2);margin-top:8px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <div class="course-tag">CLASS 4 · MINI GAME · CanCollide + if/else</div>
+    <h1 class="main-title">🪟 <span>Glass Bridge</span> Game</h1>
+    <p class="main-sub">Squid Game inspired — step on the wrong glass and you fall!</p>
+  </div>
+  <div class="meta-pills">
+    <div class="pill">📦 <strong>ServerScriptService</strong></div>
+    <div class="pill">🔀 <strong>if / else · CanCollide</strong></div>
+    <div class="pill">⏱ <strong>10 min to build</strong></div>
+  </div>
+</div>
+
+<!-- GAME HERO -->
+<div class="game-hero">
+  <div class="gh-icon">🪟</div>
+  <div>
+    <div class="gh-title">Glass Bridge — Squid Game Style</div>
+    <div class="gh-sub">5 rows of 2 glass panels. One panel in each row is safe (CanCollide = true — player can stand). The other is fake glass (CanCollide = false — player falls through). The script randomly picks which side is safe in each row using math.random() and if/else.</div>
+    <div class="gh-tags">
+      <span class="gtag" style="background:rgba(79,70,229,.2);color:#a5b4fc;">CanCollide</span>
+      <span class="gtag" style="background:rgba(5,150,105,.2);color:#6ee7b7;">if / else</span>
+      <span class="gtag" style="background:rgba(245,158,11,.2);color:#fcd34d;">math.random()</span>
+      <span class="gtag" style="background:rgba(14,165,233,.2);color:#7dd3fc;">Transparency</span>
+      <span class="gtag" style="background:rgba(168,85,247,.2);color:#d8b4fe;">for loop</span>
+    </div>
+  </div>
+</div>
+
+<!-- BRIDGE VISUAL + HOW IT WORKS -->
+<div class="sec">
+  <div class="sec-label">How the Bridge Looks</div>
+  <div class="two-col">
+
+    <!-- Visual -->
+    <div class="bridge">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#475569;margin-bottom:8px;letter-spacing:2px;">BRIDGE — TOP VIEW</div>
+      <div class="bridge-row">
+        <div class="bridge-label">ROW 1</div>
+        <div class="glass-safe">SAFE ✓</div>
+        <div class="glass-fake">FAKE ✗</div>
+      </div>
+      <div class="bridge-arrow">↓</div>
+      <div class="bridge-row">
+        <div class="bridge-label">ROW 2</div>
+        <div class="glass-fake">FAKE ✗</div>
+        <div class="glass-safe">SAFE ✓</div>
+      </div>
+      <div class="bridge-arrow">↓</div>
+      <div class="bridge-row">
+        <div class="bridge-label">ROW 3</div>
+        <div class="glass-safe">SAFE ✓</div>
+        <div class="glass-fake">FAKE ✗</div>
+      </div>
+      <div class="bridge-arrow">↓</div>
+      <div class="bridge-row">
+        <div class="bridge-label">ROW 4</div>
+        <div class="glass-fake">FAKE ✗</div>
+        <div class="glass-safe">SAFE ✓</div>
+      </div>
+      <div class="bridge-arrow">↓</div>
+      <div class="bridge-row">
+        <div class="bridge-label">ROW 5</div>
+        <div class="glass-safe">SAFE ✓</div>
+        <div class="glass-fake">FAKE ✗</div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:#475569;font-family:'JetBrains Mono',monospace;">Safe side = random each time you press Play</div>
+    </div>
+
+    <!-- How it works -->
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="info" style="border-color:#bfdbfe;">
+        <div class="info-label" style="color:var(--blue);">How It Works</div>
+        <div class="info-text" style="font-size:12px;line-height:1.85;">
+          Every row has 2 Parts — Left and Right.<br><br>
+          The script uses <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--blue-light);padding:1px 5px;border-radius:3px;">math.random(1, 2)</code> to pick which side is safe.<br><br>
+          <strong>If safeSize == 1:</strong> Left panel → CanCollide = <span style="color:var(--green);font-weight:700;">true</span>, Right panel → CanCollide = <span style="color:var(--red);font-weight:700;">false</span><br><br>
+          <strong>Else (safeSize == 2):</strong> Right panel → CanCollide = <span style="color:var(--green);font-weight:700;">true</span>, Left panel → CanCollide = <span style="color:var(--red);font-weight:700;">false</span><br><br>
+          Safe glass looks bright and solid. Fake glass looks faded and transparent.
+        </div>
+      </div>
+      <div class="info" style="border-color:#fcd34d;">
+        <div class="info-label" style="color:var(--amber);">CanCollide — The Key Property</div>
+        <div class="info-text" style="font-size:12px;line-height:1.8;">
+          <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--amber-light);padding:1px 5px;border-radius:3px;">CanCollide = true</code> → Player stands on it — solid glass<br>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--red-light);color:var(--red);padding:1px 5px;border-radius:3px;">CanCollide = false</code> → Player falls straight through it!
+        </div>
+      </div>
+      <div class="info" style="border-color:#a7f3d0;">
+        <div class="info-label" style="color:var(--green);">Setup in Studio</div>
+        <div class="info-text" style="font-size:12px;line-height:1.85;">
+          Name Parts exactly:<br>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--green-light);padding:2px 6px;border-radius:3px;">Row1Left · Row1Right</code><br>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--green-light);padding:2px 6px;border-radius:3px;">Row2Left · Row2Right</code><br>
+          ... up to Row5Left · Row5Right<br><br>
+          Script goes in <strong>ServerScriptService</strong>.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETE SCRIPT -->
+<div class="sec">
+  <div class="sec-label">Complete Script — ServerScriptService → Script</div>
+  <div class="code-wrap">
+    <div class="code-hdr">
+      <span class="code-ttl">Glass Bridge — Full Game Script</span>
+      <span class="code-badge cb2">math.random · if/else · CanCollide · for loop</span>
+    </div>
+    <div class="code-body">
+<span class="cc">-- ══════════════════════════════════════</span><br>
+<span class="cc">--   GLASS BRIDGE GAME — Squid Game Style</span><br>
+<span class="cc">--   One safe panel per row, one fake</span><br>
+<span class="cc">-- ══════════════════════════════════════</span><br><br>
+
+<span class="cc">-- How many rows in the bridge</span><br>
+<span class="ck">local</span> <span class="cv">totalRows</span> = <span class="cs">5</span><br><br>
+
+<span class="cf">print</span>(<span class="cs">"🪟 Glass Bridge is being built..."</span>)<br>
+<span class="cf">print</span>(<span class="cs">"   "</span> .. <span class="cv">totalRows</span> .. <span class="cs">" rows · Choose wisely!"</span>)<br>
+<span class="cf">print</span>(<span class="cs">"════════════════════════════════"</span>)<br><br>
+
+<span class="cc">-- Loop through every row</span><br>
+<span class="ck">for</span> <span class="cv">row</span> = <span class="cs">1</span>, <span class="cv">totalRows</span> <span class="ck">do</span><br><br>
+
+&nbsp;&nbsp;<span class="cc">-- Get the two panels for this row</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">leftPanel</span>  = workspace[<span class="cs">"Row"</span> .. <span class="cv">row</span> .. <span class="cs">"Left"</span>]<br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">rightPanel</span> = workspace[<span class="cs">"Row"</span> .. <span class="cv">row</span> .. <span class="cs">"Right"</span>]<br><br>
+
+&nbsp;&nbsp;<span class="cc">-- Set both to glass look</span><br>
+&nbsp;&nbsp;<span class="cv">leftPanel</span>.<span class="cp">Material</span>  = Enum.Material.<span class="cf">Glass</span><br>
+&nbsp;&nbsp;<span class="cv">rightPanel</span>.<span class="cp">Material</span> = Enum.Material.<span class="cf">Glass</span><br>
+&nbsp;&nbsp;<span class="cv">leftPanel</span>.<span class="cp">Anchored</span>  = <span class="cs">true</span><br>
+&nbsp;&nbsp;<span class="cv">rightPanel</span>.<span class="cp">Anchored</span> = <span class="cs">true</span><br><br>
+
+&nbsp;&nbsp;<span class="cc">-- Randomly pick which side is safe (1 = left, 2 = right)</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">safeSide</span> = math.<span class="cf">random</span>(<span class="cs">1</span>, <span class="cs">2</span>)<br><br>
+
+&nbsp;&nbsp;<span class="cc">-- Apply CanCollide and color based on the result</span><br>
+&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">safeSide</span> == <span class="cs">1</span> <span class="ck">then</span><br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cc">-- Left is SAFE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">leftPanel</span>.<span class="cp">CanCollide</span>    = <span class="cs">true</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">leftPanel</span>.<span class="cp">BrickColor</span>    = BrickColor.<span class="cf">new</span>(<span class="cs">"Cyan"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">leftPanel</span>.<span class="cp">Transparency</span>  = <span class="cs">0.3</span><br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cc">-- Right is FAKE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">rightPanel</span>.<span class="cp">CanCollide</span>   = <span class="cs">false</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">rightPanel</span>.<span class="cp">BrickColor</span>   = BrickColor.<span class="cf">new</span>(<span class="cs">"Cyan"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">rightPanel</span>.<span class="cp">Transparency</span> = <span class="cs">0.7</span><br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"Row "</span> .. <span class="cv">row</span> .. <span class="cs">" → LEFT is safe"</span>)<br><br>
+
+&nbsp;&nbsp;<span class="ck">else</span><br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cc">-- Right is SAFE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">rightPanel</span>.<span class="cp">CanCollide</span>   = <span class="cs">true</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">rightPanel</span>.<span class="cp">BrickColor</span>   = BrickColor.<span class="cf">new</span>(<span class="cs">"Cyan"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">rightPanel</span>.<span class="cp">Transparency</span> = <span class="cs">0.3</span><br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cc">-- Left is FAKE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">leftPanel</span>.<span class="cp">CanCollide</span>    = <span class="cs">true</span> <span class="cc">-- NOTE: still true so it renders</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">leftPanel</span>.<span class="cp">CanCollide</span>    = <span class="cs">false</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">leftPanel</span>.<span class="cp">BrickColor</span>    = BrickColor.<span class="cf">new</span>(<span class="cs">"Cyan"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">leftPanel</span>.<span class="cp">Transparency</span>  = <span class="cs">0.7</span><br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"Row "</span> .. <span class="cv">row</span> .. <span class="cs">" → RIGHT is safe"</span>)<br><br>
+
+&nbsp;&nbsp;<span class="ck">end</span><br><br>
+<span class="ck">end</span><br><br>
+
+<span class="cf">print</span>(<span class="cs">"════════════════════════════════"</span>)<br>
+<span class="cf">print</span>(<span class="cs">"✅ Bridge ready! Good luck..."</span>)
+    </div>
+  </div>
+</div>
+
+<!-- OUTPUT + SETUP STEPS SIDE BY SIDE -->
+<div class="two-col sec">
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div class="sec-label" style="margin-bottom:6px;">How to Build in Studio</div>
+    <ul class="steps">
+      <li class="step"><div class="snum n1">1</div><div><div class="stitle">Open Roblox Studio → Baseplate</div><div class="sdesc">Raise the baseplate or add a platform high up — players need to fall when they step on fake glass.</div></div></li>
+      <li class="step"><div class="snum n2">2</div><div><div class="stitle">Add 10 Parts — 2 per row, 5 rows</div><div class="sdesc">Make them flat (e.g. Size 4, 0.5, 4). Place them side by side with a small gap between Left and Right panels.</div></div></li>
+      <li class="step"><div class="snum n3">3</div><div><div class="stitle">Name them exactly</div><div class="sdesc"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--amber-light);padding:1px 5px;border-radius:3px;">Row1Left, Row1Right, Row2Left, Row2Right</code> ... up to Row5. Names must match exactly — capital R, capital L or R at end.</div></div></li>
+      <li class="step"><div class="snum n4">4</div><div><div class="stitle">Add Script to ServerScriptService</div><div class="sdesc">Right-click ServerScriptService → Insert Object → Script. Paste the complete script. Press F5 to Play.</div></div></li>
+      <li class="step"><div class="snum n5">5</div><div><div class="stitle">Walk across — step on wrong glass, you fall!</div><div class="sdesc">Every time you press Play, math.random picks a new safe side. The answer changes every single game.</div></div></li>
+    </ul>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div class="sec-label" style="margin-bottom:6px;">Output Window</div>
+    <div class="output">
+      <div class="out-label">Output — example run</div>
+      <div class="out-line">
+        🪟 Glass Bridge is being built...<br>
+        &nbsp;&nbsp; 5 rows · Choose wisely!<br>
+        ════════════════════════════════<br>
+        Row 1 → LEFT is safe<br>
+        Row 2 → RIGHT is safe<br>
+        Row 3 → LEFT is safe<br>
+        Row 4 → LEFT is safe<br>
+        Row 5 → RIGHT is safe<br>
+        ════════════════════════════════<br>
+        ✅ Bridge ready! Good luck...
+      </div>
+    </div>
+
+    <div class="info" style="border-color:#bfdbfe;">
+      <div class="info-label" style="color:var(--blue);">What students see in the 3D world</div>
+      <div class="info-text" style="font-size:12px;line-height:1.8;">
+        Both panels look like glass — same color, same material.<br><br>
+        The <strong>safe one</strong> is slightly more solid (Transparency 0.3)<br>
+        The <strong>fake one</strong> is slightly more faded (Transparency 0.7)<br><br>
+        Both look like glass so it's still a guessing game — but a sharp eye might notice the difference!
+      </div>
+    </div>
+
+    <div class="info" style="border-color:#fcd34d;">
+      <div class="info-label" style="color:var(--amber);">math.random() — What It Does</div>
+      <div class="info-text" style="font-size:12px;line-height:1.8;">
+        <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--amber-light);padding:1px 5px;border-radius:3px;">math.random(1, 2)</code> randomly returns either <strong>1</strong> or <strong>2</strong> — like flipping a coin. Every time you press Play it picks again, so the bridge is different every round.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WHAT EACH PART DOES -->
+<div class="sec">
+  <div class="sec-label">Code Breakdown — Line by Line</div>
+  <div class="three-col">
+    <div class="card">
+      <div class="ct ct-blue"></div>
+      <div class="card-icon">🔁</div>
+      <div class="card-label" style="color:var(--blue);">for loop</div>
+      <div class="card-title">Repeats for every row</div>
+      <div class="card-text">Instead of writing the same code 5 times, the <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">for row = 1, totalRows</code> loop runs the same logic for row 1, 2, 3, 4, 5 automatically.</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-amber"></div>
+      <div class="card-icon">🎲</div>
+      <div class="card-label" style="color:var(--amber);">math.random(1,2)</div>
+      <div class="card-title">Randomly picks safe side</div>
+      <div class="card-text">Returns 1 or 2 randomly — like rolling a dice. 1 = left is safe, 2 = right is safe. Different every Play — so the bridge changes every game.</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-green"></div>
+      <div class="card-icon">✅</div>
+      <div class="card-label" style="color:var(--green);">CanCollide = true</div>
+      <div class="card-title">Safe glass — player stands</div>
+      <div class="card-text">The safe panel is solid. Player walks on it normally. Transparency 0.3 — looks bright and clear.</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-red"></div>
+      <div class="card-icon">💀</div>
+      <div class="card-label" style="color:var(--red);">CanCollide = false</div>
+      <div class="card-title">Fake glass — player falls</div>
+      <div class="card-text">The fake panel has no collision. Player falls straight through it. Transparency 0.7 — looks slightly faded but still glassy.</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-purple"></div>
+      <div class="card-icon">🔀</div>
+      <div class="card-label" style="color:var(--accent2);">if / else</div>
+      <div class="card-title">Decides which side</div>
+      <div class="card-text">If safeSide == 1 → left gets CanCollide true. Else → right gets CanCollide true. Every row gets its own random decision.</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-teal"></div>
+      <div class="card-icon">🪟</div>
+      <div class="card-label" style="color:var(--teal);">workspace[ ]</div>
+      <div class="card-title">Find Part by name</div>
+      <div class="card-text"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;">workspace["Row1Left"]</code> finds the Part named Row1Left. Using <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">.. row ..</code> builds the name dynamically inside the loop.</div>
+    </div>
+  </div>
+</div>
+
+<!-- BONUS -->
+<div class="sec">
+  <div class="two-col">
+    <div class="bonus">
+      <div style="font-size:14px;font-weight:800;color:var(--accent2);margin-bottom:8px;">⭐ Make it Harder — Identical Glass</div>
+      <div style="font-size:12.5px;color:#4c1d95;line-height:1.7;">
+        Make both panels look <strong>completely identical</strong> — same transparency, same color. Now the player truly cannot tell. Change both transparency values to <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:#ede9fe;padding:1px 5px;border-radius:3px;">0.4</code> for safe and fake. Pure guessing game — just like the real Squid Game!
+      </div>
+    </div>
+    <div class="bonus" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#a7f3d0;">
+      <div style="font-size:14px;font-weight:800;color:var(--green);margin-bottom:8px;">⭐ Add More Rows — Change 1 Line</div>
+      <div style="font-size:12.5px;color:#14532d;line-height:1.7;">
+        Just change <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:#dcfce7;padding:1px 5px;border-radius:3px;">local totalRows = 5</code> to any number — 8, 10, 20. The loop handles the rest automatically. Add more Parts in Studio with the matching names and the script works with any number of rows.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">SMIT · AI & Game Creators · Class 4 · Glass Bridge Game — CanCollide + if/else + math.random()</div>
+</div>
+</body>
+</html>

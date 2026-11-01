@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 10 — Sounds in Roblox</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f4f0; --surface:#fff; --border:#e2e0d8;
+  --text:#1a1a2e; --muted:#6b6876;
+  --accent:#4f46e5; --accent-light:#ede9fe; --accent2:#7c3aed;
+  --green:#059669; --green-light:#d1fae5;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --red:#dc2626; --red-light:#fee2e2;
+  --blue:#2563eb; --blue-light:#dbeafe;
+  --teal:#0d9488; --teal-light:#ccfbf1;
+  --pink:#db2777; --pink-light:#fce7f3;
+  --orange:#ea580c; --orange-light:#ffedd5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;padding:40px 48px 64px;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,#c8c6d0 1px,transparent 1px);background-size:28px 28px;opacity:.35;pointer-events:none;z-index:0;}
+.page{position:relative;z-index:1;max-width:1080px;margin:0 auto;}
+
+.pg-tag{display:inline-flex;align-items:center;gap:6px;background:var(--pink-light);border:1px solid #fbcfe8;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:var(--pink);letter-spacing:.5px;margin-bottom:10px;}
+.pg-title{font-size:clamp(28px,4vw,46px);font-weight:900;color:var(--text);line-height:1.1;letter-spacing:-.5px;margin-bottom:6px;}
+.pg-title span{color:var(--accent);}
+.pg-sub{font-size:14px;color:var(--muted);font-weight:500;margin-bottom:32px;}
+
+.sec{margin-bottom:30px;}
+.sec-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.sec-title::after{content:'';flex:1;height:2px;background:var(--border);}
+.sec-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+.divider{height:1px;background:var(--border);margin:26px 0;}
+
+.two-col  {display:grid;grid-template-columns:1fr 1fr;    gap:16px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.four-col {display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+/* CODE */
+.code-wrap{background:#12131f;border:1px solid #2a2d45;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+.code-hdr{background:#0a0b14;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2a2d45;flex-wrap:wrap;gap:6px;}
+.code-ttl{font-size:10px;font-weight:700;letter-spacing:2px;color:#7aa2f7;text-transform:uppercase;}
+.code-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:4px;}
+.cb-blue  {background:rgba(122,162,247,.2);color:#7aa2f7;}
+.cb-green {background:rgba(158,206,106,.2);color:#9ece6a;}
+.cb-amber {background:rgba(224,175,104,.2);color:#e0af68;}
+.cb-purple{background:rgba(187,154,247,.2);color:#bb9af7;}
+.cb-red   {background:rgba(247,118,142,.2);color:#f7768e;}
+.cb-teal  {background:rgba(115,218,202,.2);color:#73daca;}
+.cb-pink  {background:rgba(245,194,231,.2);color:#f5c2e7;}
+.code-body{padding:20px 22px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.1;}
+.ck{color:#bb9af7;font-weight:700;}
+.cs{color:#9ece6a;font-weight:600;}
+.cf{color:#e0af68;font-weight:600;}
+.cv{color:#7dcfff;}
+.cc{color:#565f89;font-style:italic;}
+.cp{color:#f7768e;}
+.co{color:#ff9e64;}
+
+/* OUTPUT */
+.output{background:#f0fff4;border:1px solid #6ee7b7;border-radius:10px;padding:14px 18px;}
+.out-label{font-size:10px;font-weight:700;color:var(--green);letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase;}
+.out-line{font-family:'JetBrains Mono',monospace;font-size:13px;color:#065f46;line-height:2.2;}
+.out-sep{height:1px;background:#a7f3d0;margin:6px 0;}
+
+/* NOTE */
+.note{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;}
+.note-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.note-text{font-size:13px;color:var(--muted);line-height:1.65;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 16px;position:relative;overflow:hidden;}
+.ct{height:3px;position:absolute;top:0;left:0;right:0;border-radius:12px 12px 0 0;}
+.ct-blue{background:var(--blue);} .ct-purple{background:var(--accent2);}
+.ct-amber{background:var(--amber);} .ct-green{background:var(--green);}
+.ct-red{background:var(--red);} .ct-teal{background:var(--teal);}
+.ct-pink{background:var(--pink);} .ct-orange{background:var(--orange);}
+.card-icon{font-size:22px;margin-bottom:7px;margin-top:4px;}
+.card-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.card-text{font-size:12.5px;color:var(--muted);line-height:1.55;}
+
+/* STEPS */
+.steps{list-style:none;}
+.step{display:flex;gap:14px;align-items:flex-start;padding:12px 16px;margin-bottom:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.snum{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:900;flex-shrink:0;}
+.n1{background:var(--blue-light);color:var(--blue);}
+.n2{background:var(--accent-light);color:var(--accent2);}
+.n3{background:var(--amber-light);color:var(--amber);}
+.n4{background:var(--green-light);color:var(--green);}
+.n5{background:var(--pink-light);color:var(--pink);}
+.stitle{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.sdesc{font-size:12px;color:var(--muted);line-height:1.45;}
+
+/* CHECKLIST */
+.chklist{list-style:none;}
+.ci{display:flex;align-items:flex-start;gap:12px;padding:10px 16px;margin-bottom:6px;background:var(--surface);border:1px solid var(--border);border-radius:8px;}
+.ci-box{width:18px;height:18px;border-radius:5px;flex-shrink:0;margin-top:1px;background:var(--green);display:flex;align-items:center;justify-content:center;}
+.ci-box::after{content:'✓';font-size:11px;color:#fff;font-weight:800;}
+.ci-title{font-size:13px;font-weight:600;color:var(--text);}
+.ci-sub{font-size:11px;color:var(--muted);margin-top:1px;font-family:'JetBrains Mono',monospace;}
+
+/* PROPERTY TABLE */
+.prop-table{width:100%;border-collapse:separate;border-spacing:0 3px;}
+.prop-table th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:7px 16px;text-align:left;}
+.prop-table td{padding:11px 16px;font-size:13px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.prop-table tr td:first-child{border-left:1px solid var(--border);border-radius:8px 0 0 8px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:#bb9af7;}
+.prop-table tr td:last-child{border-right:1px solid var(--border);border-radius:0 8px 8px 0;font-size:12px;color:var(--muted);}
+
+/* SOUND ID TABLE */
+.sid-table{width:100%;border-collapse:separate;border-spacing:0 3px;}
+.sid-table th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:7px 16px;text-align:left;}
+.sid-table td{padding:11px 16px;font-size:13px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.sid-table tr td:first-child{border-left:1px solid var(--border);border-radius:8px 0 0 8px;font-size:16px;width:40px;}
+.sid-table tr td:last-child{border-right:1px solid var(--border);border-radius:0 8px 8px 0;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent2);}
+
+ic{font-family:'JetBrains Mono',monospace;font-size:12px;background:#e8e6f0;padding:1px 6px;border-radius:4px;color:#4f46e5;font-weight:600;}
+.bonus{background:linear-gradient(135deg,#fdf4ff,#ede9fe);border:1px solid #ddd6fe;border-radius:12px;padding:18px 22px;}
+.footer{text-align:center;padding-top:18px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);margin-top:8px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="pg-tag">CLASS 10 · SOUNDS IN ROBLOX</div>
+<h1 class="pg-title">🔊 Sound — <span>Making Your Game Feel Alive</span></h1>
+<p class="pg-sub">Adding sound objects · Playing sounds with code · Background music · Sound on events</p>
+
+<!-- ═══════════════════════
+  SECTION 1 — WHAT IS A SOUND IN ROBLOX
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">How Sound Works in Roblox</div>
+  <p class="sec-sub">Sound in Roblox is an object — just like a Part. You insert a <ic>Sound</ic> object, give it a SoundId, and play it with code or have it play automatically.</p>
+
+  <div class="four-col">
+    <div class="card">
+      <div class="ct ct-blue"></div>
+      <div class="card-icon">🔊</div>
+      <div class="card-label" style="color:var(--blue);">Sound Object</div>
+      <div class="card-title">The sound itself</div>
+      <div class="card-text">Insert a Sound object inside a Part, in Workspace, or in SoundService for background music</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-amber"></div>
+      <div class="card-icon">🆔</div>
+      <div class="card-label" style="color:var(--amber);">SoundId</div>
+      <div class="card-title">Which sound to play</div>
+      <div class="card-text">Every Roblox audio has an ID number. Set <ic>SoundId</ic> to <ic>rbxassetid://NUMBER</ic></div>
+    </div>
+    <div class="card">
+      <div class="ct ct-green"></div>
+      <div class="card-icon">▶️</div>
+      <div class="card-label" style="color:var(--green);">Play / Stop</div>
+      <div class="card-title">Control with code</div>
+      <div class="card-text">Call <ic>sound:Play()</ic> to start and <ic>sound:Stop()</ic> to stop it at any time</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-pink"></div>
+      <div class="card-icon">🎵</div>
+      <div class="card-label" style="color:var(--pink);">Looped</div>
+      <div class="card-title">Background music</div>
+      <div class="card-text">Set <ic>Looped = true</ic> so the sound repeats forever — perfect for background music</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  SECTION 2 — TWO WAYS TO ADD SOUND
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Two Ways to Add a Sound</div>
+
+  <div class="two-col">
+    <div>
+      <div class="note" style="border-color:#bfdbfe;margin-bottom:12px;">
+        <div class="note-label" style="color:var(--blue);">Way 1 — Insert manually in Studio</div>
+        <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+          1. In Explorer, right-click a Part → Insert Object → <strong>Sound</strong><br>
+          2. Select the Sound in Explorer<br>
+          3. In Properties find <strong>SoundId</strong><br>
+          4. Type: <ic>rbxassetid://9120386436</ic><br>
+          5. Tick <strong>Playing</strong> to auto-play on game start<br>
+          6. Tick <strong>Looped</strong> for background music
+        </div>
+      </div>
+      <div class="note" style="border-color:#ddd6fe;">
+        <div class="note-label" style="color:var(--accent2);">Way 2 — Create from code</div>
+        <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+          Use <ic>Instance.new("Sound")</ic> to create a Sound in Lua — full control over when it plays, volume, and looping. This is the better way when sound is triggered by events.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Create and play a sound from code</span>
+        <span class="code-badge cb-blue">Instance.new Sound</span>
+      </div>
+      <div class="code-body">
+<span class="cc">-- Create a sound object</span><br>
+<span class="ck">local</span> <span class="cv">sound</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Sound"</span>)<br>
+<span class="cv">sound</span>.Parent  <span class="co">=</span> workspace<br>
+<span class="cv">sound</span>.SoundId <span class="co">=</span> <span class="cs">"rbxassetid://9120386436"</span><br>
+<span class="cv">sound</span>.Volume  <span class="co">=</span> <span class="cs">0.5</span><br>
+<span class="cv">sound</span>.Looped  <span class="co">=</span> <span class="cs">false</span><br><br>
+<span class="cc">-- Play it</span><br>
+<span class="cv">sound</span>:<span class="cf">Play</span>()<br>
+<span class="cf">print</span>(<span class="cs">"🔊 Sound playing!"</span>)<br><br>
+<span class="cc">-- Stop it</span><br>
+task.<span class="cf">wait</span>(<span class="cs">3</span>)<br>
+<span class="cv">sound</span>:<span class="cf">Stop</span>()<br>
+<span class="cf">print</span>(<span class="cs">"🔇 Sound stopped."</span>)
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  SECTION 3 — SOUND PROPERTIES
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Sound Properties</div>
+
+  <table class="prop-table">
+    <thead>
+      <tr><th>Property</th><th>Type</th><th>Example</th><th>What It Does</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>SoundId</td><td>String</td><td>"rbxassetid://9120386436"</td><td>Which audio file to use</td></tr>
+      <tr><td>Volume</td><td>Number 0–10</td><td>0.5</td><td>How loud — 0 is silent, 1 is full, 10 is very loud</td></tr>
+      <tr><td>Looped</td><td>Boolean</td><td>true</td><td>true = plays forever, false = plays once</td></tr>
+      <tr><td>Playing</td><td>Boolean</td><td>true</td><td>Set to true to auto-play when the game starts</td></tr>
+      <tr><td>Pitch</td><td>Number</td><td>1.5</td><td>Speed and pitch — above 1 is higher, below 1 is lower</td></tr>
+      <tr><td>TimePosition</td><td>Number</td><td>0</td><td>Where in the track to start playing (in seconds)</td></tr>
+      <tr><td>RollOffMaxDistance</td><td>Number</td><td>50</td><td>How far away players can still hear the sound</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  SECTION 4 — FREE SOUND IDS
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Free Sound IDs — Ready to Use</div>
+  <p class="sec-sub">These are free audio assets from the Roblox library. Paste any of these as the SoundId.</p>
+
+  <div class="two-col">
+    <table class="sid-table">
+      <thead><tr><th></th><th>Sound</th><th>SoundId Number</th></tr></thead>
+      <tbody>
+        <tr><td>🪙</td><td>Coin pickup</td><td>4770482860</td></tr>
+        <tr><td>💥</td><td>Explosion</td><td>3208080500</td></tr>
+        <tr><td>🏆</td><td>Win / Victory</td><td>4612355792</td></tr>
+        <tr><td>💀</td><td>Death / Game Over</td><td>5989549070</td></tr>
+        <tr><td>🎵</td><td>Background music</td><td>9120386436</td></tr>
+        <tr><td>🚪</td><td>Door open</td><td>6042053626</td></tr>
+        <tr><td>🔥</td><td>Fire / Lava</td><td>1340851889</td></tr>
+        <tr><td>💨</td><td>Whoosh / Jump</td><td>5853106423</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note" style="border-color:#fcd34d;">
+      <div class="note-label" style="color:var(--amber);">How to find more sounds</div>
+      <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+        1. In Roblox Studio open the <strong>Toolbox</strong><br>
+        2. Change the dropdown from "Models" to <strong>"Audio"</strong><br>
+        3. Search for any sound — "coin", "explosion", "music"<br>
+        4. Click a result to preview it<br>
+        5. Right-click → Copy Asset ID<br>
+        6. Paste it as: <ic>rbxassetid://PASTE_ID_HERE</ic>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  SECTION 5 — BACKGROUND MUSIC
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Background Music — Plays the Whole Game</div>
+  <p class="sec-sub">Put this in <strong>ServerScriptService</strong>. The music starts when the game loads and loops forever.</p>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Background music</span>
+        <span class="code-badge cb-pink">Looped music</span>
+      </div>
+      <div class="code-body">
+<span class="cc">-- Background music — plays and loops</span><br>
+<span class="ck">local</span> <span class="cv">music</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Sound"</span>)<br>
+<span class="cv">music</span>.Parent  <span class="co">=</span> workspace<br>
+<span class="cv">music</span>.SoundId <span class="co">=</span> <span class="cs">"rbxassetid://9120386436"</span><br>
+<span class="cv">music</span>.Volume  <span class="co">=</span> <span class="cs">0.4</span><br>
+<span class="cv">music</span>.Looped  <span class="co">=</span> <span class="cs">true</span><br><br>
+<span class="cv">music</span>:<span class="cf">Play</span>()<br>
+<span class="cf">print</span>(<span class="cs">"🎵 Music started!"</span>)
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">🎵 Music started!</div>
+      </div>
+      <div class="note" style="border-color:#fbcfe8;">
+        <div class="note-label" style="color:var(--pink);">SoundService — Better for music</div>
+        <div class="note-text">For background music, set <ic>Parent = game:GetService("SoundService")</ic> instead of workspace. Music in SoundService plays at the same volume everywhere on the map regardless of where the player is.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  SECTION 6 — SOUND ON EVENTS
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Sound on Events — Play on Touch, Click, Damage</div>
+  <p class="sec-sub">The most common use — trigger a sound effect when something happens in the game.</p>
+
+  <div class="three-col">
+    <!-- COIN SOUND -->
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">Coin pickup sound</span>
+        <span class="code-badge cb-amber">Touched</span>
+      </div>
+      <div class="code-body" style="font-size:13px;">
+<span class="ck">local</span> <span class="cv">part</span> <span class="co">=</span> script.Parent<br><br>
+<span class="cc">-- Create the sound</span><br>
+<span class="ck">local</span> <span class="cv">coinSound</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Sound"</span>)<br>
+<span class="cv">coinSound</span>.Parent  <span class="co">=</span> <span class="cv">part</span><br>
+<span class="cv">coinSound</span>.SoundId <span class="co">=</span> <span class="cs">"rbxassetid://4770482860"</span><br>
+<span class="cv">coinSound</span>.Volume  <span class="co">=</span> <span class="cs">1</span><br><br>
+<span class="cv">part</span>.Touched:<span class="cf">Connect</span>(<span class="ck">function</span>(<span class="cv">hit</span>)<br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">hum</span> <span class="co">=</span> <span class="cv">hit</span>.Parent:<span class="cf">FindFirstChild</span>(<span class="cs">"Humanoid"</span>)<br>
+&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">hum</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">coinSound</span>:<span class="cf">Play</span>()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🪙 ding!"</span>)<br>
+&nbsp;&nbsp;<span class="ck">end</span><br>
+<span class="ck">end</span>)
+      </div>
+    </div>
+
+    <!-- DAMAGE SOUND -->
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">Damage / lava sound</span>
+        <span class="code-badge cb-red">Touched</span>
+      </div>
+      <div class="code-body" style="font-size:13px;">
+<span class="ck">local</span> <span class="cv">part</span>     <span class="co">=</span> script.Parent<br>
+<span class="ck">local</span> <span class="cv">debounce</span> <span class="co">=</span> <span class="cs">false</span><br><br>
+<span class="ck">local</span> <span class="cv">dmgSound</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Sound"</span>)<br>
+<span class="cv">dmgSound</span>.Parent  <span class="co">=</span> <span class="cv">part</span><br>
+<span class="cv">dmgSound</span>.SoundId <span class="co">=</span> <span class="cs">"rbxassetid://1340851889"</span><br>
+<span class="cv">dmgSound</span>.Volume  <span class="co">=</span> <span class="cs">0.8</span><br><br>
+<span class="cv">part</span>.Touched:<span class="cf">Connect</span>(<span class="ck">function</span>(<span class="cv">hit</span>)<br>
+&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">debounce</span> <span class="ck">then</span> <span class="ck">return</span> <span class="ck">end</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">hum</span> <span class="co">=</span> <span class="cv">hit</span>.Parent:<span class="cf">FindFirstChild</span>(<span class="cs">"Humanoid"</span>)<br>
+&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">hum</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">debounce</span> <span class="co">=</span> <span class="cs">true</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">dmgSound</span>:<span class="cf">Play</span>()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">hum</span>.<span class="cp">Health</span> <span class="co">-=</span> <span class="cs">25</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;task.<span class="cf">wait</span>(<span class="cs">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">debounce</span> <span class="co">=</span> <span class="cs">false</span><br>
+&nbsp;&nbsp;<span class="ck">end</span><br>
+<span class="ck">end</span>)
+      </div>
+    </div>
+
+    <!-- CLICK SOUND -->
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">Button click sound</span>
+        <span class="code-badge cb-blue">ClickDetector</span>
+      </div>
+      <div class="code-body" style="font-size:13px;">
+<span class="ck">local</span> <span class="cv">part</span>     <span class="co">=</span> script.Parent<br>
+<span class="ck">local</span> <span class="cv">detector</span> <span class="co">=</span> <span class="cv">part</span>:<span class="cf">FindFirstChild</span>(<span class="cs">"ClickDetector"</span>)<br><br>
+<span class="ck">local</span> <span class="cv">clickSound</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Sound"</span>)<br>
+<span class="cv">clickSound</span>.Parent  <span class="co">=</span> <span class="cv">part</span><br>
+<span class="cv">clickSound</span>.SoundId <span class="co">=</span> <span class="cs">"rbxassetid://6042053626"</span><br>
+<span class="cv">clickSound</span>.Volume  <span class="co">=</span> <span class="cs">1</span><br><br>
+<span class="cv">detector</span>.MouseClick:<span class="cf">Connect</span>(<span class="ck">function</span>()<br>
+&nbsp;&nbsp;<span class="cv">clickSound</span>:<span class="cf">Play</span>()<br>
+&nbsp;&nbsp;<span class="cv">part</span>.<span class="cp">BrickColor</span> <span class="co">=</span> BrickColor.<span class="cf">new</span>(<span class="cs">"Lime green"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🔊 Click!"</span>)<br>
+<span class="ck">end</span>)
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  SECTION 7 — SOUND + COIN COLLECTOR
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Add Sound to the Coin Collector Game</div>
+  <p class="sec-sub">Take the coin collector from Class 9 and add three sounds — coin pickup, level up, and win. Just add these lines to the existing script.</p>
+
+  <div class="two-col">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Coin collector with sounds</span>
+        <span class="code-badge cb-amber">sounds added</span>
+      </div>
+      <div class="code-body">
+<span class="ck">local</span> <span class="cv">Players</span> <span class="co">=</span> game:<span class="cf">GetService</span>(<span class="cs">"Players"</span>)<br><br>
+<span class="cc">-- Background music</span><br>
+<span class="ck">local</span> <span class="cv">bgMusic</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Sound"</span>)<br>
+<span class="cv">bgMusic</span>.Parent  <span class="co">=</span> workspace<br>
+<span class="cv">bgMusic</span>.SoundId <span class="co">=</span> <span class="cs">"rbxassetid://9120386436"</span><br>
+<span class="cv">bgMusic</span>.Volume  <span class="co">=</span> <span class="cs">0.3</span><br>
+<span class="cv">bgMusic</span>.Looped  <span class="co">=</span> <span class="cs">true</span><br>
+<span class="cv">bgMusic</span>:<span class="cf">Play</span>()<br><br>
+<span class="cc">-- Win sound</span><br>
+<span class="ck">local</span> <span class="cv">winSound</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Sound"</span>)<br>
+<span class="cv">winSound</span>.Parent  <span class="co">=</span> workspace<br>
+<span class="cv">winSound</span>.SoundId <span class="co">=</span> <span class="cs">"rbxassetid://4612355792"</span><br>
+<span class="cv">winSound</span>.Volume  <span class="co">=</span> <span class="cs">1</span><br><br>
+<span class="cv">Players</span>.PlayerAdded:<span class="cf">Connect</span>(<span class="ck">function</span>(<span class="cv">player</span>)<br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">ls</span>    <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Folder"</span>)<br>
+&nbsp;&nbsp;<span class="cv">ls</span>.Name   <span class="co">=</span> <span class="cs">"leaderstats"</span> ; <span class="cv">ls</span>.Parent <span class="co">=</span> <span class="cv">player</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">coins</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"IntValue"</span>)<br>
+&nbsp;&nbsp;<span class="cv">coins</span>.Name <span class="co">=</span> <span class="cs">"Coins"</span> ; <span class="cv">coins</span>.Value <span class="co">=</span> <span class="cs">0</span> ; <span class="cv">coins</span>.Parent <span class="co">=</span> <span class="cv">ls</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">level</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"IntValue"</span>)<br>
+&nbsp;&nbsp;<span class="cv">level</span>.Name <span class="co">=</span> <span class="cs">"Level"</span> ; <span class="cv">level</span>.Value <span class="co">=</span> <span class="cs">1</span> ; <span class="cv">level</span>.Parent <span class="co">=</span> <span class="cv">ls</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">won</span> <span class="co">=</span> <span class="cs">false</span><br><br>
+&nbsp;&nbsp;<span class="cv">coins</span>.Changed:<span class="cf">Connect</span>(<span class="ck">function</span>(<span class="cv">total</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">total</span> <span class="co">&gt;=</span> <span class="cs">60</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">level</span>.Value <span class="co">=</span> <span class="cs">3</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">elseif</span> <span class="cv">total</span> <span class="co">&gt;=</span> <span class="cs">30</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">level</span>.Value <span class="co">=</span> <span class="cs">2</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">total</span> <span class="co">&gt;=</span> <span class="cs">100</span> <span class="ck">and</span> <span class="ck">not</span> <span class="cv">won</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">won</span> <span class="co">=</span> <span class="cs">true</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">winSound</span>:<span class="cf">Play</span>()  <span class="cc">-- 🔊 WIN SOUND</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">bgMusic</span>:<span class="cf">Stop</span>()  <span class="cc">-- stop music on win</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🏆 "</span> <span class="co">..</span> <span class="cv">player</span>.Name <span class="co">..</span> <span class="cs">" WINS!"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">end</span><br>
+&nbsp;&nbsp;<span class="ck">end</span>)<br>
+<span class="ck">end</span>)<br><br>
+<span class="cc">-- Spawn 10 coins — each with a pickup sound</span><br>
+<span class="ck">for</span> <span class="cv">i</span> <span class="co">=</span> <span class="cs">1</span>, <span class="cs">10</span> <span class="ck">do</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">coin</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Part"</span>)<br>
+&nbsp;&nbsp;<span class="cv">coin</span>.Shape      <span class="co">=</span> Enum.PartType.<span class="cf">Ball</span><br>
+&nbsp;&nbsp;<span class="cv">coin</span>.Size       <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cs">2</span>,<span class="cs">2</span>,<span class="cs">2</span>)<br>
+&nbsp;&nbsp;<span class="cv">coin</span>.BrickColor <span class="co">=</span> BrickColor.<span class="cf">new</span>(<span class="cs">"Bright yellow"</span>)<br>
+&nbsp;&nbsp;<span class="cv">coin</span>.Material   <span class="co">=</span> Enum.Material.<span class="cf">Neon</span><br>
+&nbsp;&nbsp;<span class="cv">coin</span>.Anchored   <span class="co">=</span> <span class="cs">true</span><br>
+&nbsp;&nbsp;<span class="cv">coin</span>.Position   <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">i</span><span class="co">*</span><span class="cs">8</span>,<span class="cs">2</span>,<span class="cs">0</span>)<br>
+&nbsp;&nbsp;<span class="cv">coin</span>.Parent     <span class="co">=</span> workspace<br><br>
+&nbsp;&nbsp;<span class="cc">-- Coin pickup sound inside each coin</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">ding</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Sound"</span>)<br>
+&nbsp;&nbsp;<span class="cv">ding</span>.Parent  <span class="co">=</span> <span class="cv">coin</span><br>
+&nbsp;&nbsp;<span class="cv">ding</span>.SoundId <span class="co">=</span> <span class="cs">"rbxassetid://4770482860"</span><br>
+&nbsp;&nbsp;<span class="cv">ding</span>.Volume  <span class="co">=</span> <span class="cs">1</span><br><br>
+&nbsp;&nbsp;<span class="cv">coin</span>.Touched:<span class="cf">Connect</span>(<span class="ck">function</span>(<span class="cv">hit</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">plr</span> <span class="co">=</span> game.Players:<span class="cf">GetPlayerFromCharacter</span>(<span class="cv">hit</span>.Parent)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">plr</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">ding</span>:<span class="cf">Play</span>()  <span class="cc">-- 🔊 COIN SOUND</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">plr</span>.leaderstats.Coins.Value <span class="co">+=</span> <span class="cs">10</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">coin</span>:<span class="cf">Destroy</span>()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">end</span><br>
+&nbsp;&nbsp;<span class="ck">end</span>)<br>
+<span class="ck">end</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">What you hear</div>
+        <div class="out-line">
+          🎵 Background music starts<br>
+          &nbsp;&nbsp; (plays softly the whole game)<br>
+          <br>
+          🪙 Ding! — every coin collected<br>
+          🪙 Ding!<br>
+          🪙 Ding!<br>
+          ...<br>
+          🏆 Victory sound plays<br>
+          🔇 Music stops
+        </div>
+      </div>
+      <div class="note" style="border-color:#fcd34d;">
+        <div class="note-label" style="color:var(--amber);">Why play sound before Destroy()</div>
+        <div class="note-text">The coin sound plays first, then the coin is destroyed. If you destroy the coin before playing the sound, the sound object gets deleted before it can make a noise.</div>
+      </div>
+      <div class="note" style="border-color:#fbcfe8;">
+        <div class="note-label" style="color:var(--pink);">Volume guide</div>
+        <div class="note-text" style="font-size:12.5px;line-height:1.8;">
+          Background music → <ic>0.3</ic> (quiet, ambient)<br>
+          Coin / UI sounds → <ic>0.8 – 1</ic> (clear feedback)<br>
+          Explosions → <ic>0.6 – 0.8</ic> (impactful, not harsh)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════
+  UPLOAD YOUR OWN SOUND
+════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Using Your Own Sound File</div>
+  <p class="sec-sub">You can upload any audio file from your computer to Roblox and use it in your game — background music, custom effects, your own recorded voice.</p>
+
+  <div class="two-col" style="margin-bottom:16px;">
+    <div class="note" style="border-color:#bfdbfe;">
+      <div class="note-label" style="color:var(--blue);">Supported File Formats</div>
+      <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+        Roblox only accepts <strong>MP3</strong> and <strong>OGG</strong> files.<br>
+        Max file size: <strong>20 MB</strong><br><br>
+        If your file is WAV, MP4, or another format — convert it first using a free tool:<br>
+        <strong>online-audio-converter.com</strong> or <strong>Audacity</strong>
+      </div>
+    </div>
+    <div class="note" style="border-color:#fcd34d;">
+      <div class="note-label" style="color:var(--amber);">Where to get free music</div>
+      <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+        Use royalty-free audio — not copyrighted songs:<br>
+        🌐 <strong>freesound.org</strong> — free sound effects<br>
+        🌐 <strong>pixabay.com/music</strong> — free background music<br>
+        🌐 <strong>zapsplat.com</strong> — free SFX and music<br><br>
+        Never upload YouTube audio — it will be removed by Roblox.
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD STEPS -->
+  <ul class="steps">
+    <li class="step">
+      <div class="snum n1">1</div>
+      <div>
+        <div class="stitle">Go to create.roblox.com → sign in</div>
+        <div class="sdesc">Open your browser and go to the Roblox Creator Dashboard.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n2">2</div>
+      <div>
+        <div class="stitle">Click "Development Items" → "Audio" → "Upload Asset"</div>
+        <div class="sdesc">Find the Audio section in the left sidebar and click Upload Asset.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n3">3</div>
+      <div>
+        <div class="stitle">Choose your MP3 or OGG file → give it a name → Upload</div>
+        <div class="sdesc">Roblox reviews it automatically. Short clips are approved instantly.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n4">4</div>
+      <div>
+        <div class="stitle">Copy the Asset ID from the URL</div>
+        <div class="sdesc">After uploading, open the audio page. The URL looks like:<br>
+        <ic>create.roblox.com/store/asset/<strong>1234567890</strong>/my-sound</ic><br>
+        That number is your Sound ID.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n5">5</div>
+      <div>
+        <div class="stitle">Paste the ID into your script</div>
+        <div class="sdesc">Use the same code as any other sound — just replace the number with your own ID.</div>
+      </div>
+    </li>
+  </ul>
+
+  <!-- CODE EXAMPLE -->
+  <div class="two-col" style="margin-top:14px;">
+    <div class="code-wrap">
+      <div class="code-hdr">
+        <span class="code-ttl">LUA — Using your own uploaded sound</span>
+        <span class="code-badge cb-purple">custom audio</span>
+      </div>
+      <div class="code-body">
+<span class="cc">-- Replace 1234567890 with YOUR asset ID</span><br>
+<span class="ck">local</span> <span class="cv">mySound</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Sound"</span>)<br>
+<span class="cv">mySound</span>.Parent  <span class="co">=</span> workspace<br>
+<span class="cv">mySound</span>.SoundId <span class="co">=</span> <span class="cs">"rbxassetid://1234567890"</span><br>
+<span class="cv">mySound</span>.Volume  <span class="co">=</span> <span class="cs">0.8</span><br>
+<span class="cv">mySound</span>.Looped  <span class="co">=</span> <span class="cs">true</span><br><br>
+<span class="cv">mySound</span>:<span class="cf">Play</span>()<br>
+<span class="cf">print</span>(<span class="cs">"🎵 Custom music playing!"</span>)
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="note" style="border-color:#a7f3d0;">
+        <div class="note-label" style="color:var(--green);">That's it — same code</div>
+        <div class="note-text">Everything works exactly the same as the built-in sounds. The only difference is the ID number. Once uploaded, your sound works just like any other Roblox audio.</div>
+      </div>
+      <div class="note" style="border-color:#fca5a5;">
+        <div class="note-label" style="color:var(--red);">⚠️ Copyright Warning</div>
+        <div class="note-text">Never upload popular songs or copyrighted music. Roblox will automatically detect and remove it. Always use royalty-free audio or sounds you made yourself.</div>
+      </div>
+      <div class="note" style="border-color:#fcd34d;">
+        <div class="note-label" style="color:var(--amber);">Quick Format Converter</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.9;">
+          WAV → MP3 : <strong>online-audio-converter.com</strong><br>
+          MP4 → MP3 : <strong>Audacity</strong> (free software)<br>
+          Any → OGG : <strong>cloudconvert.com</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SUMMARY -->
+<div class="sec">
+  <div class="sec-title">Class 10 — Summary ✅</div>
+  <div class="two-col">
+    <ul class="chklist">
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Sound is an object — insert it like a Part</div><div class="ci-sub">Instance.new("Sound")</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">SoundId sets which audio to play</div><div class="ci-sub">rbxassetid://NUMBER</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Volume, Looped, Pitch — key properties</div><div class="ci-sub">0.5 volume · Looped = true for music</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">sound:Play() and sound:Stop()</div><div class="ci-sub">Call these anywhere in your script</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Sound triggered by Touched and ClickDetector events</div><div class="ci-sub">Play on coin pickup, damage, win</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Background music — Looped in workspace or SoundService</div><div class="ci-sub">Stop it on win condition</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Upload your own audio — MP3 or OGG only, max 20MB</div><div class="ci-sub">create.roblox.com → Audio → Upload → copy Asset ID</div></div></li>
+    </ul>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="note" style="border-color:#a7f3d0;">
+        <div class="note-label" style="color:var(--green);">Homework</div>
+        <div class="note-text">Take the coin collector game and add three sounds — coin pickup, level up (play when level.Value changes), and background music. Test that all three play at the right moment.</div>
+      </div>
+      <div class="note" style="border-color:#bfdbfe;">
+        <div class="note-label" style="color:var(--blue);">Next Class — GUI</div>
+        <div class="note-text"><strong>GUI (Graphical User Interface)</strong> — putting text, buttons, and health bars directly on the player's screen using ScreenGui and TextLabel.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">SMIT · AI & Game Creators · Class 10 · Sounds in Roblox Studio</div>
+
+</div>
+</body>
+</html>

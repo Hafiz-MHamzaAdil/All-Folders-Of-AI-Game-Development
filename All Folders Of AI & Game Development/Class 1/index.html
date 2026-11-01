@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 1 — Roblox Studio Introduction</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f4f0; --surface:#fff; --border:#e2e0d8;
+  --text:#1a1a2e; --muted:#6b6876;
+  --accent:#4f46e5; --accent-light:#ede9fe; --accent2:#7c3aed;
+  --green:#059669; --green-light:#d1fae5;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --red:#dc2626; --red-light:#fee2e2;
+  --blue:#2563eb; --blue-light:#dbeafe;
+  --teal:#0d9488; --teal-light:#ccfbf1;
+  --pink:#db2777; --pink-light:#fce7f3;
+  --orange:#ea580c; --orange-light:#ffedd5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;padding:40px 48px 64px;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,#c8c6d0 1px,transparent 1px);background-size:28px 28px;opacity:.35;pointer-events:none;z-index:0;}
+.page{position:relative;z-index:1;max-width:1080px;margin:0 auto;}
+
+/* PAGE TITLE */
+.pg-tag{display:inline-flex;align-items:center;gap:6px;background:var(--blue-light);border:1px solid #bfdbfe;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:var(--blue);letter-spacing:.5px;margin-bottom:10px;}
+.pg-title{font-size:clamp(28px,4vw,46px);font-weight:900;color:var(--text);line-height:1.1;letter-spacing:-.5px;margin-bottom:6px;}
+.pg-title span{color:var(--accent);}
+.pg-sub{font-size:14px;color:var(--muted);font-weight:500;margin-bottom:32px;}
+
+/* SECTION */
+.sec{margin-bottom:32px;}
+.sec-title{font-size:18px;font-weight:800;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.sec-title::after{content:'';flex:1;height:2px;background:var(--border);}
+.sec-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:28px 0;}
+
+/* LAYOUT */
+.two-col  {display:grid;grid-template-columns:1fr 1fr;    gap:16px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.four-col {display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 16px;position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s;}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.07);}
+.ct{height:3px;position:absolute;top:0;left:0;right:0;border-radius:12px 12px 0 0;}
+.ct-blue  {background:var(--blue);}
+.ct-purple{background:var(--accent2);}
+.ct-amber {background:var(--amber);}
+.ct-green {background:var(--green);}
+.ct-red   {background:var(--red);}
+.ct-teal  {background:var(--teal);}
+.ct-pink  {background:var(--pink);}
+.ct-orange{background:var(--orange);}
+.card-icon {font-size:24px;margin-bottom:8px;margin-top:4px;}
+.card-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;}
+.card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.card-text {font-size:12.5px;color:var(--muted);line-height:1.55;}
+.card-note {font-family:'JetBrains Mono',monospace;font-size:11px;margin-top:8px;color:var(--accent);}
+
+/* NOTE / INFO BOX */
+.note{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;}
+.note-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.note-text{font-size:13px;color:var(--muted);line-height:1.65;}
+
+/* CODE BLOCKS */
+.code-wrap{background:#12131f;border:1px solid #2a2d45;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+.code-hdr{background:#0a0b14;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2a2d45;}
+.code-ttl{font-size:10px;font-weight:700;letter-spacing:2px;color:#7aa2f7;text-transform:uppercase;}
+.code-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:4px;}
+.cb-blue  {background:rgba(122,162,247,.2);color:#7aa2f7;}
+.cb-green {background:rgba(158,206,106,.2);color:#9ece6a;}
+.cb-amber {background:rgba(224,175,104,.2);color:#e0af68;}
+.cb-purple{background:rgba(187,154,247,.2);color:#bb9af7;}
+.code-body{padding:20px 22px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.1;}
+.ck{color:#bb9af7;font-weight:700;}
+.cs{color:#9ece6a;font-weight:600;}
+.cf{color:#e0af68;font-weight:600;}
+.cv{color:#7dcfff;}
+.cc{color:#565f89;font-style:italic;}
+.cp{color:#f7768e;}
+.co{color:#ff9e64;}
+
+/* OUTPUT */
+.output{background:#f0fff4;border:1px solid #6ee7b7;border-radius:10px;padding:14px 18px;}
+.out-label{font-size:10px;font-weight:700;color:var(--green);letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase;}
+.out-line{font-family:'JetBrains Mono',monospace;font-size:13px;color:#065f46;line-height:2.2;}
+
+/* ENGINE COMPARE TABLE */
+.cmp{width:100%;border-collapse:separate;border-spacing:0 4px;}
+.cmp th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:8px 18px;text-align:left;}
+.cmp th:not(:first-child){text-align:center;}
+.cmp td{padding:12px 18px;font-size:13px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.cmp td:not(:first-child){text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.cmp tr td:first-child{border-left:1px solid var(--border);border-radius:8px 0 0 8px;color:var(--muted);font-weight:600;}
+.cmp tr td:last-child{border-right:1px solid var(--border);border-radius:0 8px 8px 0;}
+.cmp .hl td{background:var(--green-light);}
+.cmp .hl td:first-child{border-color:#6ee7b7;border-right:none;}
+.cmp .hl td:last-child{border-color:#6ee7b7;border-left:none;color:var(--green);font-weight:700;}
+.cmp .hl td:not(:first-child):not(:last-child){border-top-color:#6ee7b7;border-bottom-color:#6ee7b7;}
+
+/* PANEL GRID (studio panels) */
+.panels{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;width:100%;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 12px;text-align:center;transition:all .18s;}
+.panel:hover{border-color:var(--amber);transform:translateY(-2px);box-shadow:0 3px 12px rgba(217,119,6,.1);}
+.p-icon {font-size:26px;margin-bottom:7px;}
+.p-title{font-size:11px;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:.5px;}
+.p-desc {font-size:11px;color:var(--muted);line-height:1.4;}
+
+/* STEP LIST */
+.steps{list-style:none;}
+.step{display:flex;gap:14px;align-items:flex-start;padding:12px 16px;margin-bottom:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;transition:all .18s;}
+.step:hover{border-color:var(--accent);transform:translateX(4px);}
+.snum{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:900;flex-shrink:0;}
+.n1{background:var(--blue-light);  color:var(--blue);}
+.n2{background:var(--accent-light);color:var(--accent2);}
+.n3{background:var(--amber-light); color:var(--amber);}
+.n4{background:var(--green-light); color:var(--green);}
+.n5{background:var(--pink-light);  color:var(--pink);}
+.stitle{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.sdesc {font-size:12px;color:var(--muted);line-height:1.45;}
+.scode {font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent2);background:var(--accent-light);padding:2px 7px;border-radius:4px;display:inline-block;margin-top:4px;}
+
+/* CHECKLIST */
+.chklist{list-style:none;}
+.ci{display:flex;align-items:flex-start;gap:12px;padding:10px 16px;margin-bottom:6px;background:var(--surface);border:1px solid var(--border);border-radius:8px;}
+.ci-box{width:18px;height:18px;border-radius:5px;flex-shrink:0;margin-top:1px;background:var(--green);display:flex;align-items:center;justify-content:center;}
+.ci-box::after{content:'✓';font-size:11px;color:#fff;font-weight:800;}
+.ci-title{font-size:13px;font-weight:600;color:var(--text);}
+.ci-sub  {font-size:11px;color:var(--muted);margin-top:1px;font-family:'JetBrains Mono',monospace;}
+
+/* TOOLBAR SHORTCUT */
+.shortcut-row{display:flex;gap:10px;}
+.shortcut-box{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 12px;text-align:center;}
+.shortcut-key{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:900;margin-bottom:5px;}
+.shortcut-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.shortcut-desc{font-size:11px;color:var(--muted);}
+
+/* TAG PILL */
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin:2px;}
+.t1{background:var(--blue-light);  color:var(--blue);}
+.t2{background:var(--accent-light);color:var(--accent2);}
+.t3{background:var(--green-light); color:var(--green);}
+.t4{background:var(--amber-light); color:var(--amber);}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- PAGE HEADER -->
+<div class="pg-tag">CLASS 1 · MODULE 1 · 2 HOURS</div>
+<h1 class="pg-title">Introduction to <span>Roblox Studio</span></h1>
+<p class="pg-sub">Game development overview · Studio setup · Interface walkthrough · Hands-on building</p>
+
+<!-- ═══════════════════════════════
+  SECTION 1 — WHAT IS GAME DEVELOPMENT
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">What is Game Development?</div>
+  <p class="sec-sub">Making a game requires four disciplines working together — just like making a film needs a director, actors, music, and a script.</p>
+
+  <div class="four-col">
+    <div class="card">
+      <div class="ct ct-blue"></div>
+      <div class="card-icon">🎨</div>
+      <div class="card-label" style="color:var(--blue);">Discipline 1</div>
+      <div class="card-title">Game Design</div>
+      <div class="card-text">Planning the story, rules, levels, and characters. What does the player do? What are the goals?</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-purple"></div>
+      <div class="card-icon">💻</div>
+      <div class="card-label" style="color:var(--accent2);">Discipline 2</div>
+      <div class="card-title">Programming</div>
+      <div class="card-text">Writing code — the game's brain. Everything that moves and reacts runs on code.</div>
+      <div class="card-note">C++ · C# · Lua · Python</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-amber"></div>
+      <div class="card-icon">🖼️</div>
+      <div class="card-label" style="color:var(--amber);">Discipline 3</div>
+      <div class="card-title">Art & Graphics</div>
+      <div class="card-text">3D models, textures, animations. Everything the player sees is designed and created.</div>
+      <div class="card-note">Blender · Photoshop</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-green"></div>
+      <div class="card-icon">🎵</div>
+      <div class="card-label" style="color:var(--green);">Discipline 4</div>
+      <div class="card-title">Sound & Audio</div>
+      <div class="card-text">Background music, sound effects, and voice acting that bring the world to life.</div>
+      <div class="card-note">FMOD · Audacity</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+  SECTION 2 — WHAT IS A GAME ENGINE
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">What is a Game Engine?</div>
+  <p class="sec-sub">A game engine is a ready-made toolkit — physics, graphics, and input are already built in. You focus on building the game itself.</p>
+
+  <div class="two-col" style="margin-bottom:16px;">
+    <div class="note" style="border-color:#fca5a5;">
+      <div class="note-label" style="color:var(--red);">Without a Game Engine</div>
+      <div class="note-text">Write physics from scratch, build your own renderer, handle every input manually — years of work before the game even starts.</div>
+    </div>
+    <div class="note" style="border-color:#a7f3d0;">
+      <div class="note-label" style="color:var(--green);">With a Game Engine</div>
+      <div class="note-text">Physics, graphics, input, audio — all built in. You jump straight into designing and building your game.</div>
+    </div>
+  </div>
+
+  <table class="cmp">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>Unity</th>
+        <th>Unreal Engine</th>
+        <th>Roblox Studio ⭐</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Language</td><td>C#</td><td>C++ / Blueprints</td><td style="color:var(--green);font-weight:700;">Lua</td></tr>
+      <tr><td>Difficulty</td><td>Medium</td><td>Very Hard</td><td style="color:var(--green);font-weight:700;">Easy ✓</td></tr>
+      <tr><td>Cost</td><td>Free (basic)</td><td>5% revenue share</td><td style="color:var(--green);font-weight:700;">100% Free ✓</td></tr>
+      <tr><td>Build + Play</td><td>Separate tools</td><td>Separate tools</td><td style="color:var(--green);font-weight:700;">All-in-one ✓</td></tr>
+      <tr><td>Famous Games</td><td>Among Us, Cuphead</td><td>Fortnite, PUBG</td><td>Adopt Me, Blox Fruits</td></tr>
+      <tr class="hl"><td>Best For</td><td>Indie developers</td><td>AAA studios</td><td>Beginners & Students 🎓</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════
+  SECTION 3 — SETUP
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Setup — Account + Download Roblox Studio</div>
+
+  <ul class="steps">
+    <li class="step">
+      <div class="snum n1">1</div>
+      <div>
+        <div class="stitle">Go to roblox.com → Sign Up</div>
+        <div class="sdesc">Create a free account with a username, password, and birthdate. Write your username down — you will share games from this account.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n2">2</div>
+      <div>
+        <div class="stitle">Go to create.roblox.com → Download Roblox Studio</div>
+        <div class="sdesc">Click "Start Creating". This downloads the Studio installer (~500MB). Start the download early if the internet is slow.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n3">3</div>
+      <div>
+        <div class="stitle">Run the installer → Sign in</div>
+        <div class="sdesc">Double-click the downloaded file and install. When Studio opens, sign in with the Roblox account you just created.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n4">4</div>
+      <div>
+        <div class="stitle">Choose "Baseplate" template → Create</div>
+        <div class="sdesc">From the Studio home screen select Baseplate. This gives a flat ground and sky — the perfect blank canvas to start building.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n5">5</div>
+      <div>
+        <div class="stitle">Studio opens — explore for 2 minutes before anything is explained</div>
+        <div class="sdesc">Click around freely. Then the walkthrough begins.</div>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════
+  SECTION 4 — STUDIO INTERFACE
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Roblox Studio — 5 Core Panels</div>
+  <p class="sec-sub">Find each panel on your screen as it is explained.</p>
+
+  <div class="panels">
+    <div class="panel">
+      <div class="p-icon">🌍</div>
+      <div class="p-title">WORKSPACE</div>
+      <div class="p-desc">Your 3D world. Everything placed here appears in the game when you press Play.</div>
+    </div>
+    <div class="panel">
+      <div class="p-icon">📋</div>
+      <div class="p-title">EXPLORER</div>
+      <div class="p-desc">A tree list of every object in the game. Shows parent-child hierarchy.</div>
+    </div>
+    <div class="panel">
+      <div class="p-icon">⚙️</div>
+      <div class="p-title">PROPERTIES</div>
+      <div class="p-desc">Edit the selected object — color, size, position, material and more.</div>
+    </div>
+    <div class="panel">
+      <div class="p-icon">📦</div>
+      <div class="p-title">TOOLBOX</div>
+      <div class="p-desc">Free library of 3D assets — trees, cars, buildings. Drag and drop to place.</div>
+    </div>
+    <div class="panel">
+      <div class="p-icon">💻</div>
+      <div class="p-title">SCRIPT EDITOR</div>
+      <div class="p-desc">Where you write Lua code. Game logic and interactions live in scripts.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+  SECTION 5 — TOOLBAR TOOLS
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Top Toolbar — 3 Essential Tools</div>
+
+  <div class="shortcut-row">
+    <div class="shortcut-box" style="border-color:#bfdbfe;">
+      <div class="shortcut-key" style="color:var(--blue);">W</div>
+      <div class="shortcut-name">Move Tool</div>
+      <div class="shortcut-desc">Select a Part and drag the colored arrows to move it along X, Y, or Z axis</div>
+    </div>
+    <div class="shortcut-box" style="border-color:#fcd34d;">
+      <div class="shortcut-key" style="color:var(--amber);">R</div>
+      <div class="shortcut-name">Scale Tool</div>
+      <div class="shortcut-desc">Drag the handles to make a Part bigger or smaller on any axis</div>
+    </div>
+    <div class="shortcut-box" style="border-color:#a7f3d0;">
+      <div class="shortcut-key" style="color:var(--green);">E</div>
+      <div class="shortcut-name">Rotate Tool</div>
+      <div class="shortcut-desc">Spin a Part around its center using the circular rotation handles</div>
+    </div>
+  </div>
+
+  <div style="margin-top:12px;font-size:12px;color:var(--muted);padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-family:'JetBrains Mono',monospace;text-align:center;">
+    Camera: &nbsp; Right-click drag = rotate &nbsp;·&nbsp; Middle-click drag = pan &nbsp;·&nbsp; Scroll = zoom
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════
+  SECTION 6 — PARTS
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Parts — The Basic Building Block</div>
+  <p class="sec-sub">A Part is any 3D object in Roblox. You build everything out of Parts — buildings, floors, walls, platforms, obstacles.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="note" style="border-color:#bfdbfe;margin-bottom:12px;">
+        <div class="note-label" style="color:var(--blue);">How to Add a Part</div>
+        <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+          1. Click the <strong>Model</strong> tab in the top toolbar<br>
+          2. Click <strong>Part</strong> — a block appears in Workspace<br>
+          3. Or click the small arrow next to Part for other shapes:<br>
+          &nbsp;&nbsp;&nbsp;<strong>Block · Sphere · Cylinder · Wedge · Corner Wedge</strong>
+        </div>
+      </div>
+
+      <div class="note" style="border-color:#fcd34d;">
+        <div class="note-label" style="color:var(--amber);">Properties to Know</div>
+        <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+          <strong>BrickColor</strong> — the color of the Part<br>
+          <strong>Material</strong> — Wood, Metal, Glass, Neon, SmoothPlastic<br>
+          <strong>Size</strong> — Width × Height × Depth<br>
+          <strong>Anchored</strong> — true = stays in place, false = falls with gravity
+        </div>
+      </div>
+    </div>
+
+    <div class="note" style="border-color:#a7f3d0;">
+      <div class="note-label" style="color:var(--green);">Press F5 to Playtest</div>
+      <div class="note-text" style="font-size:12.5px;line-height:1.9;">
+        Press <strong>F5</strong> to run the game and walk around inside your world.<br>
+        Press <strong>F5 again</strong> (or click Stop) to exit playtest mode.<br><br>
+        <strong>Important:</strong> Parts without <strong>Anchored = true</strong> will fall when Play is pressed. Always anchor your floors and walls.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+  SECTION 7 — HANDS-ON CHALLENGES
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Hands-On — 5 Challenges</div>
+
+  <ul class="steps">
+    <li class="step">
+      <div class="snum n1">1</div>
+      <div>
+        <div class="stitle">Place 5 different Parts</div>
+        <div class="sdesc">Model tab → Part. Place at least 5 Parts. Try Block, Sphere, Cylinder, and Wedge shapes.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n2">2</div>
+      <div>
+        <div class="stitle">Move, Scale, and Rotate each one</div>
+        <div class="sdesc">Use <strong>W</strong> (move), <strong>R</strong> (scale), <strong>E</strong> (rotate). Make one very tall, one very wide, one tilted at an angle.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n3">3</div>
+      <div>
+        <div class="stitle">Change color and material</div>
+        <div class="sdesc">Select a Part → Properties → BrickColor. Try different colors. Then change Material to Wood, Metal, Neon, and Glass.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n4">4</div>
+      <div>
+        <div class="stitle">Use the Toolbox</div>
+        <div class="sdesc">Open Toolbox → search "house" or "tree" or "car" → drag into your world. Try at least 2 different assets.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n5">5</div>
+      <div>
+        <div class="stitle">Build a mini scene → Press Play</div>
+        <div class="sdesc">Build anything — a house, a tower, a room. Press <strong>F5</strong> to walk around inside your own 3D world. Remember to anchor your Parts!</div>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════
+  SECTION 8 — CLASS SUMMARY
+════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-title">Class 1 — Summary ✅</div>
+
+  <div class="two-col">
+    <ul class="chklist">
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">4 disciplines of game development</div><div class="ci-sub">Design · Programming · Art · Sound</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">What a Game Engine is and why we use one</div><div class="ci-sub">Unity · Unreal · Roblox Studio</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Roblox account created + Studio installed</div><div class="ci-sub">create.roblox.com</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">All 5 Studio panels and what each one does</div><div class="ci-sub">Workspace · Explorer · Properties · Toolbox · Script</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Move · Scale · Rotate — keyboard shortcuts</div><div class="ci-sub">W · R · E</div></div></li>
+      <li class="ci"><div class="ci-box"></div><div><div class="ci-title">Built a mini 3D scene and pressed Play (F5)</div><div class="ci-sub">Walked around inside your own world</div></div></li>
+    </ul>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="note" style="border-color:#a7f3d0;">
+        <div class="note-label" style="color:var(--green);">Homework</div>
+        <div class="note-text">Spend 30 minutes in Studio — build anything. A house, a maze, a landscape. Just explore!</div>
+      </div>
+      <div class="note" style="border-color:#bfdbfe;">
+        <div class="note-label" style="color:var(--blue);">Next Class — Module 2</div>
+        <div class="note-text"><strong>Lua Programming Basics.</strong> We write actual code — variables, data types, and print() — to make things happen in the game.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

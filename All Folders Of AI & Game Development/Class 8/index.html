@@ -1,0 +1,66 @@
+print("Hello world!")
+
+-- 
+-- if condition then 
+--     run only if code 
+-- end
+
+local health = 80 
+local score = 120 
+
+if health == 80 then 
+	print("⚠️ Warning! Low health!")
+end
+--      = assignment operators 
+--      == comparison/equality operators 
+
+--if condition then
+--	-- runs if TRUE
+--else
+--	-- runs if FALSE
+--end
+
+local health = 0 
+
+if health > 0 then 
+	print("Player is alive!")
+else 
+	print("Player is dead!")
+end
+
+-- operators 
+-- >  greater than
+-- <  less than
+-- >= greater than or equal to
+-- <= less than or equal to
+-- == equal to
+-- ~= not equal to 
+
+--if condition1 then
+--	-- condition1 is true
+--elseif condition2 then
+--	-- condition2 is true
+--elseif condition3 then
+--	-- condition3 is true
+--else
+--	-- none of the above
+--end
+
+local score = 45
+
+if score >= 90 then  -- 90+
+	print("🥇 Rank: GOLD")
+elseif score >= 70 then -- 70 - 90
+	print("🥈 Rank: SILVER")
+elseif score >= 50 then  -- 50 - 70
+	print("🥉 Rank: BRONZE")
+else
+	print("❌ No Rank — Try Again")
+end
+
+
+-- part 
+-- health - 70 part color green 
+-- health - 50 part color yellow 
+-- health - 30 part color orange
+-- health - 0  part color red

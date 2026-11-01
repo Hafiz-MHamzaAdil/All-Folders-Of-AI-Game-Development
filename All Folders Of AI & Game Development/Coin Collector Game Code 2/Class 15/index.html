@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Target Shooter — Class 11 Task</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f4f0; --surface:#fff; --border:#e2e0d8;
+  --text:#1a1a2e; --muted:#6b6876;
+  --accent:#4f46e5; --accent-light:#ede9fe; --accent2:#7c3aed;
+  --green:#059669; --green-light:#d1fae5;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --red:#dc2626; --red-light:#fee2e2;
+  --blue:#2563eb; --blue-light:#dbeafe;
+  --teal:#0d9488; --teal-light:#ccfbf1;
+  --pink:#db2777; --pink-light:#fce7f3;
+  --orange:#ea580c; --orange-light:#ffedd5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;padding:40px 48px 64px;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,#c8c6d0 1px,transparent 1px);background-size:28px 28px;opacity:.35;pointer-events:none;z-index:0;}
+.page{position:relative;z-index:1;max-width:1080px;margin:0 auto;}
+
+.pg-tag{display:inline-flex;align-items:center;gap:6px;background:var(--red-light);border:1px solid #fca5a5;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:var(--red);letter-spacing:.5px;margin-bottom:10px;}
+.pg-title{font-size:clamp(28px,4vw,46px);font-weight:900;color:var(--text);line-height:1.1;letter-spacing:-.5px;margin-bottom:6px;}
+.pg-title span{color:var(--accent);}
+.pg-sub{font-size:14px;color:var(--muted);font-weight:500;margin-bottom:28px;}
+
+.sec{margin-bottom:28px;}
+.sec-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.sec-title::after{content:'';flex:1;height:2px;background:var(--border);}
+.sec-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+.divider{height:1px;background:var(--border);margin:24px 0;}
+
+.two-col  {display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.four-col {display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+/* CODE */
+.code-wrap{background:#12131f;border:1px solid #2a2d45;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+.code-hdr{background:#0a0b14;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2a2d45;flex-wrap:wrap;gap:6px;}
+.code-ttl{font-size:10px;font-weight:700;letter-spacing:2px;color:#7aa2f7;text-transform:uppercase;}
+.code-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:4px;}
+.cb-blue  {background:rgba(122,162,247,.2);color:#7aa2f7;}
+.cb-green {background:rgba(158,206,106,.2);color:#9ece6a;}
+.cb-amber {background:rgba(224,175,104,.2);color:#e0af68;}
+.cb-purple{background:rgba(187,154,247,.2);color:#bb9af7;}
+.cb-red   {background:rgba(247,118,142,.2);color:#f7768e;}
+.cb-teal  {background:rgba(115,218,202,.2);color:#73daca;}
+.code-body{padding:18px 22px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:2.1;}
+.ck{color:#bb9af7;font-weight:700;}
+.cs{color:#9ece6a;font-weight:600;}
+.cf{color:#e0af68;font-weight:600;}
+.cv{color:#7dcfff;}
+.cc{color:#565f89;font-style:italic;}
+.cp{color:#f7768e;}
+.co{color:#ff9e64;}
+
+/* OUTPUT */
+.output{background:#f0fff4;border:1px solid #6ee7b7;border-radius:10px;padding:14px 18px;}
+.out-label{font-size:10px;font-weight:700;color:var(--green);letter-spacing:1.5px;margin-bottom:8px;text-transform:uppercase;}
+.out-line{font-family:'JetBrains Mono',monospace;font-size:13px;color:#065f46;line-height:2.2;}
+.out-sep{height:1px;background:#a7f3d0;margin:6px 0;}
+
+/* NOTE */
+.note{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;}
+.note-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.note-text{font-size:13px;color:var(--muted);line-height:1.65;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;}
+.ct{height:3px;position:absolute;top:0;left:0;right:0;border-radius:12px 12px 0 0;}
+.ct-blue{background:var(--blue);} .ct-purple{background:var(--accent2);}
+.ct-amber{background:var(--amber);} .ct-green{background:var(--green);}
+.ct-red{background:var(--red);} .ct-teal{background:var(--teal);}
+
+/* STEPS */
+.steps{list-style:none;}
+.step{display:flex;gap:14px;align-items:flex-start;padding:12px 16px;margin-bottom:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.snum{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:900;flex-shrink:0;}
+.n1{background:var(--blue-light);color:var(--blue);}
+.n2{background:var(--accent-light);color:var(--accent2);}
+.n3{background:var(--amber-light);color:var(--amber);}
+.n4{background:var(--green-light);color:var(--green);}
+.n5{background:var(--pink-light);color:var(--pink);}
+.stitle{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.sdesc{font-size:12px;color:var(--muted);line-height:1.45;}
+
+/* CHECKLIST */
+.chklist{list-style:none;}
+.ci{display:flex;align-items:flex-start;gap:12px;padding:10px 16px;margin-bottom:6px;background:var(--surface);border:1px solid var(--border);border-radius:8px;}
+.ci-box{width:18px;height:18px;border-radius:5px;flex-shrink:0;margin-top:1px;background:var(--green);display:flex;align-items:center;justify-content:center;}
+.ci-box::after{content:'✓';font-size:11px;color:#fff;font-weight:800;}
+.ci-title{font-size:13px;font-weight:600;color:var(--text);}
+.ci-sub{font-size:11px;color:var(--muted);margin-top:1px;font-family:'JetBrains Mono',monospace;}
+
+/* SCENARIO */
+.scenario{background:linear-gradient(135deg,#1a0505,#2e0a0a);border:1px solid #7c1a1a;border-radius:14px;padding:22px 26px;display:flex;gap:20px;align-items:center;margin-bottom:24px;}
+.sc-icon{font-size:52px;flex-shrink:0;}
+.sc-title{font-size:20px;font-weight:900;color:#fff;margin-bottom:5px;}
+.sc-desc{font-size:13px;color:#d4a0a0;line-height:1.65;}
+.sc-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+.sc-tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;font-family:'JetBrains Mono',monospace;}
+
+/* CHARACTER VISUAL */
+.char-grid{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;padding:20px;background:linear-gradient(180deg,#1a0a0a,#0a0a1a);border-radius:14px;border:1px solid #3a1a1a;}
+.char-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 12px;border-radius:10px;min-width:100px;border:1px solid transparent;transition:all .2s;}
+.char-card:hover{transform:translateY(-3px);}
+
+/* target person SVG style */
+.char-svg{width:60px;height:80px;}
+
+/* TARGET TABLE */
+.target-table{width:100%;border-collapse:separate;border-spacing:0 4px;}
+.target-table th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:7px 16px;text-align:left;}
+.target-table td{padding:11px 16px;font-size:13px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.target-table tr td:first-child{border-left:1px solid var(--border);border-radius:8px 0 0 8px;font-size:18px;width:40px;}
+.target-table tr td:last-child{border-right:1px solid var(--border);border-radius:0 8px 8px 0;font-size:12px;color:var(--muted);}
+
+/* RUBRIC */
+.rubric{width:100%;border-collapse:separate;border-spacing:0 3px;}
+.rubric th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:7px 14px;text-align:left;}
+.rubric td{padding:10px 14px;font-size:13px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.rubric tr td:first-child{border-left:1px solid var(--border);border-radius:7px 0 0 7px;font-weight:600;}
+.rubric tr td:last-child{border-right:1px solid var(--border);border-radius:0 7px 7px 0;}
+.rubric .hl td{background:var(--green-light);}
+.rubric .hl td:first-child{border-color:#6ee7b7;border-right:none;}
+.rubric .hl td:last-child{border-color:#6ee7b7;border-left:none;color:var(--green);font-weight:700;}
+.rubric .hl td:not(:first-child):not(:last-child){border-top-color:#6ee7b7;border-bottom-color:#6ee7b7;}
+.rubric .total td{background:var(--accent-light);}
+.rubric .total td:first-child{border:1px solid #ddd6fe;border-right:none;color:var(--accent);font-weight:800;border-radius:7px 0 0 7px;}
+.rubric .total td:last-child{border:1px solid #ddd6fe;border-left:none;border-radius:0 7px 7px 0;}
+.rubric .total td:not(:first-child):not(:last-child){border-top-color:#ddd6fe;border-bottom-color:#ddd6fe;}
+.pts{font-family:'JetBrains Mono',monospace;font-weight:700;}
+
+ic{font-family:'JetBrains Mono',monospace;font-size:12px;background:#e8e6f0;padding:1px 6px;border-radius:4px;color:#4f46e5;font-weight:600;}
+.bonus{background:linear-gradient(135deg,#fdf4ff,#ede9fe);border:1px solid #ddd6fe;border-radius:12px;padding:18px 22px;}
+.footer{text-align:center;padding-top:18px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);margin-top:8px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="pg-tag">CLASS 11 · TASK · CLICKDETECTOR + EVENTS</div>
+<h1 class="pg-title">🎯 <span>Target Shooter</span></h1>
+<p class="pg-sub">Click the enemy characters to shoot them — different targets give different points</p>
+
+<!-- SCENARIO -->
+<div class="scenario">
+  <div class="sc-icon">🎯</div>
+  <div>
+    <div class="sc-title">The Game</div>
+    <div class="sc-desc">10 enemy characters are standing on the map. Each one has a ClickDetector — aim and click to shoot. Normal enemies give 10 points, gold enemies give 50 points, and boss enemies take 3 hits to defeat. Shoot all 10 to win. Your score updates live on the leaderboard.</div>
+    <div class="sc-tags">
+      <span class="sc-tag" style="background:rgba(247,118,142,.2);color:#fca5a5;">ClickDetector</span>
+      <span class="sc-tag" style="background:rgba(224,175,104,.2);color:#fcd34d;">if / elseif</span>
+      <span class="sc-tag" style="background:rgba(122,162,247,.2);color:#a5b4fc;">for loop</span>
+      <span class="sc-tag" style="background:rgba(158,206,106,.2);color:#9ece6a;">leaderstats</span>
+      <span class="sc-tag" style="background:rgba(115,218,202,.2);color:#7dd3fc;">Sound</span>
+    </div>
+  </div>
+</div>
+
+<!-- CHARACTER VISUALS -->
+<div class="sec">
+  <div class="sec-title">The 3 Enemy Types</div>
+
+  <div class="char-grid">
+
+    <!-- NORMAL ENEMY -->
+    <div class="char-card" style="background:rgba(220,38,38,.1);border-color:#7c2020;">
+      <svg class="char-svg" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- head -->
+        <circle cx="30" cy="14" r="11" fill="#ef4444" stroke="#991b1b" stroke-width="1.5"/>
+        <!-- eyes -->
+        <circle cx="26" cy="12" r="2" fill="#fff"/>
+        <circle cx="34" cy="12" r="2" fill="#fff"/>
+        <circle cx="26.5" cy="12.5" r="1" fill="#1a1a2e"/>
+        <circle cx="34.5" cy="12.5" r="1" fill="#1a1a2e"/>
+        <!-- angry mouth -->
+        <path d="M25 18 Q30 16 35 18" stroke="#991b1b" stroke-width="1.5" fill="none"/>
+        <!-- body -->
+        <rect x="18" y="26" width="24" height="26" rx="4" fill="#ef4444" stroke="#991b1b" stroke-width="1.5"/>
+        <!-- arms -->
+        <rect x="6" y="27" width="12" height="7" rx="3" fill="#ef4444" stroke="#991b1b" stroke-width="1.5"/>
+        <rect x="42" y="27" width="12" height="7" rx="3" fill="#ef4444" stroke="#991b1b" stroke-width="1.5"/>
+        <!-- legs -->
+        <rect x="19" y="52" width="9" height="20" rx="4" fill="#b91c1c" stroke="#991b1b" stroke-width="1.5"/>
+        <rect x="32" y="52" width="9" height="20" rx="4" fill="#b91c1c" stroke="#991b1b" stroke-width="1.5"/>
+        <!-- crosshair overlay -->
+        <circle cx="30" cy="38" r="8" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="30" y1="30" x2="30" y2="46" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <line x1="22" y1="38" x2="38" y2="38" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+      </svg>
+      <div style="font-size:13px;font-weight:800;color:#ef4444;">Normal Enemy</div>
+      <div style="font-size:11px;color:var(--muted);">1 click to defeat</div>
+      <div style="font-size:12px;font-weight:700;color:var(--green);background:var(--green-light);padding:2px 10px;border-radius:20px;">+10 pts</div>
+    </div>
+
+    <!-- GOLD ENEMY -->
+    <div class="char-card" style="background:rgba(217,119,6,.1);border-color:#92400e;">
+      <svg class="char-svg" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- crown -->
+        <polygon points="18,24 22,14 30,20 38,14 42,24" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
+        <!-- crown jewels -->
+        <circle cx="22" cy="18" r="2" fill="#ef4444"/>
+        <circle cx="30" cy="16" r="2" fill="#3b82f6"/>
+        <circle cx="38" cy="18" r="2" fill="#ef4444"/>
+        <!-- head -->
+        <circle cx="30" cy="34" r="11" fill="#fcd34d" stroke="#d97706" stroke-width="1.5"/>
+        <!-- eyes -->
+        <circle cx="26" cy="32" r="2" fill="#fff"/>
+        <circle cx="34" cy="32" r="2" fill="#fff"/>
+        <circle cx="26.5" cy="32.5" r="1" fill="#1a1a2e"/>
+        <circle cx="34.5" cy="32.5" r="1" fill="#1a1a2e"/>
+        <!-- smirk -->
+        <path d="M27 38 Q30 41 33 38" stroke="#d97706" stroke-width="1.5" fill="none"/>
+        <!-- body -->
+        <rect x="18" y="46" width="24" height="16" rx="4" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
+        <!-- legs -->
+        <rect x="19" y="62" width="9" height="14" rx="4" fill="#d97706" stroke="#92400e" stroke-width="1.5"/>
+        <rect x="32" y="62" width="9" height="14" rx="4" fill="#d97706" stroke="#92400e" stroke-width="1.5"/>
+        <!-- shine -->
+        <circle cx="30" cy="54" r="3" fill="rgba(255,255,255,0.3)"/>
+      </svg>
+      <div style="font-size:13px;font-weight:800;color:#d97706;">Gold Enemy</div>
+      <div style="font-size:11px;color:var(--muted);">1 click to defeat</div>
+      <div style="font-size:12px;font-weight:700;color:var(--amber);background:var(--amber-light);padding:2px 10px;border-radius:20px;">+50 pts</div>
+    </div>
+
+    <!-- BOSS ENEMY -->
+    <div class="char-card" style="background:rgba(124,58,237,.1);border-color:#5b21b6;">
+      <svg class="char-svg" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
+        <!-- horns -->
+        <polygon points="18,18 14,4 24,14" fill="#7c3aed" stroke="#5b21b6" stroke-width="1.5"/>
+        <polygon points="42,18 46,4 36,14" fill="#7c3aed" stroke="#5b21b6" stroke-width="1.5"/>
+        <!-- head - bigger -->
+        <circle cx="30" cy="22" r="14" fill="#7c3aed" stroke="#5b21b6" stroke-width="1.5"/>
+        <!-- eyes -->
+        <circle cx="25" cy="19" r="3" fill="#fff"/>
+        <circle cx="35" cy="19" r="3" fill="#fff"/>
+        <circle cx="25" cy="19" r="1.5" fill="#dc2626"/>
+        <circle cx="35" cy="19" r="1.5" fill="#dc2626"/>
+        <!-- scary mouth -->
+        <path d="M23 27 L25 25 L27 27 L29 25 L31 27 L33 25 L35 27 L37 27" stroke="#5b21b6" stroke-width="1.5" fill="none"/>
+        <!-- body - bigger -->
+        <rect x="14" y="37" width="32" height="28" rx="4" fill="#7c3aed" stroke="#5b21b6" stroke-width="1.5"/>
+        <!-- arms - bigger -->
+        <rect x="2" y="38" width="12" height="9" rx="4" fill="#7c3aed" stroke="#5b21b6" stroke-width="1.5"/>
+        <rect x="46" y="38" width="12" height="9" rx="4" fill="#7c3aed" stroke="#5b21b6" stroke-width="1.5"/>
+        <!-- legs -->
+        <rect x="15" y="65" width="11" height="18" rx="4" fill="#5b21b6" stroke="#4c1d95" stroke-width="1.5"/>
+        <rect x="34" y="65" width="11" height="18" rx="4" fill="#5b21b6" stroke="#4c1d95" stroke-width="1.5"/>
+        <!-- HP bars -->
+        <rect x="16" y="44" width="28" height="5" rx="2" fill="#4c1d95"/>
+        <rect x="16" y="44" width="28" height="5" rx="2" fill="#a855f7"/>
+        <text x="30" y="48.5" text-anchor="middle" font-size="4" fill="white" font-family="sans-serif" font-weight="bold">3 HP</text>
+      </svg>
+      <div style="font-size:13px;font-weight:800;color:#7c3aed;">Boss Enemy</div>
+      <div style="font-size:11px;color:var(--muted);">3 clicks to defeat</div>
+      <div style="font-size:12px;font-weight:700;color:var(--accent2);background:var(--accent-light);padding:2px 10px;border-radius:20px;">+100 pts</div>
+    </div>
+
+  </div>
+
+  <!-- TARGET RULES -->
+  <table class="target-table" style="margin-top:14px;">
+    <thead><tr><th></th><th>Enemy Type</th><th>Color</th><th>Health</th><th>Points</th><th>How Many</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>🔴</td>
+        <td style="font-weight:700;">Normal Enemy</td>
+        <td><span style="background:var(--red-light);color:var(--red);font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 8px;border-radius:4px;">"Really red"</span></td>
+        <td>1 HP — 1 click</td>
+        <td style="color:var(--green);font-weight:700;">+10 pts</td>
+        <td>7 enemies</td>
+      </tr>
+      <tr>
+        <td>🟡</td>
+        <td style="font-weight:700;">Gold Enemy</td>
+        <td><span style="background:var(--amber-light);color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 8px;border-radius:4px;">"Bright yellow"</span></td>
+        <td>1 HP — 1 click</td>
+        <td style="color:var(--amber);font-weight:700;">+50 pts</td>
+        <td>2 enemies</td>
+      </tr>
+      <tr>
+        <td>🟣</td>
+        <td style="font-weight:700;">Boss Enemy</td>
+        <td><span style="background:var(--accent-light);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 8px;border-radius:4px;">"Royal purple"</span></td>
+        <td>3 HP — 3 clicks</td>
+        <td style="color:var(--accent2);font-weight:700;">+100 pts</td>
+        <td>1 boss</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- BUILD STEPS -->
+<div class="sec">
+  <div class="sec-title">How to Build — Step by Step</div>
+  <ul class="steps">
+    <li class="step">
+      <div class="snum n1">1</div>
+      <div>
+        <div class="stitle">Open Studio → Baseplate → ServerScriptService → Script</div>
+        <div class="sdesc">All the code goes in one script. No Parts need to be placed manually — the script builds everything.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n2">2</div>
+      <div>
+        <div class="stitle">The script creates the leaderboard first</div>
+        <div class="sdesc">A <ic>Score</ic> stat and a <ic>Kills</ic> stat are created for every player who joins.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n3">3</div>
+      <div>
+        <div class="stitle">A function builds one enemy character</div>
+        <div class="sdesc">The <ic>createEnemy()</ic> function makes a character from Parts — a head, body, arms, and legs. It takes position, color, health, and points as parameters.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n4">4</div>
+      <div>
+        <div class="stitle">A for loop calls createEnemy() for all 10 enemies</div>
+        <div class="sdesc">7 normal, 2 gold, 1 boss — each placed in a different spot across the map.</div>
+      </div>
+    </li>
+    <li class="step">
+      <div class="snum n5">5</div>
+      <div>
+        <div class="stitle">Press F5 — aim and click the enemies to shoot them</div>
+        <div class="sdesc">Click the head or body of each enemy. Watch the score go up on the leaderboard. The boss needs 3 clicks — it shows its remaining HP each time.</div>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<div class="divider"></div>
+
+<!-- COMPLETE SCRIPT -->
+<div class="sec">
+  <div class="sec-title">Complete Script</div>
+
+  <div class="two-col">
+    <!-- LEFT: Leaderstats + createEnemy function -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-ttl">Part 1 — Leaderboard + shoot sound</span>
+          <span class="code-badge cb-green">leaderstats</span>
+        </div>
+        <div class="code-body">
+<span class="ck">local</span> <span class="cv">Players</span> <span class="co">=</span> game:<span class="cf">GetService</span>(<span class="cs">"Players"</span>)<br><br>
+<span class="cc">-- Shoot sound</span><br>
+<span class="ck">local</span> <span class="cv">shootSound</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Sound"</span>)<br>
+<span class="cv">shootSound</span>.Parent  <span class="co">=</span> workspace<br>
+<span class="cv">shootSound</span>.SoundId <span class="co">=</span> <span class="cs">"rbxassetid://5853106423"</span><br>
+<span class="cv">shootSound</span>.Volume  <span class="co">=</span> <span class="cs">1</span><br><br>
+<span class="cc">-- Win sound</span><br>
+<span class="ck">local</span> <span class="cv">winSound</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Sound"</span>)<br>
+<span class="cv">winSound</span>.Parent  <span class="co">=</span> workspace<br>
+<span class="cv">winSound</span>.SoundId <span class="co">=</span> <span class="cs">"rbxassetid://4612355792"</span><br>
+<span class="cv">winSound</span>.Volume  <span class="co">=</span> <span class="cs">1</span><br><br>
+<span class="ck">local</span> <span class="cv">totalEnemies</span> <span class="co">=</span> <span class="cs">10</span><br>
+<span class="ck">local</span> <span class="cv">defeated</span>     <span class="co">=</span> <span class="cs">0</span><br>
+<span class="ck">local</span> <span class="cv">currentPlayer</span> <span class="co">=</span> <span class="cs">nil</span><br><br>
+<span class="cv">Players</span>.PlayerAdded:<span class="cf">Connect</span>(<span class="ck">function</span>(<span class="cv">player</span>)<br>
+&nbsp;&nbsp;<span class="cv">currentPlayer</span> <span class="co">=</span> <span class="cv">player</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">ls</span>    <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Folder"</span>)<br>
+&nbsp;&nbsp;<span class="cv">ls</span>.Name   <span class="co">=</span> <span class="cs">"leaderstats"</span><br>
+&nbsp;&nbsp;<span class="cv">ls</span>.Parent <span class="co">=</span> <span class="cv">player</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">score</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"IntValue"</span>)<br>
+&nbsp;&nbsp;<span class="cv">score</span>.Name <span class="co">=</span> <span class="cs">"Score"</span> ; <span class="cv">score</span>.Value <span class="co">=</span> <span class="cs">0</span><br>
+&nbsp;&nbsp;<span class="cv">score</span>.Parent <span class="co">=</span> <span class="cv">ls</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">kills</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"IntValue"</span>)<br>
+&nbsp;&nbsp;<span class="cv">kills</span>.Name <span class="co">=</span> <span class="cs">"Kills"</span> ; <span class="cv">kills</span>.Value <span class="co">=</span> <span class="cs">0</span><br>
+&nbsp;&nbsp;<span class="cv">kills</span>.Parent <span class="co">=</span> <span class="cv">ls</span><br>
+<span class="ck">end</span>)
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-ttl">Part 2 — createEnemy() function</span>
+          <span class="code-badge cb-purple">builds character</span>
+        </div>
+        <div class="code-body">
+<span class="ck">local function</span> <span class="cf">createEnemy</span>(<span class="cv">pos</span>, <span class="cv">color</span>, <span class="cv">hp</span>, <span class="cv">pts</span>)<br><br>
+&nbsp;&nbsp;<span class="cc">-- MODEL to hold all body parts</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">model</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Model"</span>)<br>
+&nbsp;&nbsp;<span class="cv">model</span>.Name   <span class="co">=</span> <span class="cs">"Enemy"</span><br>
+&nbsp;&nbsp;<span class="cv">model</span>.Parent <span class="co">=</span> workspace<br><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">bc</span> <span class="co">=</span> BrickColor.<span class="cf">new</span>(<span class="cv">color</span>)<br><br>
+&nbsp;&nbsp;<span class="cc">-- HEAD</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">head</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Part"</span>)<br>
+&nbsp;&nbsp;<span class="cv">head</span>.Size       <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cs">2</span>,<span class="cs">2</span>,<span class="cs">2</span>)<br>
+&nbsp;&nbsp;<span class="cv">head</span>.BrickColor <span class="co">=</span> <span class="cv">bc</span><br>
+&nbsp;&nbsp;<span class="cv">head</span>.Shape      <span class="co">=</span> Enum.PartType.<span class="cf">Ball</span><br>
+&nbsp;&nbsp;<span class="cv">head</span>.Material   <span class="co">=</span> Enum.Material.<span class="cf">Neon</span><br>
+&nbsp;&nbsp;<span class="cv">head</span>.Anchored   <span class="co">=</span> <span class="cs">true</span><br>
+&nbsp;&nbsp;<span class="cv">head</span>.Position   <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">pos</span>.X, <span class="cv">pos</span>.Y <span class="co">+</span> <span class="cs">4</span>, <span class="cv">pos</span>.Z)<br>
+&nbsp;&nbsp;<span class="cv">head</span>.Parent     <span class="co">=</span> <span class="cv">model</span><br><br>
+&nbsp;&nbsp;<span class="cc">-- BODY</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">body</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Part"</span>)<br>
+&nbsp;&nbsp;<span class="cv">body</span>.Size       <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cs">2</span>,<span class="cs">3</span>,<span class="cs">1</span>)<br>
+&nbsp;&nbsp;<span class="cv">body</span>.BrickColor <span class="co">=</span> <span class="cv">bc</span><br>
+&nbsp;&nbsp;<span class="cv">body</span>.Anchored   <span class="co">=</span> <span class="cs">true</span><br>
+&nbsp;&nbsp;<span class="cv">body</span>.Position   <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">pos</span>.X, <span class="cv">pos</span>.Y <span class="co">+</span> <span class="cs">1.5</span>, <span class="cv">pos</span>.Z)<br>
+&nbsp;&nbsp;<span class="cv">body</span>.Parent     <span class="co">=</span> <span class="cv">model</span><br><br>
+&nbsp;&nbsp;<span class="cc">-- LEFT LEG</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">legL</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Part"</span>)<br>
+&nbsp;&nbsp;<span class="cv">legL</span>.Size     <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cs">0.8</span>,<span class="cs">2</span>,<span class="cs">0.8</span>)<br>
+&nbsp;&nbsp;<span class="cv">legL</span>.BrickColor <span class="co">=</span> <span class="cv">bc</span><br>
+&nbsp;&nbsp;<span class="cv">legL</span>.Anchored <span class="co">=</span> <span class="cs">true</span><br>
+&nbsp;&nbsp;<span class="cv">legL</span>.Position <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">pos</span>.X <span class="co">-</span> <span class="cs">0.6</span>, <span class="cv">pos</span>.Y <span class="co">-</span> <span class="cs">1</span>, <span class="cv">pos</span>.Z)<br>
+&nbsp;&nbsp;<span class="cv">legL</span>.Parent   <span class="co">=</span> <span class="cv">model</span><br><br>
+&nbsp;&nbsp;<span class="cc">-- RIGHT LEG</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">legR</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"Part"</span>)<br>
+&nbsp;&nbsp;<span class="cv">legR</span>.Size     <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cs">0.8</span>,<span class="cs">2</span>,<span class="cs">0.8</span>)<br>
+&nbsp;&nbsp;<span class="cv">legR</span>.BrickColor <span class="co">=</span> <span class="cv">bc</span><br>
+&nbsp;&nbsp;<span class="cv">legR</span>.Anchored <span class="co">=</span> <span class="cs">true</span><br>
+&nbsp;&nbsp;<span class="cv">legR</span>.Position <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">pos</span>.X <span class="co">+</span> <span class="cs">0.6</span>, <span class="cv">pos</span>.Y <span class="co">-</span> <span class="cs">1</span>, <span class="cv">pos</span>.Z)<br>
+&nbsp;&nbsp;<span class="cv">legR</span>.Parent   <span class="co">=</span> <span class="cv">model</span><br><br>
+&nbsp;&nbsp;<span class="cc">-- CLICKDETECTOR on the body</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">detector</span> <span class="co">=</span> Instance.<span class="cf">new</span>(<span class="cs">"ClickDetector"</span>)<br>
+&nbsp;&nbsp;<span class="cv">detector</span>.MaxActivationDistance <span class="co">=</span> <span class="cs">100</span><br>
+&nbsp;&nbsp;<span class="cv">detector</span>.Parent <span class="co">=</span> <span class="cv">body</span><br><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">currentHp</span> <span class="co">=</span> <span class="cv">hp</span><br><br>
+&nbsp;&nbsp;<span class="cv">detector</span>.MouseClick:<span class="cf">Connect</span>(<span class="ck">function</span>(<span class="cv">player</span>)<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">currentHp</span> <span class="co">=</span> <span class="cv">currentHp</span> <span class="co">-</span> <span class="cs">1</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">shootSound</span>:<span class="cf">Play</span>()<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">currentHp</span> <span class="co">&gt;</span> <span class="cs">0</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cc">-- boss still alive — flash white</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">body</span>.<span class="cp">BrickColor</span> <span class="co">=</span> BrickColor.<span class="cf">new</span>(<span class="cs">"White"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;task.<span class="cf">wait</span>(<span class="cs">0.1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">body</span>.<span class="cp">BrickColor</span> <span class="co">=</span> <span class="cv">bc</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💥 Boss HP left: "</span> <span class="co">..</span> <span class="cv">currentHp</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cc">-- enemy defeated!</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">player</span>.leaderstats.Score.Value <span class="co">+=</span> <span class="cv">pts</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">player</span>.leaderstats.Kills.Value <span class="co">+=</span> <span class="cs">1</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">defeated</span> <span class="co">+=</span> <span class="cs">1</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💀 +"</span> <span class="co">..</span> <span class="cv">pts</span> <span class="co">..</span> <span class="cs">" pts! Score: "</span> <span class="co">..</span> <span class="cv">player</span>.leaderstats.Score.Value)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">model</span>:<span class="cf">Destroy</span>()<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">defeated</span> <span class="co">==</span> <span class="cv">totalEnemies</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">winSound</span>:<span class="cf">Play</span>()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"══════════════════════"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🏆 "</span> <span class="co">..</span> <span class="cv">player</span>.Name <span class="co">..</span> <span class="cs">" WINS!"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Final Score: "</span> <span class="co">..</span> <span class="cv">player</span>.leaderstats.Score.Value)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"══════════════════════"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">end</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="ck">end</span><br>
+&nbsp;&nbsp;<span class="ck">end</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: Spawn enemies + output -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-ttl">Part 3 — Spawn all 10 enemies</span>
+          <span class="code-badge cb-red">for loop</span>
+        </div>
+        <div class="code-body">
+<span class="cc">-- Spawn 7 Normal enemies</span><br>
+<span class="ck">for</span> <span class="cv">i</span> <span class="co">=</span> <span class="cs">1</span>, <span class="cs">7</span> <span class="ck">do</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">pos</span> <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">i</span> <span class="co">*</span> <span class="cs">8</span>, <span class="cs">4</span>, <span class="cs">10</span>)<br>
+&nbsp;&nbsp;<span class="cf">createEnemy</span>(<span class="cv">pos</span>, <span class="cs">"Really red"</span>, <span class="cs">1</span>, <span class="cs">10</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="cc">-- Spawn 2 Gold enemies</span><br>
+<span class="ck">for</span> <span class="cv">i</span> <span class="co">=</span> <span class="cs">1</span>, <span class="cs">2</span> <span class="ck">do</span><br>
+&nbsp;&nbsp;<span class="ck">local</span> <span class="cv">pos</span> <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cv">i</span> <span class="co">*</span> <span class="cs">20</span>, <span class="cs">4</span>, <span class="co">-</span><span class="cs">10</span>)<br>
+&nbsp;&nbsp;<span class="cf">createEnemy</span>(<span class="cv">pos</span>, <span class="cs">"Bright yellow"</span>, <span class="cs">1</span>, <span class="cs">50</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="cc">-- Spawn 1 Boss — 3 HP, 100 pts</span><br>
+<span class="ck">local</span> <span class="cv">bossPos</span> <span class="co">=</span> Vector3.<span class="cf">new</span>(<span class="cs">30</span>, <span class="cs">4</span>, <span class="cs">0</span>)<br>
+<span class="cf">createEnemy</span>(<span class="cv">bossPos</span>, <span class="cs">"Royal purple"</span>, <span class="cs">3</span>, <span class="cs">100</span>)<br><br>
+<span class="cf">print</span>(<span class="cs">"🎯 10 enemies spawned!"</span>)<br>
+<span class="cf">print</span>(<span class="cs">"   Click to shoot them!"</span>)
+        </div>
+      </div>
+
+      <div class="output">
+        <div class="out-label">Output — full game run</div>
+        <div class="out-line">
+          🎯 10 enemies spawned!<br>
+          &nbsp;&nbsp; Click to shoot them!<br>
+        </div>
+        <div class="out-sep"></div>
+        <div class="out-line">
+          💀 +10 pts! Score: 10<br>
+          💀 +10 pts! Score: 20<br>
+          💀 +50 pts! Score: 70 ← gold!<br>
+          💥 Boss HP left: 2<br>
+          💥 Boss HP left: 1<br>
+          💀 +100 pts! Score: 170 ← boss!<br>
+        </div>
+        <div class="out-sep"></div>
+        <div class="out-line">
+          ══════════════════════<br>
+          🏆 Ahmed WINS!<br>
+          &nbsp;&nbsp; Final Score: 270<br>
+          ══════════════════════
+        </div>
+      </div>
+
+      <div class="note" style="border-color:#fcd34d;">
+        <div class="note-label" style="color:var(--amber);">Max Score Possible</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.9;margin-top:4px;">
+          7 Normal × 10 = <strong>70 pts</strong><br>
+          2 Gold × 50 = <strong>100 pts</strong><br>
+          1 Boss × 100 = <strong>100 pts</strong><br>
+          <span style="color:var(--amber);font-weight:700;">Total = 270 pts</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- BONUS + MARKING -->
+<div class="two-col sec">
+  <div>
+    <div class="sec-title" style="font-size:16px;">Bonus ⭐</div>
+    <div class="bonus">
+      <div style="font-size:12.5px;color:#4c1d95;line-height:1.85;">
+        <strong>1. Respawning enemies</strong> — after all enemies are killed, wait 5 seconds then spawn them all again using a while loop<br><br>
+        <strong>2. Miss penalty</strong> — add a second ClickDetector on the floor. If the player clicks the floor, -5 pts<br><br>
+        <strong>3. Timer</strong> — add a 60 second countdown. Print the score when time runs out even if all enemies aren't dead
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="sec-title" style="font-size:16px;">Marking</div>
+    <table class="rubric">
+      <thead><tr><th>Criterion</th><th style="text-align:center;">Pts</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>leaderstats with Score and Kills</td><td class="pts" style="text-align:center;color:var(--green);">2</td></tr>
+        <tr class="hl"><td>createEnemy() function with parameters</td><td class="pts" style="text-align:center;color:var(--green);">2</td></tr>
+        <tr class="hl"><td>ClickDetector shoots and destroys enemy</td><td class="pts" style="text-align:center;color:var(--green);">2</td></tr>
+        <tr class="hl"><td>if/else for red (10pts) vs gold (50pts)</td><td class="pts" style="text-align:center;color:var(--green);">1</td></tr>
+        <tr class="hl"><td>Boss takes 3 clicks with flash effect</td><td class="pts" style="text-align:center;color:var(--green);">2</td></tr>
+        <tr class="hl"><td>Win message when all 10 defeated</td><td class="pts" style="text-align:center;color:var(--green);">1</td></tr>
+        <tr class="total"><td>Total</td><td class="pts" style="text-align:center;color:var(--accent);font-size:15px;">10</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">SMIT · AI & Game Creators · Class 11 · Target Shooter Task</div>
+
+</div>
+</body>
+</html>

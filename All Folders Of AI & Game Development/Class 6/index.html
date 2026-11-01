@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 4 — Complete Game: The Dungeon Escape</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f4f0; --surface:#fff; --border:#e2e0d8; --border2:#d0cecc;
+  --text:#1a1a2e; --muted:#7a7880; --muted2:#a09ea8;
+  --accent:#4f46e5; --accent-light:#ede9fe; --accent2:#7c3aed;
+  --green:#059669; --green-light:#d1fae5;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --red:#dc2626; --red-light:#fee2e2;
+  --blue:#2563eb; --blue-light:#dbeafe;
+  --teal:#0d9488; --teal-light:#ccfbf1;
+  --pink:#db2777; --pink-light:#fce7f3;
+  --orange:#ea580c; --orange-light:#ffedd5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;padding:36px 44px 56px;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,#c8c6d0 1px,transparent 1px);background-size:28px 28px;opacity:.38;pointer-events:none;z-index:0;}
+.page{position:relative;z-index:1;max-width:1100px;margin:0 auto;}
+
+/* HEADER */
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:16px;}
+.course-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);border:1px solid #ddd6fe;border-radius:20px;padding:4px 13px;font-size:11px;font-weight:700;color:var(--accent2);letter-spacing:.5px;margin-bottom:10px;}
+.main-title{font-size:clamp(26px,4vw,44px);font-weight:900;color:var(--text);line-height:1.1;letter-spacing:-.5px;}
+.main-title span{color:var(--accent);}
+.main-sub{font-size:15px;color:var(--muted);margin-top:7px;font-weight:500;}
+.meta-pills{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 13px;font-size:12px;color:var(--muted);}
+.pill strong{color:var(--text);font-weight:700;}
+
+/* SECTION */
+.sec{margin-bottom:26px;}
+.sec-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* LAYOUT */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+/* GAME OVERVIEW */
+.game-hero{background:linear-gradient(135deg,#1e1e2e,#2d2b55);border:1px solid #4c4875;border-radius:16px;padding:24px 28px;display:flex;gap:24px;align-items:center;margin-bottom:24px;}
+.game-icon-big{font-size:56px;flex-shrink:0;}
+.game-hero-title{font-size:clamp(22px,3vw,34px);font-weight:900;color:#fff;letter-spacing:-.5px;margin-bottom:6px;}
+.game-hero-sub{font-size:13px;color:#94a3b8;line-height:1.6;}
+.game-hero-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+.gtag{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;font-family:'JetBrains Mono',monospace;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s;}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.07);}
+.ct{height:3px;position:absolute;top:0;left:0;right:0;border-radius:12px 12px 0 0;}
+.ct-blue{background:var(--blue);}   .ct-purple{background:var(--accent2);} .ct-amber{background:var(--amber);}
+.ct-green{background:var(--green);} .ct-red{background:var(--red);}        .ct-teal{background:var(--teal);}
+.ct-orange{background:var(--orange);}
+.card-icon{font-size:20px;margin-bottom:6px;margin-top:4px;}
+.card-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.card-text{font-size:11.5px;color:var(--muted);line-height:1.5;}
+
+/* CODE */
+.code-wrap{background:#12131f;border:1px solid #313244;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.12);}
+.code-hdr{background:#0a0b14;padding:9px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #313244;flex-wrap:wrap;gap:6px;}
+.code-ttl{font-size:9px;font-weight:700;letter-spacing:2px;color:#89b4fa;text-transform:uppercase;}
+.code-step{font-size:10px;font-weight:700;padding:2px 9px;border-radius:4px;}
+.cs1{background:rgba(37,99,235,.25);  color:#93c5fd;}
+.cs2{background:rgba(124,58,237,.25); color:#c4b5fd;}
+.cs3{background:rgba(5,150,105,.25);  color:#6ee7b7;}
+.cs4{background:rgba(217,119,6,.25);  color:#fcd34d;}
+.cs5{background:rgba(219,39,119,.25); color:#f9a8d4;}
+.cs6{background:rgba(220,38,38,.25);  color:#fca5a5;}
+.code-body{padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:2.05;}
+.ck{color:#bb9af7;font-weight:700;} .cs{color:#9ece6a;font-weight:600;} .cf{color:#e0af68;font-weight:600;} .cv{color:#7dcfff;} .cc{color:#565f89;font-style:italic;} .cp{color:#f7768e;}
+.co{color:#ff9e64;}
+
+/* OUTPUT */
+.output{background:#f0fff4;border:1px solid #6ee7b7;border-radius:10px;padding:13px 16px;}
+.out-label{font-size:10px;font-weight:700;color:var(--green);letter-spacing:1.5px;margin-bottom:8px;}
+.out-line{font-family:'JetBrains Mono',monospace;font-size:12px;color:#065f46;line-height:2.1;}
+.out-sep{height:1px;background:#a7f3d0;margin:6px 0;}
+.out-red{background:#fff5f5;border:1px solid #fca5a5;border-radius:10px;padding:13px 16px;}
+.out-red .out-label{color:var(--red);}
+.out-red .out-line{color:#991b1b;}
+
+/* INFO */
+.info{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.info-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.info-text{font-size:12.5px;color:var(--muted);line-height:1.6;}
+
+/* ROOM VISUAL */
+.rooms-row{display:flex;gap:10px;align-items:center;justify-content:center;margin:12px 0;}
+.room-box{border-radius:12px;padding:14px 12px;text-align:center;min-width:110px;transition:all .2s;border:2px solid transparent;}
+.room-box:hover{transform:translateY(-2px);}
+.room-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;margin-bottom:4px;}
+.room-icon{font-size:28px;margin-bottom:6px;}
+.room-name{font-size:12px;font-weight:700;}
+.room-desc{font-size:10px;margin-top:3px;}
+.room-arrow{font-size:22px;color:var(--border2);}
+
+/* VARIABLE TABLE */
+.vtable{width:100%;border-collapse:separate;border-spacing:0 3px;}
+.vtable th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:7px 14px;text-align:left;}
+.vtable td{padding:9px 14px;font-size:12.5px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);vertical-align:middle;}
+.vtable tr td:first-child{border-left:1px solid var(--border);border-radius:7px 0 0 7px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--accent2);}
+.vtable tr td:last-child{border-right:1px solid var(--border);border-radius:0 7px 7px 0;font-size:11px;color:var(--muted2);}
+.dtype{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.d-str{background:var(--blue-light);color:var(--blue);}
+.d-num{background:var(--amber-light);color:var(--amber);}
+.d-bool{background:var(--green-light);color:var(--green);}
+
+/* IF/ELSE MARKER */
+.if-marker{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;margin-left:6px;vertical-align:middle;}
+.m-if{background:var(--blue-light);color:var(--blue);}
+.m-else{background:var(--red-light);color:var(--red);}
+.m-elseif{background:var(--amber-light);color:var(--amber);}
+.m-and{background:var(--green-light);color:var(--green);}
+
+/* BONUS */
+.bonus{background:linear-gradient(135deg,#fdf4ff,#ede9fe);border:1px solid #ddd6fe;border-radius:12px;padding:18px 22px;}
+
+/* FOOTER */
+.footer{text-align:center;padding-top:18px;border-top:1px solid var(--border);font-size:12px;color:var(--muted2);margin-top:8px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <div class="course-tag">CLASS 4 · COMPLETE GAME · if / elseif / else</div>
+    <h1 class="main-title">🏰 The <span>Dungeon Escape</span></h1>
+    <p class="main-sub">A complete Roblox game built entirely with variables, conditions, and Parts</p>
+  </div>
+  <div class="meta-pills">
+    <div class="pill">🎮 <strong>Complete Game</strong></div>
+    <div class="pill">📦 <strong>6 Parts · 1 Script</strong></div>
+    <div class="pill">🔀 <strong>if / elseif / else</strong></div>
+    <div class="pill">⏱ <strong>Build in 40 min</strong></div>
+  </div>
+</div>
+
+<!-- GAME OVERVIEW -->
+<div class="game-hero">
+  <div class="game-icon-big">🏰</div>
+  <div>
+    <div class="game-hero-title">The Dungeon Escape</div>
+    <div class="game-hero-sub">
+      The player is trapped in a dungeon. They must pass through 4 rooms — each room has a challenge. Each room checks the player's stats using if/else and decides what happens. If the player survives all 4 rooms with health above 0, they escape and win. Every single decision in this game is made by a condition.
+    </div>
+    <div class="game-hero-tags">
+      <span class="gtag" style="background:rgba(79,70,229,.2);color:#a5b4fc;">Variables</span>
+      <span class="gtag" style="background:rgba(5,150,105,.2);color:#6ee7b7;">if / else</span>
+      <span class="gtag" style="background:rgba(245,158,11,.2);color:#fcd34d;">elseif</span>
+      <span class="gtag" style="background:rgba(219,39,119,.2);color:#f9a8d4;">and / or</span>
+      <span class="gtag" style="background:rgba(14,165,233,.2);color:#7dd3fc;">BrickColor</span>
+      <span class="gtag" style="background:rgba(168,85,247,.2);color:#d8b4fe;">Transparency</span>
+      <span class="gtag" style="background:rgba(239,68,68,.2);color:#fca5a5;">Math Operators</span>
+    </div>
+  </div>
+</div>
+
+<!-- ROOM MAP -->
+<div class="sec">
+  <div class="sec-label">Game Map — 4 Rooms + 2 Special Parts</div>
+  <div class="rooms-row">
+    <div class="room-box" style="background:#dbeafe;border-color:#93c5fd;">
+      <div class="room-num" style="color:var(--blue);">START</div>
+      <div class="room-icon">🚪</div>
+      <div class="room-name" style="color:var(--blue);">Entry Gate</div>
+      <div class="room-desc" style="color:#1e40af;">Check if player<br>has enough HP</div>
+    </div>
+    <div class="room-arrow">→</div>
+    <div class="room-box" style="background:#fef3c7;border-color:#fcd34d;">
+      <div class="room-num" style="color:var(--amber);">ROOM 1</div>
+      <div class="room-icon">🔥</div>
+      <div class="room-name" style="color:var(--amber);">Fire Room</div>
+      <div class="room-desc" style="color:#92400e;">Takes damage<br>based on armour</div>
+    </div>
+    <div class="room-arrow">→</div>
+    <div class="room-box" style="background:#ede9fe;border-color:#c4b5fd;">
+      <div class="room-num" style="color:var(--accent2);">ROOM 2</div>
+      <div class="room-icon">🔐</div>
+      <div class="room-name" style="color:var(--accent2);">Locked Door</div>
+      <div class="room-desc" style="color:#5b21b6;">Need key OR<br>enough gold</div>
+    </div>
+    <div class="room-arrow">→</div>
+    <div class="room-box" style="background:#fce7f3;border-color:#f9a8d4;">
+      <div class="room-num" style="color:var(--pink);">ROOM 3</div>
+      <div class="room-icon">🧌</div>
+      <div class="room-name" style="color:var(--pink);">Boss Fight</div>
+      <div class="room-desc" style="color:#9d174d;">Attack vs boss<br>health check</div>
+    </div>
+    <div class="room-arrow">→</div>
+    <div class="room-box" style="background:var(--green-light);border-color:#6ee7b7;">
+      <div class="room-num" style="color:var(--green);">ROOM 4</div>
+      <div class="room-icon">🏆</div>
+      <div class="room-name" style="color:var(--green);">Score Rank</div>
+      <div class="room-desc" style="color:#065f46;">Gold/Silver/<br>Bronze rank</div>
+    </div>
+    <div class="room-arrow">→</div>
+    <div class="room-box" style="background:#ccfbf1;border-color:#5eead4;">
+      <div class="room-num" style="color:var(--teal);">END</div>
+      <div class="room-icon">🌟</div>
+      <div class="room-name" style="color:var(--teal);">Escape!</div>
+      <div class="room-desc" style="color:#0f766e;">Win screen<br>or Game Over</div>
+    </div>
+  </div>
+</div>
+
+<!-- VARIABLES -->
+<div class="sec">
+  <div class="sec-label">Step 1 — All Game Variables</div>
+  <div class="two-col">
+    <table class="vtable">
+      <thead><tr><th>Variable</th><th>Value</th><th>Type</th><th>Used In</th></tr></thead>
+      <tbody>
+        <tr><td>playerName</td><td>"Ahmed"</td><td><span class="dtype d-str">String</span></td><td>Welcome + final screen</td></tr>
+        <tr><td>health</td><td>100</td><td><span class="dtype d-num">Number</span></td><td>Every room — life tracker</td></tr>
+        <tr><td>maxHealth</td><td>100</td><td><span class="dtype d-num">Number</span></td><td>Entry gate check</td></tr>
+        <tr><td>attackPower</td><td>40</td><td><span class="dtype d-num">Number</span></td><td>Boss fight room</td></tr>
+        <tr><td>armour</td><td>10</td><td><span class="dtype d-num">Number</span></td><td>Fire room damage reduction</td></tr>
+        <tr><td>gold</td><td>80</td><td><span class="dtype d-num">Number</span></td><td>Locked door room</td></tr>
+        <tr><td>score</td><td>0</td><td><span class="dtype d-num">Number</span></td><td>Increases each room — rank at end</td></tr>
+        <tr><td>hasKey</td><td>false</td><td><span class="dtype d-bool">Boolean</span></td><td>Locked door room</td></tr>
+        <tr><td>isAlive</td><td>true</td><td><span class="dtype d-bool">Boolean</span></td><td>Win / Game Over check</td></tr>
+      </tbody>
+    </table>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETE CODE -->
+<div class="sec">
+  <div class="sec-label">Step 2 — Complete Game Script (ServerScriptService → Script)</div>
+
+  <div class="two-col" style="align-items:start;">
+    <div style="display:flex;flex-direction:column;gap:10px;">
+
+      <!-- BLOCK 1: Variables + Parts -->
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-ttl">BLOCK 1 — Variables + Part References</span>
+          <span class="code-step cs1">Setup</span>
+        </div>
+        <div class="code-body">
+<span class="cc">-- ══════════════════════════════</span><br>
+<span class="cc">--   THE DUNGEON ESCAPE</span><br>
+<span class="cc">--   A complete game using if/else</span><br>
+<span class="cc">-- ══════════════════════════════</span><br><br>
+<span class="cc">-- PLAYER STATS</span><br>
+<span class="ck">local</span> <span class="cv">playerName</span>  = <span class="cs">"Ahmed"</span><br>
+<span class="ck">local</span> <span class="cv">health</span>      = <span class="cs">100</span><br>
+<span class="ck">local</span> <span class="cv">maxHealth</span>   = <span class="cs">100</span><br>
+<span class="ck">local</span> <span class="cv">attackPower</span> = <span class="cs">40</span><br>
+<span class="ck">local</span> <span class="cv">armour</span>      = <span class="cs">10</span><br>
+<span class="ck">local</span> <span class="cv">gold</span>        = <span class="cs">80</span><br>
+<span class="ck">local</span> <span class="cv">score</span>       = <span class="cs">0</span><br>
+<span class="ck">local</span> <span class="cv">hasKey</span>      = <span class="cs">false</span><br>
+<span class="ck">local</span> <span class="cv">isAlive</span>     = <span class="cs">true</span><br><br>
+<span class="cc">-- PART REFERENCES</span><br>
+<span class="ck">local</span> <span class="cv">entryGate</span>   = workspace.EntryGate<br>
+<span class="ck">local</span> <span class="cv">fireRoom</span>    = workspace.FireRoom<br>
+<span class="ck">local</span> <span class="cv">lockedDoor</span>  = workspace.LockedDoor<br>
+<span class="ck">local</span> <span class="cv">bossRoom</span>    = workspace.BossRoom<br>
+<span class="ck">local</span> <span class="cv">rankRoom</span>    = workspace.RankRoom<br>
+<span class="ck">local</span> <span class="cv">escapePortal</span>= workspace.EscapePortal
+        </div>
+      </div>
+
+      <!-- BLOCK 2: WELCOME -->
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-ttl">BLOCK 2 — Welcome Screen</span>
+          <span class="code-step cs1">print()</span>
+        </div>
+        <div class="code-body">
+<span class="cf">print</span>(<span class="cs">"════════════════════════════"</span>)<br>
+<span class="cf">print</span>(<span class="cs">"  🏰 THE DUNGEON ESCAPE"</span>)<br>
+<span class="cf">print</span>(<span class="cs">"════════════════════════════"</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Player  : "</span> .. <span class="cv">playerName</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Health  : "</span> .. <span class="cv">health</span> .. <span class="cs">" / "</span> .. <span class="cv">maxHealth</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Attack  : "</span> .. <span class="cv">attackPower</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Armour  : "</span> .. <span class="cv">armour</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Gold    : "</span> .. <span class="cv">gold</span>)<br>
+<span class="cf">print</span>(<span class="cs">"Key     : "</span> .. <span class="cf">tostring</span>(<span class="cv">hasKey</span>))<br>
+<span class="cf">print</span>(<span class="cs">"════════════════════════════"</span>)
+        </div>
+      </div>
+
+      <!-- BLOCK 3: ENTRY GATE -->
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-ttl">BLOCK 3 — Entry Gate</span>
+          <span class="code-step cs1">if / else</span>
+        </div>
+        <div class="code-body">
+<span class="cc">-- 🚪 ENTRY GATE</span><br>
+<span class="cc">-- Need at least 50 HP to enter</span><br>
+<span class="cf">print</span>(<span class="cs">"</span><span class="cs">🚪 Approaching the gate..."</span>)<br><br>
+<span class="ck">if</span> <span class="cv">health</span> &gt;= <span class="cs">50</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">entryGate</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Lime green"</span>)<br>
+&nbsp;&nbsp;<span class="cv">entryGate</span>.<span class="cp">Transparency</span> = <span class="cs">0.5</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"✅ Gate OPEN — Enter, "</span> .. <span class="cv">playerName</span>)<br>
+&nbsp;&nbsp;<span class="cv">score</span> = <span class="cv">score</span> + <span class="cs">10</span><br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cv">entryGate</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Bright red"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"❌ Gate LOCKED — Too weak!"</span>)<br>
+&nbsp;&nbsp;<span class="cv">isAlive</span> = <span class="cs">false</span><br>
+<span class="ck">end</span>
+        </div>
+      </div>
+
+      <!-- BLOCK 4: FIRE ROOM -->
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-ttl">BLOCK 4 — Fire Room</span>
+          <span class="code-step cs4">if / elseif / else</span>
+        </div>
+        <div class="code-body">
+<span class="cc">-- 🔥 FIRE ROOM</span><br>
+<span class="cc">-- Armour reduces fire damage</span><br>
+<span class="ck">local</span> <span class="cv">fireDamage</span> = <span class="cs">50</span> - <span class="cv">armour</span>  <span class="cc">-- armour reduces it</span><br><br>
+<span class="cv">fireRoom</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Dark orange"</span>)<br>
+<span class="cv">fireRoom</span>.<span class="cp">Material</span>   = Enum.Material.<span class="cf">Neon</span><br><br>
+<span class="cf">print</span>(<span class="cs">"🔥 Fire Room! Damage: "</span> .. <span class="cv">fireDamage</span>)<br><br>
+<span class="ck">if</span> <span class="cv">armour</span> &gt;= <span class="cs">30</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🛡️ Heavy armour — no damage!"</span>)<br>
+&nbsp;&nbsp;<span class="cv">score</span> = <span class="cv">score</span> + <span class="cs">20</span><br>
+<span class="ck">elseif</span> <span class="cv">armour</span> &gt;= <span class="cs">10</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">health</span> = <span class="cv">health</span> - <span class="cv">fireDamage</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🟡 Partial armour — took "</span> .. <span class="cv">fireDamage</span> .. <span class="cs">" dmg"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Health: "</span> .. <span class="cv">health</span>)<br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cv">health</span> = <span class="cv">health</span> - <span class="cs">50</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🔴 No armour! Full 50 damage!"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Health: "</span> .. <span class="cv">health</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="ck">if</span> <span class="cv">health</span> &lt;= <span class="cs">0</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">isAlive</span> = <span class="cs">false</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💀 Burned alive!"</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div style="display:flex;flex-direction:column;gap:10px;">
+
+      <!-- BLOCK 5: LOCKED DOOR -->
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-ttl">BLOCK 5 — Locked Door</span>
+          <span class="code-step cs2">if + or</span>
+        </div>
+        <div class="code-body">
+<span class="cc">-- 🔐 LOCKED DOOR</span><br>
+<span class="cc">-- Need key OR 100+ gold to pass</span><br>
+<span class="ck">local</span> <span class="cv">doorCost</span> = <span class="cs">100</span><br><br>
+<span class="ck">if</span> <span class="cv">hasKey</span> == <span class="cs">true</span> <span class="ck">or</span> <span class="cv">gold</span> &gt;= <span class="cv">doorCost</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">lockedDoor</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Lime green"</span>)<br>
+&nbsp;&nbsp;<span class="cv">lockedDoor</span>.<span class="cp">Transparency</span> = <span class="cs">0.8</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🔓 Door OPEN!"</span>)<br>
+&nbsp;&nbsp;<span class="ck">if</span> <span class="cv">hasKey</span> == <span class="cs">true</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Used the key!"</span>)<br>
+&nbsp;&nbsp;<span class="ck">else</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cv">gold</span> = <span class="cv">gold</span> - <span class="cv">doorCost</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Paid gold. Left: "</span> .. <span class="cv">gold</span>)<br>
+&nbsp;&nbsp;<span class="ck">end</span><br>
+&nbsp;&nbsp;<span class="cv">score</span> = <span class="cv">score</span> + <span class="cs">20</span><br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cv">lockedDoor</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Dark red"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🔒 LOCKED! Need key or 100 gold"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   You have: "</span> .. <span class="cv">gold</span> .. <span class="cs">" gold"</span>)<br>
+&nbsp;&nbsp;<span class="cv">health</span> = <span class="cv">health</span> - <span class="cs">20</span>  <span class="cc">-- penalty!</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   -20 HP penalty! Health: "</span> .. <span class="cv">health</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+
+      <!-- BLOCK 6: BOSS -->
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-ttl">BLOCK 6 — Boss Fight</span>
+          <span class="code-step cs5">if + and</span>
+        </div>
+        <div class="code-body">
+<span class="cc">-- 🧌 BOSS FIGHT</span><br>
+<span class="ck">local</span> <span class="cv">bossHealth</span> = <span class="cs">35</span><br>
+<span class="ck">local</span> <span class="cv">bossAttack</span> = <span class="cs">25</span><br><br>
+<span class="cv">bossRoom</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Hot pink"</span>)<br>
+<span class="cv">bossRoom</span>.<span class="cp">Material</span>   = Enum.Material.<span class="cf">Neon</span><br>
+<span class="cf">print</span>(<span class="cs">"🧌 BOSS appears! HP: "</span> .. <span class="cv">bossHealth</span>)<br><br>
+<span class="ck">if</span> <span class="cv">attackPower</span> &gt;= <span class="cv">bossHealth</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">bossRoom</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Lime green"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"⚔️ Boss DEFEATED in one hit!"</span>)<br>
+&nbsp;&nbsp;<span class="cv">score</span> = <span class="cv">score</span> + <span class="cs">30</span><br>
+<span class="ck">elseif</span> <span class="cv">attackPower</span> &gt;= <span class="cv">bossHealth</span> / <span class="cs">2</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">health</span> = <span class="cv">health</span> - <span class="cv">bossAttack</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🤜 Boss wounded — survived but took "</span> .. <span class="cv">bossAttack</span> .. <span class="cs">" dmg"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Health: "</span> .. <span class="cv">health</span>)<br>
+&nbsp;&nbsp;<span class="cv">score</span> = <span class="cv">score</span> + <span class="cs">15</span><br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cv">health</span> = <span class="cv">health</span> - (bossAttack * <span class="cs">2</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💀 Too weak! Boss dealt double damage!"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Health: "</span> .. <span class="cv">health</span>)<br>
+<span class="ck">end</span><br><br>
+<span class="ck">if</span> <span class="cv">health</span> &lt;= <span class="cs">0</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">isAlive</span> = <span class="cs">false</span><br>
+<span class="ck">end</span>
+        </div>
+      </div>
+
+      <!-- BLOCK 7: RANK -->
+      <div class="code-wrap">
+        <div class="code-hdr">
+          <span class="code-ttl">BLOCK 7 — Score Rank Room</span>
+          <span class="code-step cs3">elseif chain</span>
+        </div>
+        <div class="code-body">
+<span class="cc">-- 🏆 RANK ROOM</span><br>
+<span class="cf">print</span>(<span class="cs">"🏆 Final Score: "</span> .. <span class="cv">score</span>)<br><br>
+<span class="ck">if</span> <span class="cv">score</span> &gt;= <span class="cs">70</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">rankRoom</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Bright yellow"</span>)<br>
+&nbsp;&nbsp;<span class="cv">rankRoom</span>.<span class="cp">Material</span>   = Enum.Material.<span class="cf">Neon</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🥇 Rank: GOLD — Legendary!"</span>)<br>
+<span class="ck">elseif</span> <span class="cv">score</span> &gt;= <span class="cs">40</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">rankRoom</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"White"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🥈 Rank: SILVER — Well done!"</span>)<br>
+<span class="ck">elseif</span> <span class="cv">score</span> &gt;= <span class="cs">20</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">rankRoom</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Dark orange"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🥉 Rank: BRONZE — Keep going!"</span>)<br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cv">rankRoom</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Medium stone grey"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"❌ No rank — Try again!"</span>)<br>
+<span class="ck">end</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BLOCK 8: WIN/LOSE — Full width -->
+  <div class="code-wrap" style="margin-top:10px;">
+    <div class="code-hdr">
+      <span class="code-ttl">BLOCK 8 — Win / Game Over Screen (final block — goes at the very end)</span>
+      <span class="code-step cs6">if / else — FINAL</span>
+    </div>
+    <div class="code-body" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+<span class="cc">-- 🌟 WIN / GAME OVER CHECK</span><br>
+<span class="cf">print</span>(<span class="cs">"════════════════════════════"</span>)<br><br>
+<span class="ck">if</span> <span class="cv">isAlive</span> == <span class="cs">true</span> <span class="ck">and</span> <span class="cv">health</span> &gt; <span class="cs">0</span> <span class="ck">then</span><br>
+&nbsp;&nbsp;<span class="cv">escapePortal</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Cyan"</span>)<br>
+&nbsp;&nbsp;<span class="cv">escapePortal</span>.<span class="cp">Material</span>   = Enum.Material.<span class="cf">Neon</span><br>
+&nbsp;&nbsp;<span class="cv">escapePortal</span>.<span class="cp">Transparency</span> = <span class="cs">0.3</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"🌟 YOU ESCAPED THE DUNGEON!"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Player : "</span> .. <span class="cv">playerName</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Health : "</span> .. <span class="cv">health</span> .. <span class="cs">" / "</span> .. <span class="cv">maxHealth</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Score  : "</span> .. <span class="cv">score</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Gold   : "</span> .. <span class="cv">gold</span>)<br>
+<span class="ck">else</span><br>
+&nbsp;&nbsp;<span class="cv">escapePortal</span>.<span class="cp">BrickColor</span> = BrickColor.<span class="cf">new</span>(<span class="cs">"Black"</span>)<br>
+&nbsp;&nbsp;<span class="cv">escapePortal</span>.<span class="cp">Transparency</span> = <span class="cs">0.8</span><br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"💀 GAME OVER!"</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   "</span> .. <span class="cv">playerName</span> .. <span class="cs">" did not survive."</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Final health: "</span> .. <span class="cv">health</span>)<br>
+&nbsp;&nbsp;<span class="cf">print</span>(<span class="cs">"   Try again!"</span>)<br>
+<span class="ck">end</span><br>
+<span class="cf">print</span>(<span class="cs">"════════════════════════════"</span>)
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="output">
+          <div class="out-label">Win Path Output (health=100, armour=10, attackPower=40, hasKey=false, gold=80)</div>
+          <div class="out-line">
+            ════════════════════════════<br>
+            &nbsp;&nbsp;🏰 THE DUNGEON ESCAPE<br>
+            ════════════════════════════<br>
+            Player : Ahmed · Health: 100/100<br>
+          </div>
+          <div class="out-sep"></div>
+          <div class="out-line">
+            🚪 Approaching the gate...<br>
+            ✅ Gate OPEN — Enter, Ahmed<br>
+          </div>
+          <div class="out-sep"></div>
+          <div class="out-line">
+            🔥 Fire Room! Damage: 40<br>
+            🟡 Partial armour — took 40 dmg<br>
+            &nbsp;&nbsp; Health: 60<br>
+          </div>
+          <div class="out-sep"></div>
+          <div class="out-line">
+            🔒 LOCKED! Need key or 100 gold<br>
+            &nbsp;&nbsp; You have: 80 gold<br>
+            &nbsp;&nbsp; -20 HP penalty! Health: 40<br>
+          </div>
+          <div class="out-sep"></div>
+          <div class="out-line">
+            🧌 BOSS appears! HP: 35<br>
+            ⚔️ Boss DEFEATED in one hit!<br>
+          </div>
+          <div class="out-sep"></div>
+          <div class="out-line">
+            🏆 Final Score: 60<br>
+            🥈 Rank: SILVER — Well done!<br>
+          </div>
+          <div class="out-sep"></div>
+          <div class="out-line">
+            🌟 YOU ESCAPED THE DUNGEON!<br>
+            &nbsp;&nbsp; Health: 40 / 100<br>
+            &nbsp;&nbsp; Score: 60 · Gold: 80<br>
+            ════════════════════════════
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WHAT EACH IF/ELSE DOES -->
+<div class="sec">
+  <div class="sec-label">If/Else Map — What Every Condition Does</div>
+  <div class="four-col">
+    <div class="card">
+      <div class="ct ct-blue"></div>
+      <div class="card-icon">🚪</div>
+      <div class="card-label" style="color:var(--blue);">Entry Gate</div>
+      <div class="card-title">if / else <span class="if-marker m-if">if</span></div>
+      <div class="card-text">health ≥ 50 → open (green, transparent)<br>else → locked (red), isAlive = false</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-amber"></div>
+      <div class="card-icon">🔥</div>
+      <div class="card-label" style="color:var(--amber);">Fire Room</div>
+      <div class="card-title">elseif chain <span class="if-marker m-elseif">elseif</span></div>
+      <div class="card-text">armour ≥ 30 → no damage<br>armour ≥ 10 → partial damage<br>else → full 50 damage</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-purple"></div>
+      <div class="card-icon">🔐</div>
+      <div class="card-label" style="color:var(--accent2);">Locked Door</div>
+      <div class="card-title">if + or <span class="if-marker m-and">or</span></div>
+      <div class="card-text">hasKey OR gold ≥ 100 → open<br>else → -20 HP penalty, stays red</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-pink"></div>
+      <div class="card-icon">🧌</div>
+      <div class="card-label" style="color:var(--pink);">Boss Fight</div>
+      <div class="card-title">elseif <span class="if-marker m-elseif">elseif</span></div>
+      <div class="card-text">attack ≥ bossHP → one-shot win<br>attack ≥ half → survive with damage<br>else → double damage</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-green"></div>
+      <div class="card-icon">🏆</div>
+      <div class="card-label" style="color:var(--green);">Rank Room</div>
+      <div class="card-title">elseif chain <span class="if-marker m-elseif">elseif</span></div>
+      <div class="card-text">score ≥ 70 → Gold (neon yellow)<br>≥ 40 → Silver (white)<br>≥ 20 → Bronze · else → no rank</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-teal"></div>
+      <div class="card-icon">🌟</div>
+      <div class="card-label" style="color:var(--teal);">Escape Portal</div>
+      <div class="card-title">if + and <span class="if-marker m-and">and</span></div>
+      <div class="card-text">isAlive AND health > 0 → win (cyan neon portal)<br>else → game over (black + transparent)</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-red"></div>
+      <div class="card-icon">💀</div>
+      <div class="card-label" style="color:var(--red);">Death Check</div>
+      <div class="card-title">if after damage <span class="if-marker m-if">if</span></div>
+      <div class="card-text">After every damage event: if health ≤ 0 then isAlive = false. Stops the game immediately.</div>
+    </div>
+    <div class="card" style="background:var(--accent-light);border-color:#ddd6fe;">
+      <div class="ct ct-purple"></div>
+      <div class="card-icon">🔢</div>
+      <div class="card-label" style="color:var(--accent2);">Total</div>
+      <div class="card-title">8 if/else blocks</div>
+      <div class="card-text">Every outcome in the game is a condition. No outcome is hardcoded — every result flows from the player's variable values.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHALLENGE VARIABLES -->
+<div class="sec">
+  <div class="sec-label">Challenge — Change These Variables and Replay</div>
+  <div class="three-col">
+    <div class="info" style="border-color:#fcd34d;">
+      <div class="info-label" style="color:var(--amber);">🔥 Hard Mode</div>
+      <div class="info-text" style="font-size:12px;line-height:1.9;">
+        <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--amber-light);padding:1px 5px;border-radius:3px;">health = 60</code><br>
+        <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--amber-light);padding:1px 5px;border-radius:3px;">armour = 0</code><br>
+        <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--amber-light);padding:1px 5px;border-radius:3px;">attackPower = 15</code><br>
+        <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--amber-light);padding:1px 5px;border-radius:3px;">gold = 50</code><br>
+        Can you still escape?
+      </div>
+    </div>
+    <div class="info" style="border-color:#a7f3d0;">
+      <div class="info-label" style="color:var(--green);">💪 Easy Mode</div>
+      <div class="info-text" style="font-size:12px;line-height:1.9;">
+        <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--green-light);padding:1px 5px;border-radius:3px;">health = 100</code><br>
+        <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--green-light);padding:1px 5px;border-radius:3px;">armour = 40</code><br>
+        <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--green-light);padding:1px 5px;border-radius:3px;">attackPower = 60</code><br>
+        <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--green-light);padding:1px 5px;border-radius:3px;">hasKey = true</code><br>
+        Can you get Gold rank?
+      </div>
+    </div>
+    <div class="bonus">
+      <div style="font-size:13px;font-weight:800;color:var(--accent2);margin-bottom:8px;">⭐ Bonus — Add a 5th Room</div>
+      <div style="font-size:12px;color:#4c1d95;line-height:1.7;">Add a <strong>PoisonSwamp</strong> Part. If health > 70 → player swims through safely (+10 score). elseif health > 40 → takes 15 poison damage. else → takes 30 damage and isAlive = false.</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">SMIT · AI & Game Creators · Class 4 · The Dungeon Escape — Complete Game with if / elseif / else</div>
+
+</div>
+</body>
+</html>

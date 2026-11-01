@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lua — Operators & String Methods</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --border: #e2e0d8;
+  --border2: #d0cecc;
+  --text: #1a1a2e;
+  --muted: #7a7880;
+  --muted2: #a09ea8;
+  --accent: #4f46e5;
+  --accent-light: #ede9fe;
+  --accent2: #7c3aed;
+  --green: #059669;
+  --green-light: #d1fae5;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --blue: #2563eb;
+  --blue-light: #dbeafe;
+  --teal: #0d9488;
+  --teal-light: #ccfbf1;
+  --pink: #db2777;
+  --pink-light: #fce7f3;
+  --orange: #ea580c;
+  --orange-light: #ffedd5;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, #c8c6d0 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* TOP BAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 44px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; z-index: 300;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.tb-left { display: flex; align-items: center; gap: 10px; }
+.tb-logo { width: 24px; height: 24px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; font-weight: 800; }
+.tb-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.tb-sep { width: 1px; height: 16px; background: var(--border); }
+.tb-sub { font-size: 11px; color: var(--muted); }
+.tb-right { display: flex; align-items: center; gap: 10px; }
+.tb-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+.fs-btn { background: transparent; border: 1px solid var(--border2); color: var(--muted); font-size: 11px; font-family: 'Outfit', sans-serif; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+.fs-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* SLIDE */
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 58px 52px 60px;
+  opacity: 0; transform: translateX(60px);
+  transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none; z-index: 1; overflow: hidden;
+}
+.slide.active { opacity: 1; transform: translateX(0); pointer-events: all; }
+.slide.exit { opacity: 0; transform: translateX(-60px); transition: all 0.32s ease-in; }
+
+/* HUD */
+.hud {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 12px; z-index: 300;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 50px; padding: 9px 20px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+.hbtn { background: transparent; border: 1px solid var(--border2); color: var(--accent); font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 12px; padding: 6px 16px; border-radius: 30px; cursor: pointer; transition: all 0.18s; }
+.hbtn:hover { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 2px 12px rgba(79,70,229,0.3); }
+.hctr { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); min-width: 52px; text-align: center; }
+.dots { display: flex; gap: 5px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border2); transition: all 0.3s; cursor: pointer; }
+.dot.active { background: var(--accent); width: 20px; border-radius: 3px; }
+
+/* BADGE */
+.badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 20px; padding: 4px 14px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 12px; }
+.b-blue { background: var(--blue-light); color: var(--blue); border: 1px solid #bfdbfe; }
+.b-purple { background: var(--accent-light); color: var(--accent2); border: 1px solid #ddd6fe; }
+.b-green { background: var(--green-light); color: var(--green); border: 1px solid #a7f3d0; }
+.b-amber { background: var(--amber-light); color: var(--amber); border: 1px solid #fcd34d; }
+.b-teal { background: var(--teal-light); color: var(--teal); border: 1px solid #99f6e4; }
+.b-pink { background: var(--pink-light); color: var(--pink); border: 1px solid #fbcfe8; }
+
+/* TITLES */
+.h1 { font-size: clamp(30px, 4.5vw, 52px); font-weight: 900; line-height: 1.08; text-align: center; color: var(--text); margin-bottom: 8px; letter-spacing: -1px; }
+.h2 { font-size: clamp(20px, 3vw, 36px); font-weight: 800; line-height: 1.1; text-align: center; color: var(--text); margin-bottom: 8px; letter-spacing: -0.5px; }
+.accent { color: var(--accent); }
+.green { color: var(--green); }
+.sub { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 22px; font-weight: 500; line-height: 1.5; max-width: 700px; }
+
+/* DIVIDER */
+.divr { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 1000px; margin: 10px 0; }
+.divr-line { flex: 1; height: 1px; background: var(--border); }
+.divr-text { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--muted2); white-space: nowrap; text-transform: uppercase; }
+
+/* GRIDS */
+.grid { display: grid; gap: 12px; width: 100%; }
+.g2 { grid-template-columns: 1fr 1fr; max-width: 960px; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; max-width: 960px; }
+.g4 { grid-template-columns: repeat(4,1fr); max-width: 1060px; }
+.g5 { grid-template-columns: repeat(5,1fr); max-width: 1060px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 1040px; align-items: start; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; width: 100%; max-width: 1040px; align-items: start; }
+
+/* CARDS */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; position: relative; overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; }
+.card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
+.ct { height: 3px; position: absolute; top:0; left:0; right:0; border-radius: 12px 12px 0 0; }
+.ct-blue { background: var(--blue); }
+.ct-purple { background: var(--accent2); }
+.ct-amber { background: var(--amber); }
+.ct-green { background: var(--green); }
+.ct-red { background: var(--red); }
+.ct-teal { background: var(--teal); }
+.ct-pink { background: var(--pink); }
+.ct-orange { background: var(--orange); }
+.card-icon { font-size: 22px; margin-bottom: 7px; margin-top: 4px; }
+.card-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; }
+.card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.card-text { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+.card-code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); margin-top: 7px; background: var(--accent-light); padding: 3px 7px; border-radius: 4px; display: inline-block; }
+
+/* CODE BLOCKS */
+.code-block {
+  background: #12131f; border: 1px solid #313244;
+  border-radius: 12px; padding: 16px 20px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  line-height: 1.95; width: 100%;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  position: relative;
+}
+.code-label { font-size: 9px; letter-spacing: 2px; color: #89b4fa; margin-bottom: 10px; text-transform: uppercase; font-weight: 700; display: block; }
+.ck{color:#bb9af7;font-weight:700;}
+.cs{color:#9ece6a;font-weight:600;}
+.cf{color:#e0af68;font-weight:600;}
+.cv{color:#7dcfff;}
+.cc{color:#565f89;font-style:italic;}
+.cn { color: #f38ba8; }
+.co { color: #f9e2af; }
+
+/* OUTPUT */
+.output { background: #f0fff4; border: 1px solid #6ee7b7; border-radius: 10px; padding: 12px 16px; }
+.out-label { font-size: 10px; font-weight: 700; color: var(--green); letter-spacing: 1.5px; margin-bottom: 7px; }
+.out-line { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: #065f46; line-height: 2; }
+
+/* OPERATOR TABLE */
+.op-table { width: 100%; border-collapse: separate; border-spacing: 0 3px; }
+.op-table th { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 6px 14px; text-align: left; }
+.op-table td { padding: 9px 14px; font-size: 13px; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.op-table tr td:first-child { border-left: 1px solid var(--border); border-radius: 7px 0 0 7px; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; text-align: center; width: 56px; }
+.op-table tr td:last-child { border-right: 1px solid var(--border); border-radius: 0 7px 7px 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green); }
+
+/* INFO BOX */
+.info { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.info-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+.info-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* METHOD CARD — big style for string methods */
+.mcard {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 0; overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.mcard:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+.mcard-head { padding: 14px 16px 10px; }
+.mcard-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+.mcard-name { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.mcard-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.mcard-body { background: #12131f; padding: 12px 16px; }
+.mcard-code { font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.9; }
+.mcard-foot { padding: 10px 16px; background: var(--bg); border-top: 1px solid var(--border); }
+.mcard-out { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--green); }
+.mcard-out-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; color: var(--green); margin-bottom: 3px; }
+
+/* REVEAL */
+@keyframes up { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.rv { opacity: 0; }
+.active .rv { animation: up 0.42s forwards; }
+.active .rv:nth-child(1){animation-delay:0.06s}
+.active .rv:nth-child(2){animation-delay:0.13s}
+.active .rv:nth-child(3){animation-delay:0.20s}
+.active .rv:nth-child(4){animation-delay:0.27s}
+.active .rv:nth-child(5){animation-delay:0.34s}
+.active .rv:nth-child(6){animation-delay:0.41s}
+.active .rv:nth-child(7){animation-delay:0.48s}
+.active .rv:nth-child(8){animation-delay:0.55s}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-logo">G</div>
+    <span class="tb-title">AI & Game Creators — Class 3</span>
+    <div class="tb-sep"></div>
+    <span class="tb-sub">Operators & String Methods</span>
+  </div>
+  <div class="tb-right">
+    <span class="tb-num" id="topNum">01 / 10</span>
+    <button class="fs-btn" onclick="toggleFS()">⛶ Fullscreen</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+  S0 — TITLE
+══════════════════════════ -->
+<div class="slide active" id="s0">
+  <div class="badge b-blue rv">CLASS 3 · MODULE 2 CONTINUED · LUA PROGRAMMING</div>
+  <h1 class="h1 rv">Operators <span class="accent">&</span><br>String Methods</h1>
+  <p class="sub rv">Doing things with your variables — math, logic, and text manipulation in Lua</p>
+  <div style="display:flex;gap:12px;margin-bottom:20px;" class="rv">
+    <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:10px;padding:12px 20px;text-align:center;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--blue);margin-bottom:4px;">PART 1</div>
+      <div style="font-size:15px;font-weight:700;">Operators & Expressions</div>
+      <div style="font-size:12px;color:var(--muted);">Math · Comparison · Logical</div>
+    </div>
+    <div style="background:var(--teal-light);border:1px solid #99f6e4;border-radius:10px;padding:12px 20px;text-align:center;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--teal);margin-bottom:4px;">PART 2</div>
+      <div style="font-size:15px;font-weight:700;">String Methods</div>
+      <div style="font-size:12px;color:var(--muted);">len · upper · lower · sub · rep · reverse</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:center;" class="rv">
+    <span style="background:var(--blue-light);color:var(--blue);border:1px solid #bfdbfe;border-radius:4px;font-size:11px;font-weight:600;padding:3px 9px;">+ - * / % ^</span>
+    <span style="background:var(--accent-light);color:var(--accent2);border:1px solid #ddd6fe;border-radius:4px;font-size:11px;font-weight:600;padding:3px 9px;">== ~= > < >= <=</span>
+    <span style="background:var(--green-light);color:var(--green);border:1px solid #a7f3d0;border-radius:4px;font-size:11px;font-weight:600;padding:3px 9px;">and or not</span>
+    <span style="background:var(--teal-light);color:var(--teal);border:1px solid #99f6e4;border-radius:4px;font-size:11px;font-weight:600;padding:3px 9px;">string.len() string.upper() string.lower()</span>
+    <span style="background:var(--amber-light);color:var(--amber);border:1px solid #fcd34d;border-radius:4px;font-size:11px;font-weight:600;padding:3px 9px;">string.sub() string.rep() string.reverse()</span>
+  </div>
+  <div style="margin-top:20px;font-size:12px;color:var(--muted2);" class="rv">Press → or click Next to begin</div>
+</div>
+
+<!-- ══════════════════════════
+  S1 — MATH OPERATORS
+══════════════════════════ -->
+<div class="slide" id="s1">
+  <div class="badge b-blue rv">PART 1 · MATH OPERATORS</div>
+  <h2 class="h2 rv">Arithmetic Operators</h2>
+  <p class="sub rv">These work exactly like a calculator — apply them to number variables</p>
+
+  <div class="two-col rv">
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <table class="op-table">
+        <thead><tr><th>Op</th><th>Name</th><th>Example</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--blue);">+</td><td>Addition</td><td>10 + 3</td><td>13</td></tr>
+          <tr><td style="color:var(--blue);">-</td><td>Subtraction</td><td>10 - 3</td><td>7</td></tr>
+          <tr><td style="color:var(--blue);">*</td><td>Multiplication</td><td>10 * 3</td><td>30</td></tr>
+          <tr><td style="color:var(--blue);">/</td><td>Division</td><td>10 / 4</td><td>2.5</td></tr>
+          <tr><td style="color:var(--orange);">%</td><td>Modulo (remainder)</td><td>10 % 3</td><td>1</td></tr>
+          <tr><td style="color:var(--orange);">^</td><td>Power / Exponent</td><td>2 ^ 8</td><td>256</td></tr>
+        </tbody>
+      </table>
+      <div class="info" style="border-color:#fcd34d;">
+        <div class="info-label" style="color:var(--amber);">What is Modulo %?</div>
+        <div class="info-text" style="font-size:12px;">It gives the <strong>remainder</strong> after division. <code style="font-family:'JetBrains Mono',monospace;background:var(--amber-light);padding:1px 5px;border-radius:3px;font-size:11px;">10 % 3 = 1</code> because 10 ÷ 3 = 3 remainder 1. In games: used to check if a number is even/odd, or if every 5th event should trigger something.</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="code-block">
+        <span class="code-label">LUA — Math operators with variables</span>
+        <span class="ck">local</span> <span class="cv">score</span>  = <span class="cs">100</span><br>
+        <span class="ck">local</span> <span class="cv">bonus</span>  = <span class="cs">25</span><br>
+        <span class="ck">local</span> <span class="cv">lives</span>  = <span class="cs">3</span><br><br>
+        <span class="cc">-- Addition</span><br>
+        <span class="cf">print</span>(<span class="cv">score</span> + <span class="cv">bonus</span>)         <span class="cc">-- 125</span><br><br>
+        <span class="cc">-- Subtraction</span><br>
+        <span class="cf">print</span>(<span class="cv">score</span> - <span class="cs">30</span>)           <span class="cc">-- 70</span><br><br>
+        <span class="cc">-- Multiplication</span><br>
+        <span class="cf">print</span>(<span class="cv">bonus</span> * <span class="cv">lives</span>)         <span class="cc">-- 75</span><br><br>
+        <span class="cc">-- Power</span><br>
+        <span class="cf">print</span>(<span class="cs">2</span> ^ <span class="cs">10</span>)               <span class="cc">-- 1024</span><br><br>
+        <span class="cc">-- Modulo — is score even?</span><br>
+        <span class="cf">print</span>(<span class="cv">score</span> % <span class="cs">2</span>)            <span class="cc">-- 0 = even!</span>
+      </div>
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">125<br>70<br>75<br>1024<br>0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+  S2 — EXPRESSIONS & COMPOUND
+══════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="badge b-blue rv">PART 1 · EXPRESSIONS</div>
+  <h2 class="h2 rv">Expressions — Using Operators Together</h2>
+  <p class="sub rv">An expression is any combination of variables and operators that produces a value</p>
+
+  <div class="two-col rv">
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="code-block">
+        <span class="code-label">LUA — Expressions in a game context</span>
+        <span class="ck">local</span> <span class="cv">baseScore</span>   = <span class="cs">50</span><br>
+        <span class="ck">local</span> <span class="cv">multiplier</span>  = <span class="cs">3</span><br>
+        <span class="ck">local</span> <span class="cv">penalty</span>     = <span class="cs">10</span><br>
+        <span class="ck">local</span> <span class="cv">lives</span>       = <span class="cs">5</span><br><br>
+        <span class="cc">-- Calculate final score</span><br>
+        <span class="ck">local</span> <span class="cv">finalScore</span> = (<span class="cv">baseScore</span> * <span class="cv">multiplier</span>) - <span class="cv">penalty</span><br>
+        <span class="cf">print</span>(<span class="cs">"Final Score: "</span> .. <span class="cv">finalScore</span>)    <span class="cc">-- 140</span><br><br>
+        <span class="cc">-- Update lives</span><br>
+        <span class="cv">lives</span> = <span class="cv">lives</span> - <span class="cs">1</span><br>
+        <span class="cf">print</span>(<span class="cs">"Lives left: "</span> .. <span class="cv">lives</span>)        <span class="cc">-- 4</span><br><br>
+        <span class="cc">-- Increase score by 20%</span><br>
+        <span class="cv">finalScore</span> = <span class="cv">finalScore</span> * <span class="cs">1.2</span><br>
+        <span class="cf">print</span>(<span class="cs">"Boosted Score: "</span> .. <span class="cv">finalScore</span>)  <span class="cc">-- 168</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="output" style="margin-bottom:2px;">
+        <div class="out-label">Output</div>
+        <div class="out-line">Final Score: 140<br>Lives left: 4<br>Boosted Score: 168.0</div>
+      </div>
+      <div class="info" style="border-color:#bfdbfe;">
+        <div class="info-label" style="color:var(--blue);">Order of Operations</div>
+        <div class="info-text" style="font-size:12px;line-height:1.8;">Lua follows BODMAS / PEMDAS:<br>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;">^</span> first → <span style="font-family:'JetBrains Mono',monospace;font-size:11px;">* /</span> → <span style="font-family:'JetBrains Mono',monospace;font-size:11px;">+ -</span><br>
+          Use <strong>( )</strong> to control the order explicitly.
+        </div>
+      </div>
+      <div class="info" style="border-color:#a7f3d0;">
+        <div class="info-label" style="color:var(--green);">Real Game Use</div>
+        <div class="info-text" style="font-size:12px;">Every game uses expressions: damage = attack * weapon_power, XP needed = level ^ 2 * 100, speed = baseSpeed + boost</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+  S3 — COMPARISON OPERATORS
+══════════════════════════ -->
+<div class="slide" id="s3">
+  <div class="badge b-purple rv">PART 1 · COMPARISON OPERATORS</div>
+  <h2 class="h2 rv">Comparison Operators</h2>
+  <p class="sub rv">These compare two values and always return <strong>true</strong> or <strong>false</strong> — they feed directly into if/then</p>
+
+  <div class="two-col rv">
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <table class="op-table">
+        <thead><tr><th>Op</th><th>Meaning</th><th>Example</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--accent2);">==</td><td>Equal to</td><td>5 == 5</td><td>true</td></tr>
+          <tr><td style="color:var(--accent2);">~=</td><td>NOT equal to</td><td>5 ~= 3</td><td>true</td></tr>
+          <tr><td style="color:var(--accent2);">&gt;</td><td>Greater than</td><td>10 &gt; 3</td><td>true</td></tr>
+          <tr><td style="color:var(--accent2);">&lt;</td><td>Less than</td><td>3 &lt; 10</td><td>true</td></tr>
+          <tr><td style="color:var(--accent2);">&gt;=</td><td>Greater or equal</td><td>5 &gt;= 5</td><td>true</td></tr>
+          <tr><td style="color:var(--accent2);">&lt;=</td><td>Less or equal</td><td>4 &lt;= 5</td><td>true</td></tr>
+        </tbody>
+      </table>
+      <div class="info" style="border-color:#ddd6fe;">
+        <div class="info-label" style="color:var(--accent2);">⚠️ = vs ==</div>
+        <div class="info-text" style="font-size:12px;"><code style="font-family:'JetBrains Mono',monospace;background:var(--accent-light);padding:1px 5px;border-radius:3px;">= </code> assigns a value to a variable.<br><code style="font-family:'JetBrains Mono',monospace;background:var(--accent-light);padding:1px 5px;border-radius:3px;">==</code> compares two values.<br>This is the most common beginner mistake!</div>
+      </div>
+    </div>
+    <div>
+      <div class="code-block">
+        <span class="code-label">LUA — Comparison operators</span>
+        <span class="ck">local</span> <span class="cv">score</span>  = <span class="cs">80</span><br>
+        <span class="ck">local</span> <span class="cv">target</span> = <span class="cs">100</span><br>
+        <span class="ck">local</span> <span class="cv">lives</span>  = <span class="cs">3</span><br><br>
+        <span class="cf">print</span>(<span class="cv">score</span> == <span class="cv">target</span>)    <span class="cc">-- false  (80 is not 100)</span><br>
+        <span class="cf">print</span>(<span class="cv">score</span> ~= <span class="cv">target</span>)    <span class="cc">-- true   (80 is not equal to 100)</span><br>
+        <span class="cf">print</span>(<span class="cv">score</span> &gt; <span class="cs">50</span>)        <span class="cc">-- true   (80 is greater than 50)</span><br>
+        <span class="cf">print</span>(<span class="cv">score</span> &lt; <span class="cv">target</span>)    <span class="cc">-- true   (80 is less than 100)</span><br>
+        <span class="cf">print</span>(<span class="cv">lives</span> &gt;= <span class="cs">1</span>)        <span class="cc">-- true   (player still alive)</span><br>
+        <span class="cf">print</span>(<span class="cv">lives</span> == <span class="cs">0</span>)        <span class="cc">-- false  (not game over yet)</span><br><br>
+        <span class="cc">-- Store the result in a variable</span><br>
+        <span class="ck">local</span> <span class="cv">isWinning</span> = <span class="cv">score</span> &gt; <span class="cs">50</span><br>
+        <span class="cf">print</span>(<span class="cs">"Is winning: "</span> .. <span class="cf">tostring</span>(<span class="cv">isWinning</span>)) <span class="cc">-- true</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+  S4 — LOGICAL OPERATORS
+══════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="badge b-purple rv">PART 1 · LOGICAL OPERATORS</div>
+  <h2 class="h2 rv">Logical Operators — and · or · not</h2>
+  <p class="sub rv">Combine multiple conditions into one — essential for complex game logic</p>
+
+  <div class="two-col rv">
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="grid g3" style="max-width:600px;gap:10px;">
+        <div class="card">
+          <div class="ct ct-green"></div>
+          <div class="card-icon">🔗</div>
+          <div class="card-label" style="color:var(--green);">AND</div>
+          <div class="card-title">Both must be true</div>
+          <div class="card-text">Returns true only if condition A <strong>and</strong> condition B are both true</div>
+          <div class="card-code">lives > 0 and score > 50</div>
+        </div>
+        <div class="card">
+          <div class="ct ct-blue"></div>
+          <div class="card-icon">🔀</div>
+          <div class="card-label" style="color:var(--blue);">OR</div>
+          <div class="card-title">At least one true</div>
+          <div class="card-text">Returns true if condition A <strong>or</strong> condition B (or both) are true</div>
+          <div class="card-code">hasKey or hasCode</div>
+        </div>
+        <div class="card">
+          <div class="ct ct-red"></div>
+          <div class="card-icon">🔄</div>
+          <div class="card-label" style="color:var(--red);">NOT</div>
+          <div class="card-title">Flips the value</div>
+          <div class="card-text">Turns true into false and false into true</div>
+          <div class="card-code">not isGameOver</div>
+        </div>
+      </div>
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">Can enter: false<br>Has access: true<br>Game running: true</div>
+      </div>
+    </div>
+    <div>
+      <div class="code-block">
+        <span class="code-label">LUA — Logical operators</span>
+        <span class="ck">local</span> <span class="cv">lives</span>      = <span class="cs">3</span><br>
+        <span class="ck">local</span> <span class="cv">score</span>      = <span class="cs">80</span><br>
+        <span class="ck">local</span> <span class="cv">hasKey</span>     = <span class="cs">false</span><br>
+        <span class="ck">local</span> <span class="cv">hasCode</span>    = <span class="cs">true</span><br>
+        <span class="ck">local</span> <span class="cv">isGameOver</span> = <span class="cs">false</span><br><br>
+        <span class="cc">-- AND: both must be true</span><br>
+        <span class="ck">local</span> <span class="cv">canEnter</span> = <span class="cv">hasKey</span> <span class="ck">and</span> <span class="cv">hasCode</span><br>
+        <span class="cf">print</span>(<span class="cs">"Can enter: "</span> .. <span class="cf">tostring</span>(<span class="cv">canEnter</span>))    <span class="cc">-- false</span><br><br>
+        <span class="cc">-- OR: at least one must be true</span><br>
+        <span class="ck">local</span> <span class="cv">hasAccess</span> = <span class="cv">hasKey</span> <span class="ck">or</span> <span class="cv">hasCode</span><br>
+        <span class="cf">print</span>(<span class="cs">"Has access: "</span> .. <span class="cf">tostring</span>(<span class="cv">hasAccess</span>))  <span class="cc">-- true</span><br><br>
+        <span class="cc">-- NOT: flip the value</span><br>
+        <span class="ck">local</span> <span class="cv">isRunning</span> = <span class="ck">not</span> <span class="cv">isGameOver</span><br>
+        <span class="cf">print</span>(<span class="cs">"Game running: "</span> .. <span class="cf">tostring</span>(<span class="cv">isRunning</span>))  <span class="cc">-- true</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+  S5 — STRING METHODS INTRO
+══════════════════════════ -->
+<div class="slide" id="s5">
+  <div class="badge b-teal rv">PART 2 · STRING METHODS</div>
+  <h2 class="h2 rv">String Methods — Working With Text</h2>
+  <p class="sub rv">Lua has built-in functions to inspect and transform string variables. These are called with <code style="font-family:'JetBrains Mono',monospace;background:var(--teal-light);color:var(--teal);padding:2px 7px;border-radius:5px;">string.methodName()</code></p>
+
+  <div class="grid g3 rv" style="max-width:960px;">
+    <div class="card">
+      <div class="ct ct-blue"></div>
+      <div class="card-icon">📏</div>
+      <div class="card-label" style="color:var(--blue);">Method 1</div>
+      <div class="card-title">string.len()</div>
+      <div class="card-text">Returns the number of characters in a string — including spaces</div>
+      <div class="card-code">string.len("Hello") → 5</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-orange"></div>
+      <div class="card-icon">🔠</div>
+      <div class="card-label" style="color:var(--orange);">Method 2</div>
+      <div class="card-title">string.upper()</div>
+      <div class="card-text">Converts all letters in the string to UPPERCASE</div>
+      <div class="card-code">string.upper("hello") → "HELLO"</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-teal"></div>
+      <div class="card-icon">🔡</div>
+      <div class="card-label" style="color:var(--teal);">Method 3</div>
+      <div class="card-title">string.lower()</div>
+      <div class="card-text">Converts all letters in the string to lowercase</div>
+      <div class="card-code">string.lower("HELLO") → "hello"</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-purple"></div>
+      <div class="card-icon">✂️</div>
+      <div class="card-label" style="color:var(--accent2);">Method 4</div>
+      <div class="card-title">string.sub()</div>
+      <div class="card-text">Extracts a piece of a string from position start to end</div>
+      <div class="card-code">string.sub("Hello", 1, 3) → "Hel"</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-pink"></div>
+      <div class="card-icon">🔁</div>
+      <div class="card-label" style="color:var(--pink);">Method 5</div>
+      <div class="card-title">string.rep()</div>
+      <div class="card-text">Repeats a string a given number of times</div>
+      <div class="card-code">string.rep("Ha", 3) → "HaHaHa"</div>
+    </div>
+    <div class="card">
+      <div class="ct ct-amber"></div>
+      <div class="card-icon">🔃</div>
+      <div class="card-label" style="color:var(--amber);">Method 6</div>
+      <div class="card-title">string.reverse()</div>
+      <div class="card-text">Reverses the characters of a string completely</div>
+      <div class="card-code">string.reverse("Hello") → "olleH"</div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;font-size:12px;color:var(--muted);text-align:center;" class="rv">
+    Shortcut syntax: <code style="font-family:'JetBrains Mono',monospace;background:var(--teal-light);color:var(--teal);padding:1px 7px;border-radius:4px;">myString:upper()</code> — same as <code style="font-family:'JetBrains Mono',monospace;background:var(--teal-light);color:var(--teal);padding:1px 7px;border-radius:4px;">string.upper(myString)</code> — both work in Roblox
+  </div>
+</div>
+
+<!-- ══════════════════════════
+  S6 — string.len + string.upper/lower
+══════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="badge b-teal rv">PART 2 · METHODS 1–3 · DEEP DIVE</div>
+  <h2 class="h2 rv">len() · upper() · lower()</h2>
+  <p class="sub rv">The most commonly used string methods — great for username validation and display text</p>
+
+  <div class="three-col rv">
+    <!-- len -->
+    <div class="mcard">
+      <div class="mcard-head">
+        <div class="mcard-label" style="color:var(--blue);">METHOD 1</div>
+        <div class="mcard-name">string.len( str )</div>
+        <div class="mcard-desc">Counts every character — letters, numbers, spaces, symbols. Returns a number.</div>
+      </div>
+      <div class="mcard-body">
+        <div class="mcard-code">
+          <span class="ck">local</span> <span class="cv">name</span> = <span class="cs">"Roblox"</span><br>
+          <span class="ck">local</span> <span class="cv">city</span> = <span class="cs">"Islamabad"</span><br><br>
+          <span class="cf">print</span>(<span class="cf">string.len</span>(<span class="cv">name</span>))<br>
+          <span class="cf">print</span>(<span class="cf">string.len</span>(<span class="cv">city</span>))<br><br>
+          <span class="cc">-- Short syntax:</span><br>
+          <span class="cf">print</span>(<span class="cv">name</span>:<span class="cf">len</span>())
+        </div>
+      </div>
+      <div class="mcard-foot">
+        <div class="mcard-out-label">Output</div>
+        <div class="mcard-out">6<br>9<br>6</div>
+      </div>
+    </div>
+    <!-- upper -->
+    <div class="mcard">
+      <div class="mcard-head">
+        <div class="mcard-label" style="color:var(--orange);">METHOD 2</div>
+        <div class="mcard-name">string.upper( str )</div>
+        <div class="mcard-desc">Converts all letters to capitals. Numbers and symbols are not changed.</div>
+      </div>
+      <div class="mcard-body">
+        <div class="mcard-code">
+          <span class="ck">local</span> <span class="cv">playerName</span> = <span class="cs">"ahmed ali"</span><br><br>
+          <span class="ck">local</span> <span class="cv">loud</span> = <span class="cf">string.upper</span>(<span class="cv">playerName</span>)<br>
+          <span class="cf">print</span>(<span class="cv">loud</span>)<br><br>
+          <span class="cc">-- Short syntax:</span><br>
+          <span class="cf">print</span>(<span class="cv">playerName</span>:<span class="cf">upper</span>())<br><br>
+          <span class="cc">-- Use case: show winner name big</span><br>
+          <span class="cf">print</span>(<span class="cs">"WINNER: "</span> .. <span class="cv">playerName</span>:<span class="cf">upper</span>())
+        </div>
+      </div>
+      <div class="mcard-foot">
+        <div class="mcard-out-label">Output</div>
+        <div class="mcard-out">AHMED ALI<br>AHMED ALI<br>WINNER: AHMED ALI</div>
+      </div>
+    </div>
+    <!-- lower -->
+    <div class="mcard">
+      <div class="mcard-head">
+        <div class="mcard-label" style="color:var(--teal);">METHOD 3</div>
+        <div class="mcard-name">string.lower( str )</div>
+        <div class="mcard-desc">Converts all letters to lowercase. Useful for normalizing input before comparing.</div>
+      </div>
+      <div class="mcard-body">
+        <div class="mcard-code">
+          <span class="ck">local</span> <span class="cv">input</span>    = <span class="cs">"ROBLOX"</span><br>
+          <span class="ck">local</span> <span class="cv">password</span> = <span class="cs">"SECRET123"</span><br><br>
+          <span class="cf">print</span>(<span class="cf">string.lower</span>(<span class="cv">input</span>))<br><br>
+          <span class="cc">-- Short syntax:</span><br>
+          <span class="cf">print</span>(<span class="cv">password</span>:<span class="cf">lower</span>())<br><br>
+          <span class="cc">-- Compare regardless of case</span><br>
+          <span class="ck">local</span> <span class="cv">match</span> = (<span class="cv">input</span>:<span class="cf">lower</span>() == <span class="cs">"roblox"</span>)<br>
+          <span class="cf">print</span>(<span class="cf">tostring</span>(<span class="cv">match</span>))
+        </div>
+      </div>
+      <div class="mcard-foot">
+        <div class="mcard-out-label">Output</div>
+        <div class="mcard-out">roblox<br>secret123<br>true</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+  S7 — string.sub + string.rep + string.reverse
+══════════════════════════ -->
+<div class="slide" id="s7">
+  <div class="badge b-teal rv">PART 2 · METHODS 4–6 · DEEP DIVE</div>
+  <h2 class="h2 rv">sub() · rep() · reverse()</h2>
+  <p class="sub rv">Cut, repeat, and flip strings — powerful tools for building game text and UI</p>
+
+  <div class="three-col rv">
+    <!-- sub -->
+    <div class="mcard">
+      <div class="mcard-head">
+        <div class="mcard-label" style="color:var(--accent2);">METHOD 4</div>
+        <div class="mcard-name">string.sub( str, i, j )</div>
+        <div class="mcard-desc">Extracts characters from position <strong>i</strong> to position <strong>j</strong>. Positions start at 1. Use negative numbers to count from the end.</div>
+      </div>
+      <div class="mcard-body">
+        <div class="mcard-code">
+          <span class="ck">local</span> <span class="cv">word</span> = <span class="cs">"Roblox Studio"</span><br><br>
+          <span class="cc">-- First 6 characters</span><br>
+          <span class="cf">print</span>(<span class="cf">string.sub</span>(<span class="cv">word</span>, <span class="cs">1</span>, <span class="cs">6</span>))<br><br>
+          <span class="cc">-- From position 8 to end</span><br>
+          <span class="cf">print</span>(<span class="cf">string.sub</span>(<span class="cv">word</span>, <span class="cs">8</span>))<br><br>
+          <span class="cc">-- Last 6 characters</span><br>
+          <span class="cf">print</span>(<span class="cf">string.sub</span>(<span class="cv">word</span>, -<span class="cs">6</span>))
+        </div>
+      </div>
+      <div class="mcard-foot">
+        <div class="mcard-out-label">Output</div>
+        <div class="mcard-out">Roblox<br>Studio<br>Studio</div>
+      </div>
+    </div>
+    <!-- rep -->
+    <div class="mcard">
+      <div class="mcard-head">
+        <div class="mcard-label" style="color:var(--pink);">METHOD 5</div>
+        <div class="mcard-name">string.rep( str, n )</div>
+        <div class="mcard-desc">Repeats the string <strong>n</strong> times. Useful for drawing dividers, patterns, loading bars.</div>
+      </div>
+      <div class="mcard-body">
+        <div class="mcard-code">
+          <span class="cc">-- Repeat a laugh</span><br>
+          <span class="cf">print</span>(<span class="cf">string.rep</span>(<span class="cs">"Ha"</span>, <span class="cs">5</span>))<br><br>
+          <span class="cc">-- Draw a divider line</span><br>
+          <span class="cf">print</span>(<span class="cf">string.rep</span>(<span class="cs">"="</span>, <span class="cs">20</span>))<br><br>
+          <span class="cc">-- Simple health bar (5 lives)</span><br>
+          <span class="ck">local</span> <span class="cv">hp</span> = <span class="cs">3</span><br>
+          <span class="cf">print</span>(<span class="cf">string.rep</span>(<span class="cs">"❤️"</span>, <span class="cv">hp</span>))
+        </div>
+      </div>
+      <div class="mcard-foot">
+        <div class="mcard-out-label">Output</div>
+        <div class="mcard-out">HaHaHaHaHa<br>====================<br>❤️❤️❤️</div>
+      </div>
+    </div>
+    <!-- reverse -->
+    <div class="mcard">
+      <div class="mcard-head">
+        <div class="mcard-label" style="color:var(--amber);">METHOD 6</div>
+        <div class="mcard-name">string.reverse( str )</div>
+        <div class="mcard-desc">Reverses every character in the string. Great for puzzles, secret codes, and fun effects.</div>
+      </div>
+      <div class="mcard-body">
+        <div class="mcard-code">
+          <span class="ck">local</span> <span class="cv">msg</span>    = <span class="cs">"Hello World"</span><br>
+          <span class="ck">local</span> <span class="cv">secret</span> = <span class="cs">"desreveR"</span><br><br>
+          <span class="cf">print</span>(<span class="cf">string.reverse</span>(<span class="cv">msg</span>))<br><br>
+          <span class="cc">-- Decode a secret message</span><br>
+          <span class="cf">print</span>(<span class="cf">string.reverse</span>(<span class="cv">secret</span>))<br><br>
+          <span class="cc">-- Chain methods</span><br>
+          <span class="cf">print</span>(<span class="cf">string.upper</span>(<span class="cf">string.reverse</span>(<span class="cv">msg</span>)))
+        </div>
+      </div>
+      <div class="mcard-foot">
+        <div class="mcard-out-label">Output</div>
+        <div class="mcard-out">dlroW olleH<br>Reversed<br>DLROW OLLEH</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+  S8 — ALL TOGETHER
+══════════════════════════ -->
+<div class="slide" id="s8">
+  <div class="badge b-green rv">EVERYTHING COMBINED</div>
+  <h2 class="h2 rv">Operators + String Methods Together</h2>
+  <p class="sub rv">A realistic example combining math operators, comparison operators, and string methods in one script</p>
+
+  <div class="two-col rv">
+    <div>
+      <div class="code-block">
+        <span class="code-label">LUA — Combined example: Game Welcome System</span>
+        <span class="cc">-- Player info</span><br>
+        <span class="ck">local</span> <span class="cv">playerName</span> = <span class="cs">"ali raza"</span><br>
+        <span class="ck">local</span> <span class="cv">score</span>      = <span class="cs">450</span><br>
+        <span class="ck">local</span> <span class="cv">level</span>      = <span class="cs">4</span><br>
+        <span class="ck">local</span> <span class="cv">lives</span>      = <span class="cs">3</span><br><br>
+        <span class="cc">-- String methods: clean up the name</span><br>
+        <span class="ck">local</span> <span class="cv">displayName</span> = <span class="cf">string.upper</span>(<span class="cv">playerName</span>)<br>
+        <span class="ck">local</span> <span class="cv">nameLength</span>  = <span class="cf">string.len</span>(<span class="cv">playerName</span>)<br>
+        <span class="ck">local</span> <span class="cv">firstName</span>   = <span class="cf">string.sub</span>(<span class="cv">playerName</span>, <span class="cs">1</span>, <span class="cs">3</span>)<br><br>
+        <span class="cc">-- Math operators: calculate next level XP</span><br>
+        <span class="ck">local</span> <span class="cv">nextLevelXP</span> = <span class="cv">level</span> ^ <span class="cs">2</span> * <span class="cs">100</span><br>
+        <span class="ck">local</span> <span class="cv">xpNeeded</span>   = <span class="cv">nextLevelXP</span> - <span class="cv">score</span><br><br>
+        <span class="cc">-- Comparison operator</span><br>
+        <span class="ck">local</span> <span class="cv">isAlive</span> = <span class="cv">lives</span> &gt; <span class="cs">0</span><br><br>
+        <span class="cc">-- Print the welcome screen</span><br>
+        <span class="cf">print</span>(<span class="cf">string.rep</span>(<span class="cs">"="</span>, <span class="cs">24</span>))<br>
+        <span class="cf">print</span>(<span class="cs">"WELCOME, "</span> .. <span class="cv">displayName</span>)<br>
+        <span class="cf">print</span>(<span class="cs">"Name length: "</span>  .. <span class="cv">nameLength</span>)<br>
+        <span class="cf">print</span>(<span class="cs">"Short name: "</span>   .. <span class="cv">firstName</span>)<br>
+        <span class="cf">print</span>(<span class="cs">"Score: "</span>        .. <span class="cv">score</span>)<br>
+        <span class="cf">print</span>(<span class="cs">"XP to next lvl: "</span> .. <span class="cv">xpNeeded</span>)<br>
+        <span class="cf">print</span>(<span class="cs">"Lives: "</span>        .. <span class="cf">string.rep</span>(<span class="cs">"❤️"</span>, <span class="cv">lives</span>))<br>
+        <span class="cf">print</span>(<span class="cs">"Alive: "</span>        .. <span class="cf">tostring</span>(<span class="cv">isAlive</span>))<br>
+        <span class="cf">print</span>(<span class="cf">string.rep</span>(<span class="cs">"="</span>, <span class="cs">24</span>))
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="output">
+        <div class="out-label">Output</div>
+        <div class="out-line">
+          ========================<br>
+          WELCOME, ALI RAZA<br>
+          Name length: 8<br>
+          Short name: ali<br>
+          Score: 450<br>
+          XP to next lvl: 1150<br>
+          Lives: ❤️❤️❤️<br>
+          Alive: true<br>
+          ========================
+        </div>
+      </div>
+      <div class="info" style="border-color:#a7f3d0;">
+        <div class="info-label" style="color:var(--green);">What this script uses</div>
+        <div class="info-text" style="font-size:12px;line-height:1.9;">
+          ✓ Variables (string, number, boolean)<br>
+          ✓ Math operators: <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">^ * -</code><br>
+          ✓ Comparison operator: <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">></code><br>
+          ✓ string.upper · string.len · string.sub · string.rep
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+  S9 — CLASS TASK
+══════════════════════════ -->
+<div class="slide" id="s9">
+  <div class="badge b-amber rv">CLASS 3 · TASK · 25 MINUTES</div>
+  <h2 class="h2 rv">Task — The Game Stats Report</h2>
+  <p class="sub rv">Write one script that uses operators AND string methods to generate a full formatted game report</p>
+
+  <div class="two-col rv" style="max-width:1040px;">
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="info" style="border-color:#fcd34d;">
+        <div class="info-label" style="color:var(--amber);">The Scenario</div>
+        <div class="info-text" style="font-size:13px;line-height:1.6;">You are building an end-of-round summary screen for your Roblox game. When the round ends, the server prints each player's stats in a clean, formatted report.</div>
+      </div>
+
+      <div class="info" style="border-color:#bfdbfe;">
+        <div class="info-label" style="color:var(--blue);">Variables to Create</div>
+        <div class="info-text" style="font-size:12px;line-height:1.9;">
+          <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--blue-light);padding:1px 5px;border-radius:3px;">playerName</code> — your own name (string)<br>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--blue-light);padding:1px 5px;border-radius:3px;">kills</code> — number of kills (number)<br>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--blue-light);padding:1px 5px;border-radius:3px;">deaths</code> — number of deaths (number)<br>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--blue-light);padding:1px 5px;border-radius:3px;">accuracy</code> — shots hit % (number 0–100)<br>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--blue-light);padding:1px 5px;border-radius:3px;">isWinner</code> — boolean true/false
+        </div>
+      </div>
+
+      <div class="info" style="border-color:#ddd6fe;">
+        <div class="info-label" style="color:var(--accent2);">Must Use</div>
+        <div class="info-text" style="font-size:12px;line-height:1.9;">
+          ✓ Calculate <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">KD ratio</code> = kills / deaths<br>
+          ✓ Calculate <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">totalShots</code> = kills * 4<br>
+          ✓ Use <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">string.upper()</code> on playerName<br>
+          ✓ Use <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">string.len()</code> on playerName<br>
+          ✓ Use <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">string.rep("=")</code> for dividers<br>
+          ✓ Use a comparison operator for <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">isWinner</code>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="output">
+        <div class="out-label">Expected Output (example values)</div>
+        <div class="out-line">
+          ====================<br>
+          ROUND SUMMARY<br>
+          ====================<br>
+          Player: AHMED ALI<br>
+          Name length: 9 chars<br>
+          Kills: 8<br>
+          Deaths: 2<br>
+          K/D Ratio: 4.0<br>
+          Total Shots: 32<br>
+          Accuracy: 75%<br>
+          Winner: true<br>
+          ====================
+        </div>
+      </div>
+      <div class="info" style="border-color:#a7f3d0;">
+        <div class="info-label" style="color:var(--green);">Bonus ⭐</div>
+        <div class="info-text" style="font-size:12px;line-height:1.6;">Add a "rank" variable (string like "Gold"). Use <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">string.upper()</code> on it and print: <br><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--green-light);padding:2px 6px;border-radius:4px;">"Rank: " .. string.rep("⭐", 3) .. " " .. rank:upper()</code></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HUD -->
+<div class="hud">
+  <button class="hbtn" onclick="go(-1)">← Prev</button>
+  <div class="dots" id="dots"></div>
+  <span class="hctr" id="ctr">01 / 10</span>
+  <button class="hbtn" onclick="go(1)">Next →</button>
+</div>
+
+<script>
+const N = 10;
+let cur = 0;
+const dotsEl = document.getElementById('dots');
+for (let i = 0; i < N; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+}
+function goTo(n) {
+  document.getElementById('s' + cur).classList.remove('active');
+  document.getElementById('s' + cur).classList.add('exit');
+  setTimeout(() => document.getElementById('s' + cur).classList.remove('exit'), 320);
+  cur = n;
+  document.getElementById('s' + cur).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+  const label = String(cur + 1).padStart(2, '0') + ' / ' + String(N).padStart(2, '0');
+  document.getElementById('ctr').textContent = label;
+  document.getElementById('topNum').textContent = label;
+}
+function go(d) { const n = Math.max(0, Math.min(N - 1, cur + d)); if (n !== cur) goTo(n); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
+});
+function toggleFS() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+</script>
+</body>
+</html>

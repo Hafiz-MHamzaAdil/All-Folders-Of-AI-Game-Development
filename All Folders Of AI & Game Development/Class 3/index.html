@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 2 Task 2 — Game Variables in Action</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --border: #e2e0d8;
+  --border2: #d0cecc;
+  --text: #1a1a2e;
+  --muted: #7a7880;
+  --muted2: #a09ea8;
+  --accent: #4f46e5;
+  --accent-light: #ede9fe;
+  --accent2: #7c3aed;
+  --green: #059669;
+  --green-light: #d1fae5;
+  --amber: #d97706;
+  --amber-light: #fef3c7;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --blue: #2563eb;
+  --blue-light: #dbeafe;
+  --teal: #0d9488;
+  --teal-light: #ccfbf1;
+  --pink: #db2777;
+  --pink-light: #fce7f3;
+  --orange: #ea580c;
+  --orange-light: #ffedd5;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  padding: 32px 40px 52px;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, #c8c6d0 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.38;
+  pointer-events: none; z-index: 0;
+}
+.page { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; }
+
+/* ── HEADER ── */
+.header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
+.course-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-light); border: 1px solid #ddd6fe; border-radius: 20px; padding: 4px 13px; font-size: 11px; font-weight: 700; color: var(--accent2); letter-spacing: 0.5px; margin-bottom: 10px; }
+.main-title { font-size: clamp(26px,4vw,42px); font-weight: 900; color: var(--text); line-height: 1.1; letter-spacing: -0.5px; }
+.main-title span { color: var(--accent); }
+.main-sub { font-size: 15px; color: var(--muted); margin-top: 7px; font-weight: 500; }
+.meta-pills { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 13px; font-size: 12px; color: var(--muted); }
+.pill strong { color: var(--text); font-weight: 700; }
+
+/* ── SECTION ── */
+.sec-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted2); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.section { margin-bottom: 24px; }
+
+/* ── SCENARIO ── */
+.scenario { background: var(--amber-light); border: 1px solid #fcd34d; border-radius: 14px; padding: 20px 24px; display: flex; gap: 16px; align-items: flex-start; margin-bottom: 24px; }
+.sc-icon { font-size: 32px; flex-shrink: 0; }
+.sc-title { font-size: 15px; font-weight: 800; color: var(--amber); margin-bottom: 5px; }
+.sc-text { font-size: 13px; color: #92400e; line-height: 1.6; }
+
+/* ── OBJECTIVE ── */
+.objective { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin-bottom: 24px; }
+.obj-title { font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.obj-text  { font-size: 13px; color: var(--muted); line-height: 1.65; }
+.obj-text strong { color: var(--text); }
+
+/* ── TWO COL ── */
+.two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+/* ── VARIABLE TABLE ── */
+.vtable { width: 100%; border-collapse: separate; border-spacing: 0 3px; }
+.vtable th { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 7px 16px; text-align: left; }
+.vtable td { padding: 10px 16px; font-size: 13px; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); vertical-align: middle; }
+.vtable tr td:first-child  { border-left: 1px solid var(--border);  border-radius: 8px 0 0 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--accent2); }
+.vtable tr td:last-child   { border-right: 1px solid var(--border); border-radius: 0 8px 8px 0; font-size: 11px; color: var(--muted2); }
+.vtable tr td:nth-child(2) { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+.dtype { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+.d-str  { background: var(--blue-light);   color: var(--blue); }
+.d-num  { background: var(--amber-light);  color: var(--amber); }
+.d-bool { background: var(--green-light);  color: var(--green); }
+
+/* ── CODE BLOCKS ── */
+.code-wrap { background: #12131f; border: 1px solid #313244; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.12); margin-bottom: 0; }
+.code-header { background: #0a0b14; padding: 9px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #313244; }
+.code-title { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #89b4fa; text-transform: uppercase; }
+.code-step  { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+.cs-1 { background: rgba(37,99,235,0.25); color: #93c5fd; }
+.cs-2 { background: rgba(124,58,237,0.25); color: #c4b5fd; }
+.cs-3 { background: rgba(5,150,105,0.25);  color: #6ee7b7; }
+.cs-4 { background: rgba(217,119,6,0.25);  color: #fcd34d; }
+.cs-5 { background: rgba(219,39,119,0.25); color: #f9a8d4; }
+.code-body { padding: 16px 20px; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 2.0; }
+.ck{color:#bb9af7;font-weight:700;}
+.cs{color:#9ece6a;font-weight:600;}
+.cf{color:#e0af68;font-weight:600;}
+.cv{color:#7dcfff;}
+.cc{color:#565f89;font-style:italic;}
+.cn { color: #f38ba8; }
+
+/* ── OUTPUT ── */
+.output { background: #f0fff4; border: 1px solid #6ee7b7; border-radius: 10px; padding: 13px 16px; }
+.out-label { font-size: 10px; font-weight: 700; color: var(--green); letter-spacing: 1.5px; margin-bottom: 8px; }
+.out-line  { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #065f46; line-height: 2.1; }
+.out-sep   { height: 1px; background: #a7f3d0; margin: 5px 0; }
+
+/* ── STEP CARD ── */
+.steps { list-style: none; }
+.step { display: flex; gap: 14px; align-items: flex-start; padding: 12px 16px; margin-bottom: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; transition: all 0.18s; }
+.step:hover { border-color: var(--accent); transform: translateX(4px); }
+.snum { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 900; flex-shrink: 0; }
+.n1 { background: var(--blue-light);   color: var(--blue); }
+.n2 { background: var(--accent-light); color: var(--accent2); }
+.n3 { background: var(--amber-light);  color: var(--amber); }
+.n4 { background: var(--green-light);  color: var(--green); }
+.n5 { background: var(--pink-light);   color: var(--pink); }
+.stitle { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.sdesc  { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.scode  { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent2); background: var(--accent-light); padding: 2px 7px; border-radius: 4px; display: inline-block; margin-top: 4px; }
+
+/* ── INFO BOX ── */
+.info { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.info-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+.info-text  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── BONUS ── */
+.bonus { background: linear-gradient(135deg,#fdf4ff,#ede9fe); border: 1px solid #ddd6fe; border-radius: 12px; padding: 18px 22px; }
+.bonus-title { font-size: 14px; font-weight: 800; color: var(--accent2); margin-bottom: 8px; }
+.bonus-text  { font-size: 13px; color: #4c1d95; line-height: 1.65; }
+
+/* ── RUBRIC ── */
+.rubric { width: 100%; border-collapse: separate; border-spacing: 0 3px; }
+.rubric th { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 7px 14px; text-align: left; }
+.rubric td { padding: 10px 14px; font-size: 13px; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.rubric tr td:first-child { border-left: 1px solid var(--border); border-radius: 7px 0 0 7px; font-weight: 600; }
+.rubric tr td:last-child  { border-right: 1px solid var(--border); border-radius: 0 7px 7px 0; font-size: 12px; color: var(--muted); }
+.rubric .hl td { background: var(--green-light); }
+.rubric .hl td:first-child { border-color: #6ee7b7; border-right: none; }
+.rubric .hl td:last-child  { border-color: #6ee7b7; border-left: none; color: var(--green); font-weight: 700; }
+.rubric .hl td:not(:first-child):not(:last-child) { border-top-color: #6ee7b7; border-bottom-color: #6ee7b7; }
+.rubric .total td { background: var(--accent-light); }
+.rubric .total td:first-child { border-left: 1px solid #ddd6fe; border-radius: 7px 0 0 7px; color: var(--accent); font-weight: 800; border-right: none; }
+.rubric .total td:last-child  { border-right: 1px solid #ddd6fe; border-radius: 0 7px 7px 0; border-left: none; }
+.rubric .total td:not(:first-child):not(:last-child) { border-top-color: #ddd6fe; border-bottom-color: #ddd6fe; }
+.pts { font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+
+/* ── FLOW DIAGRAM ── */
+.flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; margin: 8px 0; }
+.flow-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 130px; }
+.flow-box-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.flow-box-sub   { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); }
+.flow-arrow { font-size: 18px; color: var(--border2); padding: 0 6px; }
+
+/* ── FOOTER ── */
+.footer { text-align: center; padding-top: 18px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted2); margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="course-tag">CLASS 2 · MODULE 2 · TASK 2</div>
+      <h1 class="main-title">The <span>RPG Game Setup</span></h1>
+      <p class="main-sub">Use variables to build and run a real game system — all in the Output window</p>
+    </div>
+    <div class="meta-pills">
+      <div class="pill">⏱ <strong>30 minutes</strong></div>
+      <div class="pill">👤 <strong>Individual</strong></div>
+      <div class="pill">🎮 <strong>Game Context</strong></div>
+      <div class="pill">📘 <strong>Variables · Types · print()</strong></div>
+    </div>
+  </div>
+
+  <!-- SCENARIO -->
+  <div class="scenario">
+    <div class="sc-icon">⚔️</div>
+    <div>
+      <div class="sc-title">You are building a Roblox RPG (Role-Playing Game)</div>
+      <div class="sc-text">
+        Every RPG game needs to track a player's stats — their name, health, level, gold coins, and whether they are alive. When the game starts, it sets up all these stats, prints a welcome screen, then simulates what happens during one round of the game: the player takes damage, earns coins, levels up, and their stats update in real time. You will write the script that does all of this — using only variables, data types, math operators, and print().
+      </div>
+    </div>
+  </div>
+
+  <!-- OBJECTIVE -->
+  <div class="objective">
+    <div class="obj-title">🎯 What This Task Covers</div>
+    <div class="obj-text">
+      Declare <strong>all player stats as variables</strong> with the correct data types → print a welcome screen → <strong>simulate a game round</strong> by updating variables (take damage, earn coins, level up) → print updated stats after each event → print a final game-over screen. Every single value must come from a variable — no hardcoded numbers in the print lines.
+    </div>
+  </div>
+
+  <!-- VARIABLES TABLE + FLOW -->
+  <div class="section">
+    <div class="sec-label">Variables to Declare</div>
+    <div class="two-col">
+      <table class="vtable">
+        <thead>
+          <tr><th>Variable Name</th><th>Example Value</th><th>Type</th><th>What It Represents</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>playerName</td>
+            <td>"Ahmed"</td>
+            <td><span class="dtype d-str">String</span></td>
+            <td>The player's name</td>
+          </tr>
+          <tr>
+            <td>playerClass</td>
+            <td>"Warrior"</td>
+            <td><span class="dtype d-str">String</span></td>
+            <td>RPG class — Warrior, Mage, Archer</td>
+          </tr>
+          <tr>
+            <td>health</td>
+            <td>100</td>
+            <td><span class="dtype d-num">Number</span></td>
+            <td>Current HP — starts at 100</td>
+          </tr>
+          <tr>
+            <td>maxHealth</td>
+            <td>100</td>
+            <td><span class="dtype d-num">Number</span></td>
+            <td>Maximum possible HP</td>
+          </tr>
+          <tr>
+            <td>level</td>
+            <td>1</td>
+            <td><span class="dtype d-num">Number</span></td>
+            <td>Player's current level</td>
+          </tr>
+          <tr>
+            <td>gold</td>
+            <td>50</td>
+            <td><span class="dtype d-num">Number</span></td>
+            <td>Gold coins the player has</td>
+          </tr>
+          <tr>
+            <td>attackPower</td>
+            <td>15</td>
+            <td><span class="dtype d-num">Number</span></td>
+            <td>How much damage the player deals</td>
+          </tr>
+          <tr>
+            <td>isAlive</td>
+            <td>true</td>
+            <td><span class="dtype d-bool">Boolean</span></td>
+            <td>Is the player still in the game?</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- FLOW -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        
+
+      </div>
+    </div>
+  </div>
+
+  <!-- BONUS + RUBRIC -->
+  <div class="two-col section">
+    <div>
+      <div class="sec-label">Bonus Challenge ⭐</div>
+      <div class="bonus">
+        <div class="bonus-title">Add a Healing Potion Event</div>
+        <div class="bonus-text">
+          After Event 1 (taking damage), add a new event:<br><br>
+          <strong>Event 1.5:</strong> Player drinks a healing potion and recovers 20 HP. But health cannot go above maxHealth!<br><br>
+          Declare a variable:<br>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:#ede9fe;padding:3px 8px;border-radius:4px;display:inline-block;margin:4px 0;">local healAmount = 20</code><br><br>
+          Add the heal to health:<br>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:#ede9fe;padding:3px 8px;border-radius:4px;display:inline-block;margin:4px 0;">health = health + healAmount</code><br><br>
+          Print the result:<br>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:#ede9fe;padding:3px 8px;border-radius:4px;display:inline-block;margin:4px 0;">"🧪 Potion used! Health: " .. health</code><br><br>
+          Then also try adding an <strong>armour</strong> variable (number) and subtract it from enemy damage before applying it to health.
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-label">Marking Checklist</div>
+      <table class="rubric">
+        <thead>
+          <tr><th>Criterion</th><th style="text-align:center;">Pts</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hl"><td>All 8 variables declared correctly</td><td class="pts" style="text-align:center;color:var(--green);">2</td><td>Correct types used</td></tr>
+          <tr class="hl"><td>Welcome screen prints all stats with labels</td><td class="pts" style="text-align:center;color:var(--green);">2</td><td>Using .. operator</td></tr>
+          <tr class="hl"><td>Event 1 — health reduced correctly</td><td class="pts" style="text-align:center;color:var(--green);">1</td><td>health = health - damage</td></tr>
+          <tr class="hl"><td>Event 2 — gold increased correctly</td><td class="pts" style="text-align:center;color:var(--green);">1</td><td>gold = gold + earned</td></tr>
+          <tr class="hl"><td>Event 3 — level and attack updated</td><td class="pts" style="text-align:center;color:var(--green);">1</td><td>Both variables changed</td></tr>
+          <tr class="hl"><td>End summary shows updated values</td><td class="pts" style="text-align:center;color:var(--green);">1</td><td>Not the original values</td></tr>
+          <tr class="hl"><td>isAlive set to false + tostring() used</td><td class="pts" style="text-align:center;color:var(--green);">1</td><td>Boolean printed correctly</td></tr>
+          <tr class="hl"><td>Own name and class — not copied from example</td><td class="pts" style="text-align:center;color:var(--green);">1</td><td>Personalised script</td></tr>
+          <tr class="total"><td>Total</td><td class="pts" style="text-align:center;color:var(--accent);font-size:15px;">10</td><td style="color:var(--accent);font-weight:700;">/ 10</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    SMIT · AI & Game Creators · Class 2 · Task 2 — Variables in a Game Context
+  </div>
+
+</div>
+</body>
+</html>
